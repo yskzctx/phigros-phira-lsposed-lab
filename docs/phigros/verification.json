@@ -1,7 +1,7 @@
 {
-  "artifact": "Phigros-Lab-LSPosed-157-arm64-v0.1-DEV.apk",
-  "sha256": "28ea2851b276024e1fe41c7f1f7ff8ac9f334b6e7b9c75cf9bc31b9003cd726c",
-  "bytes": 49515778,
+  "artifact": "Phigros-Lab-LSPosed-157-arm64-v0.2-DIAGNOSTICS-DEV.apk",
+  "sha256": "7b2546d37f42ebd3acfd5cfe3e87502aa4cb24ab3f0b63429a0bcae1078e383d",
+  "bytes": 49528066,
   "package": "com.phigros.lab.lsp",
   "target": "com.PigeonGames.Phigros",
   "target_version_code": 157,

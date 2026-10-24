@@ -1,6 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.phigros.lab.lsp" android:versionCode="1" android:versionName="0.1-dev-174">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.phigros.lab.lsp" android:versionCode="2" android:versionName="0.2-diagnostics-dev">
     <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
-    <queries><package android:name="com.PigeonGames.Phigros" /></queries>
+    <queries><package android:name="com.PigeonGames.Phigros" /><package android:name="org.lsposed.manager" /></queries>
     <application android:label="Phigros 本地实验模块" android:theme="@android:style/Theme.Material.Light.NoActionBar" android:allowBackup="false" android:extractNativeLibs="true" android:multiArch="true" android:usesCleartextTraffic="false">
         <meta-data android:name="xposedmodule" android:value="true" />
         <meta-data android:name="xposeddescription" android:value="仅适配 4.0.1(157) arm64；独立测试存档；开发候选，尚未真机验收" />
@@ -11,5 +11,5 @@
         <activity android:name="com.phigros.offline.ChapterLibraryActivity" android:exported="true" android:screenOrientation="sensorLandscape" />
         <activity android:name="com.phigros.offline.SkinActivity" android:exported="false" android:screenOrientation="sensorLandscape" />
         <activity android:name="com.phigros.offline.ChapterPlayerActivity" android:exported="false" android:process=":chapter_player" android:screenOrientation="sensorLandscape" android:configChanges="orientation|screenSize|keyboardHidden" />
-    </application>
+    <receiver android:name="com.phigros.lab.ConnectionReport" android:exported="false" /></application>
 </manifest>

@@ -2,23 +2,35 @@
   "source_files": [
     {
       "path": "AndroidManifest.xml",
-      "sha256": "6d5b217e7ff48bb061c81a597401cc0576fd724333f09c2be5c38f393def0f3d"
+      "sha256": "72f5436db4cb9ce0ded02b3ee2ba5d7ad752b5d9b888e5938a70bbee67cc11a6"
+    },
+    {
+      "path": "src/ConnectionReport.java",
+      "sha256": "1b640123fa4f2fc837861b423e467490fe9a57b542d6b022c17c39d7c8d3e650"
     },
     {
       "path": "src/Controls.java",
-      "sha256": "2e74942efe533671c4e6792096c3348793391f41638cf88c0c824813f2913344"
+      "sha256": "044401b6611ae2411e89680049fe192afdd8ad943e3552cfa7315b019f0b64f7"
+    },
+    {
+      "path": "src/Dashboard.java",
+      "sha256": "9904f8dd67952626e66e25e95c9a2c0cfac547c16f37f644c4a179373840eb36"
+    },
+    {
+      "path": "src/DiagnosticState.java",
+      "sha256": "7b6d23ea42d4520354c09ce0143eac90abacef863c643db8a75634d7495aac4f"
     },
     {
       "path": "src/Entry.java",
-      "sha256": "666a309192ff09b1c128a7ac25eede7d885ffadf6ae9df2cd7670e97fded2005"
+      "sha256": "058cb19530403cab687b7fcc3a114702738a9a80d35d3a9b420bd97ec325e654"
     },
     {
       "path": "src/InfoActivity.java",
-      "sha256": "5440c7e624f9b9216936cd53ed6e8e3bbce075184a6327e7767a9463e1b5dd11"
+      "sha256": "135532c16550beee58bd8aac17061aeb01de9f055bdd0f8297307cb0b8a22c33"
     },
     {
       "path": "src/LabNative.java",
-      "sha256": "6dcd58beae30bea80fc015893066c9650279c0cac342a3d0a2d2125477b568f3"
+      "sha256": "e11783a0efa8eb48509a0858f6c636d92e5c2aab6bd201656cf4b67e33fcfc3b"
     },
     {
       "path": "src/LabStore.java",
@@ -26,7 +38,7 @@
     },
     {
       "path": "native/module.c",
-      "sha256": "d7fff7c921a1c091bb26b57d3d3534976a661cb7f18aae491ddfe10d732cc85f"
+      "sha256": "3d5eafa58ac8dfa7e3880d5fd7d8257ca0d6499fe242457a5ec3e43136f46f90"
     },
     {
       "path": "native/frame-policy.h",
@@ -35,6 +47,10 @@
     {
       "path": "native/profile.h",
       "sha256": "91ce51fa6b043188405cff1a1a2132e4a96540479379e9a2dc2cab9be997d7d0"
+    },
+    {
+      "path": "tests/DiagnosticStateTest.java",
+      "sha256": "49d9cd2b82669822707a2d27b45511d92ebc33eeb73cc91d085186da38d71f47"
     },
     {
       "path": "tests/LabStoreTest.java",

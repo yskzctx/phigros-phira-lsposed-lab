@@ -10,7 +10,11 @@ def digest(path):
  with path.open('rb')as f:return hashlib.file_digest(f,'sha256').hexdigest()
 assert digest(a.resources_from_apk)=='28ea2851b276024e1fe41c7f1f7ff8ac9f334b6e7b9c75cf9bc31b9003cd726c','Use the matching public Phigros module candidate as the default-resource input, not an original game or private APK'
 sdk=a.sdk.resolve();tools=sdk/'build-tools'/a.build_tools;android=sdk/'platforms'/a.platform/'android.jar';api=a.xposed_api.resolve()
-classes=build/'classes';classes.mkdir(exist_ok=True);dex=build/'dex';dex.mkdir(exist_ok=True)
+classes=build/'classes';classes.mkdir(exist_ok=True)
+# A fresh javac output prevents removed anonymous classes entering the DEX.
+for obsolete in classes.rglob('*.class'):
+ if not obsolete.is_symlink() and classes.resolve() in obsolete.resolve().parents:obsolete.unlink()
+dex=build/'dex';dex.mkdir(exist_ok=True)
 run('javac','--release','8','-encoding','UTF-8','-classpath',str(android)+os.pathsep+str(api),'-d',classes,*sorted((root/'src').rglob('*.java')))
 run('java','-Djava.io.tmpdir='+str(build),'-cp',tools/'lib/d8.jar','com.android.tools.r8.D8','--min-api','26','--lib',android,'--lib',api,'--output',dex,*sorted(classes.rglob('*.class')))
 host='windows-x86_64'if os.name=='nt'else'linux-x86_64';compiler=a.ndk.resolve()/'toolchains/llvm/prebuilt'/host/'bin'/('aarch64-linux-android26-clang.cmd'if os.name=='nt'else'aarch64-linux-android26-clang')
@@ -35,7 +39,7 @@ with zipfile.ZipFile(resources)as res,zipfile.ZipFile(a.resources_from_apk)as ol
  z.writestr('lib/arm64-v8a/libphigros_chapter.so',chapter,compress_type=zipfile.ZIP_STORED)
  z.writestr('assets/xposed_init','com.phigros.lab.Entry\n');z.writestr('assets/native_init','libphigros_lsp.so\n');z.writestr('assets/xposed_scope','com.PigeonGames.Phigros\n')
 zipalign=tools/('zipalign.exe'if os.name=='nt'else'zipalign');run(zipalign,'-P','16','-f','4',unsigned,aligned)
-apk=out/'Phigros-Lab-LSPosed-157-arm64-v0.1-DEV.apk'
+apk=out/'Phigros-Lab-LSPosed-157-arm64-v0.2-DIAGNOSTICS-DEV.apk'
 run('java','-Djava.io.tmpdir='+str(build),'-jar',tools/'lib/apksigner.jar','sign','--ks',a.keystore.resolve(),'--ks-key-alias',a.alias,'--ks-pass','file:'+str(a.password_file.resolve()),'--min-sdk-version','26','--v1-signing-enabled','false','--v2-signing-enabled','true','--v3-signing-enabled','true','--v4-signing-enabled','false','--out',apk,aligned)
 run('java','-jar',tools/'lib/apksigner.jar','verify','--verbose',apk);run(zipalign,'-c','-P','16','4',apk)
 with zipfile.ZipFile(apk)as z:assert z.testzip()is None
