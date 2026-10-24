@@ -1,0 +1,11 @@
+{
+  "host_tests": [
+    "exact profile rejection",
+    "original preferences unchanged, private backups and persistent shadow",
+    "hook rollback at every failure position",
+    "late activation abort",
+    "isolated upload returns failure instead of success"
+  ],
+  "all_passed": true,
+  "device_tested": false
+}

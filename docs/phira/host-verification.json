@@ -1,0 +1,16 @@
+{
+  "all_passed": true,
+  "tests": [
+    "original ELF SHA and supported offline gate",
+    "DEX Java/native signatures",
+    "only config fields changed; protected score bytes untouched",
+    "original storage unchanged and private backup",
+    "fresh lab has no copied account",
+    "cold autoplay reset preserves other modifiers",
+    "local_records and charts[].record restore preserve new charts and skins",
+    "local history all AP then restore preserves original records and null records",
+    "invalid lab root rejected",
+    "signed APK with no replacement engine"
+  ],
+  "device_tested": false
+}

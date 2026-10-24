@@ -1,0 +1,32 @@
+# Phigros / Phira LSPosed 本地实验模块
+
+两个寄生原版应用的 LSPosed 开发模块，共用此公开仓库。与 [Phigros 修改版项目](https://github.com/yskzctx/phigros-offline-lab) 分开维护。
+
+**当前为 0.1 开发预发行：尚未真机验收，功能未全部齐全。** 编译、签名和主机测试通过不等于真实设备能正常启动或全部功能可用。
+
+## 下载
+
+在本仓库 [Releases](https://github.com/yskzctx/phigros-phira-lsposed-lab/releases) 下载对应模块及 SHA256SUMS.txt。两个 APK 是两个不同宿主的模块，不是两个 Phigros 修改版。需要支持原生 Hook 的 LSPosed 环境；只勾选对应原版宿主，安装后冷启动。
+
+| 模块 | 目标原版 | 当前范围 | 已知缺项 |
+| --- | --- | --- | --- |
+| Phigros 本地实验模块 | com.PigeonGames.Phigros，4.0.1（157），arm64 | 控制面板、自动游玩、分数/准确率规划、判定规则、RKS/历史记录编辑、独立实验存档、自制谱播放器、音符皮肤 | 原生章节扩展特效/音效/判定线颜色未完成；两处皮肤存储独立；全部设备行为待验证 |
+| Phira 本地实验模块 | org.flos.phira，0.8.2（39），arm64 | 原版标准 AP 自动游玩、音量键面板、原版谱面/完整资源包导入、独立实验存档、历史全 AP/恢复、会话记录恢复 | 目标分数、准确率、逐音符规则、RKS 编辑未接入；全部设备行为待验证 |
+
+两者均默认关闭自动游玩；只有对应版本、进程和原生库匹配才允许激活。Phira 模块不替换原版引擎；Phigros 模块的自制谱播放器是独立子进程，不包含官方 Unity 引擎或 Phigros 游戏资源。
+
+## 数据与网络
+
+模块设计为使用独立实验目录，首次只读备份原始记录，不覆盖原版数据。禁用模块并冷启动是恢复原始数据路径的方案；不要卸载、清除或覆盖原版数据。具体路径和限制见对应说明。
+
+宿主网络权限保留，模块不统一断网。Phigros 模块接入云存档同步失败保护；Phira 模块启用原版离线结算与不计成绩标记，并保留成绩完整性检查。**实际不上传行为仍需设备端验收，当前不是已验证的联网测试方案。** 不用于在线排行榜、服务器/购买/账号校验或反作弊绕过。
+
+## 说明、验证与源码
+
+- [Phigros 使用与验收](docs/phigros/使用与验收.md)，[构建](modules/phigros/README.md)。
+- [Phira 使用与验收](docs/phira/使用与验收.md)，[源码与构建](modules/phira/README.md)。
+- `docs/*/verification.json`、`host-verification.json` 为构建时验证记录；里面 published=false 表示当时未发布，当前公开状态以 Release 和 publication.json 为准，设备验收仍为 false。
+- [Phigros 自制谱播放器对应源码](chapter-player/README.md)：基于 TeamFlos/phira 固定提交，保留 GPL-3.0 许可；预发行同时提供完整对应源码压缩包。
+- [免责声明](DISCLAIMER.md)。不上传签名私钥、凭据、手机日志或私人存档。
+
+请先备份需要保留的数据，针对已知兼容版本测试。反馈附版本、问题步骤和经过脱敏的必要日志，不要公开登录令牌、私人存档或签名文件。
