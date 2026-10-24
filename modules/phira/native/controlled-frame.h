@@ -102,13 +102,16 @@ static bool lab_frame_begin(LabPlan *p,void *judge,void *resource,void *chart,bo
  unsigned char old_keyboard=((unsigned char*)resource)[0xbc];if(!p->touch)((unsigned char*)resource)[0xbc]=1;p->frame_resource=resource;p->saved_autoplay=mods&1u;p->in_frame=true;
  for(int i=1;i<=p->n;i++){
   LabChartNote *n=p->notes+i;n->contact_ready=false;unsigned char state=n->memory[0x30];if(state!=0)continue;int judgment=p->selected[i];
-  double event=n->start;if(judgment==1)event+=.221*speed;else if(judgment==3)event-=.19*speed;else if(plan_is_good(judgment))event+=(plan_good_early(judgment,i,p->seed)?-.12:.12)*speed;
+  /* Original touch matching subtracts EARLY_OFFSET=.07 from late offsets.
+   * +.12 would become .05 (Perfect); +.19 becomes .12 (Good). */
+  double good_offset=plan_good_early(judgment,i,p->seed)?-.12:.19;
+  double event=n->start;if(judgment==1)event+=.221*speed;else if(judgment==3)event-=.19*speed;else if(plan_is_good(judgment))event+=good_offset*speed;
   bool ready=time>=event;if(judgment==1&&ready)p->expired_miss=true;
   if(n->start>time+.25*speed&&!ready)continue;
   n->saved_time=lab_f64(n->memory,0x140);n->saved_kind=lab_size(n->memory,0);n->changed=true;
   if(judgment!=1&&(n->kind!=1||judgment==3))lab_put_size(n->memory,0,0); // ordinary chart input classification; never a score-field write
   if(!ready)lab_put_f64(n->memory,0x140,time+.221*speed);
-  else if(judgment!=1){double diff=judgment==3?-.19:plan_is_good(judgment)?(plan_good_early(judgment,i,p->seed)?-.12:.12):0;lab_put_f64(n->memory,0x140,time-diff*speed);n->contact_ready=true;p->fired++;}
+  else if(judgment!=1){double diff=judgment==3?-.19:plan_is_good(judgment)?good_offset:0;lab_put_f64(n->memory,0x140,time-diff*speed);n->contact_ready=true;p->fired++;}
  }
  for(size_t i=0;i<p->row_count;i++){
   LabChartRow *r=p->rows+i;r->start=lab_size(r->live,24);if(r->start>r->count){lab_frame_end(p);memcpy((char*)resource+0x88,&mods,4);((unsigned char*)resource)[0xbc]=old_keyboard;return lab_fail(p,"谱面判定游标越界");}

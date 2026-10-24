@@ -33,5 +33,9 @@ int main(void){
  assert(lab_frame_begin(&plan,judge,resource,chart,true,&cfg,123,&api));assert(touch_events==2&&resource[0xbc]==0&&resource[0xb7]==1);memcpy(&mods,resource+0x88,4);assert(mods==0x22);lab_frame_end(&plan);memcpy(&mods,resource+0x88,4);assert(mods==0x23);
  int64_t borrowed=1;memcpy(cell,&borrowed,8);assert(!lab_frame_begin(&plan,judge,resource,chart,true,&cfg,123,&api));assert(lab_f64(notes,0x140)==1&&lab_size(notes+2*0x188,0)==2&&resource[0xbc]==0);memcpy(&mods,resource+0x88,4);assert(mods==0x23);
  unsigned char unchanged[2600];memcpy(unchanged,resource,sizeof(resource));assert(lab_frame_begin(&plan,judge,resource,chart,false,&cfg,123,&api));lab_frame_end(&plan);assert(!memcmp(unchanged,resource,sizeof(resource)));
- assert(!memcmp(protected_before,judge+0x58,sizeof(protected_before)));lab_plan_release(&plan);puts("PASS: Early Good, natural Miss, scoped Bad, retry/index/time/kind rollback, touch integration, no keyboard/network/unrated changes, protected bytes untouched");
+ assert(!memcmp(protected_before,judge+0x58,sizeof(protected_before)));lab_plan_release(&plan);
+ memset(cell,0,sizeof(cell));for(int k=0;k<3;k++)notes[k*0x188+0x30]=0;count(rows,24,0);plan.touch=&touch;cfg.rules[0].judgment=5;
+ real(resource,0x9e0,1.13);assert(lab_frame_begin(&plan,judge,resource,chart,true,&cfg,123,&api));assert(plan.fired==0);lab_frame_end(&plan);
+ real(resource,0x9e0,1.20);assert(lab_frame_begin(&plan,judge,resource,chart,true,&cfg,123,&api));assert(plan.fired==1);double late_delta=lab_f64(notes,0x140)-1.20;assert(fabs(late_delta+.19)<1e-7);assert(fabs(late_delta+.07)>.08&&fabs(late_delta+.07)<.16);lab_frame_end(&plan);assert(lab_f64(notes,0x140)==1);
+ assert(!memcmp(protected_before,judge+0x58,sizeof(protected_before)));lab_plan_release(&plan);puts("PASS: Early/Late Good including native early-offset compensation, natural Miss, Bad lifecycle, retry/index/time/kind rollback, touch integration and protected-byte canary");
 }

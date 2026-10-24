@@ -14,7 +14,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "365477c4bfaa9b495107ee798c4970d3873d1efeaf90143e2f8634c520ce388c"
+      "sha256": "943569625086e5401f132d5124679e0a9879ff0e61773dc644abb0149aad63b0"
     },
     {
       "path": "chapter-player/LICENSE-GPL-3.0.txt",
@@ -50,7 +50,7 @@
     },
     {
       "path": "docs/CONTROLS-20261025.md",
-      "sha256": "424b4bec1011402c4d01bbb668723b9e685bcbb615df07c35008751c1dec3ff3"
+      "sha256": "a55baf14b34bbd9b51f5c1920aacd05f1008008d4328ac693bb24729b5d9c08a"
     },
     {
       "path": "docs/DIAGNOSTICS-0.2.md",
@@ -58,7 +58,7 @@
     },
     {
       "path": "docs/NETWORK-POLICY.md",
-      "sha256": "26ebd937bb3ce22163361683fcfa7c20ebb99fd9cdc8c914a49282ad8806d7f5"
+      "sha256": "3e9701547b6894ef9f5072f768ee0ceddc5d25566491d6bc60e6ea83feaecbb3"
     },
     {
       "path": "docs/phigros/SHA256SUMS.txt",
@@ -66,15 +66,15 @@
     },
     {
       "path": "docs/phigros/host-verification.json",
-      "sha256": "db72d7e14035a920063ceb3fbaf633dbd3455f588ce340fe3c2e123089cd4a05"
+      "sha256": "efca7e6851841e54523612d32b3d4d7479ccac77788096d19e93c7516889cd0a"
     },
     {
       "path": "docs/phigros/verification.json",
-      "sha256": "95f5e24d3f5b3da13b43149d3b0d5fd257c64025dec0927670c1bcd3d6d2e9b0"
+      "sha256": "e73a093c826d542809c296573c06035bcabbb3b4c094b6ee819e1b45e649b9b6"
     },
     {
       "path": "docs/phigros/使用与验收.md",
-      "sha256": "d4cbf7fbd9e6ffc1eb33e0352a21a21f5a5d66fc620315929dac47e597dad4a8"
+      "sha256": "019fe4a368a250fecd7ed550c8c05834a0323192dcb5b3930b5e2a0cd44d163e"
     },
     {
       "path": "docs/phira/SHA256SUMS.txt",
@@ -82,15 +82,15 @@
     },
     {
       "path": "docs/phira/geometry-machine-verification.json",
-      "sha256": "1eb2254a2e741f5c067c74734f03c2ada1d2f001c2fa3c6cfd3166f13a3b08a9"
+      "sha256": "6bdc3d7d345adaccdce960a275927d643ef6d82007c82242a49292459bab63b2"
     },
     {
       "path": "docs/phira/host-verification.json",
-      "sha256": "b216252c8b4ff89302a72f5bd87e700ee7ebd36143c714a4d71e4d9f616d9761"
+      "sha256": "d507f05a8ddb242d6ad7c6a94c37059b387580d7ff155bcaacb6d1697748f671"
     },
     {
       "path": "docs/phira/input-machine-verification.json",
-      "sha256": "cb18d0ad6a58518cd1a63d887402b6f98b2d220f522c786bb5490cc678e27f4a"
+      "sha256": "df1b0ed7813831c87baa8dd93e2ec620b3712e7c108812e83f8371dafa3c7b6f"
     },
     {
       "path": "docs/phira/storage-layout-evidence.json",
@@ -98,11 +98,11 @@
     },
     {
       "path": "docs/phira/verification.json",
-      "sha256": "856ab05a10008b90f01ebef2c59d865cd39554783c3f86e14f08847f6b046bb5"
+      "sha256": "d89d0cdb619eecbe565e9b81be1c947bddaff3f9eb38e0243b56bcc4a61a5d5a"
     },
     {
       "path": "docs/phira/使用与验收.md",
-      "sha256": "965f4c1b8da3fa097d40b3b7ad20d604e4b015be1def10c5fc6884164fcea341"
+      "sha256": "c87fe7d4e492471891005d10d4935a8eb5e7f5691ff3668700435aa6ec2481d7"
     },
     {
       "path": "modules/common/activation-gate.h",
@@ -118,7 +118,7 @@
     },
     {
       "path": "modules/phigros/README.md",
-      "sha256": "96bd35d237007d7f431a71afa14f40f734296a688773bfe1c6ac0fd994364202"
+      "sha256": "3d7d44300c22fc6c81fb7ec0826c5397c98d9f6235670133596cd62b1ee49656"
     },
     {
       "path": "modules/phigros/assets/offline/chapter-player-GPL-3.0.txt",
@@ -134,7 +134,7 @@
     },
     {
       "path": "modules/phigros/assets/offline/chart-catalog.tsv",
-      "sha256": "c1e29497e33654cc4483754385f6921fda85dc877550d5c4b929bc856632abb6"
+      "sha256": "0aa88db44ccec2b5c264d84e3d1d031f0fff0ab50a317aa7b3441934300db496"
     },
     {
       "path": "modules/phigros/assets/offline/controls-ui.html",
@@ -142,7 +142,7 @@
     },
     {
       "path": "modules/phigros/build_module.py",
-      "sha256": "e660d5b4718fce6daa33f5cf4eec3e1c4a31454ba959131ea2f9dc803b3a66fb"
+      "sha256": "e5bb8084909aa34e07c325fcea069e37d3ecd153f8483a5a9c2d7c95eb973249"
     },
     {
       "path": "modules/phigros/native/cloud-guard.c",
@@ -310,7 +310,7 @@
     },
     {
       "path": "modules/phira/README.md",
-      "sha256": "88b558a2a252134b145bb5c777b700378575f82595ef6ca205fa261b7079ace8"
+      "sha256": "164a922f29442a51b8cec8d96796e61ba4fcbc22b5ac498722844dddfde1d264"
     },
     {
       "path": "modules/phira/assets/controls-ui.html",
@@ -318,15 +318,15 @@
     },
     {
       "path": "modules/phira/build_module.py",
-      "sha256": "d4fc0dfe5bd48175339747c3ff2ea93c915cfbf8547683c203ed2f1236981f85"
+      "sha256": "8de8fe990ae7f5bbc2afd17692fd1d2bc5f1383e875cba4f59f100122d635bf1"
     },
     {
       "path": "modules/phira/native/controlled-frame.h",
-      "sha256": "fd363bd5f04f69918434db337965dccdb00da8836953c40fd97b130ebddeb281"
+      "sha256": "3ebd18a0263a32f97e6ab65f21b162bd8eb09af1bb22d316701b4a8f08d1aa78"
     },
     {
       "path": "modules/phira/native/goal-plan.h",
-      "sha256": "e642a6f6a57c875fe561dfec08d39c4a4d7be5e0273e1fef8fb42d6410fef652"
+      "sha256": "4b227fa708c6b1dd47a4fb07f16cee8ddd0abb563401237943e08f93ec7d62b2"
     },
     {
       "path": "modules/phira/native/input-bridge.h",
@@ -334,7 +334,7 @@
     },
     {
       "path": "modules/phira/native/input-touch.h",
-      "sha256": "d89ce27e53043b255e6aef628da754b99ea7c63b16db1cc0785b32f61e676008"
+      "sha256": "2157118e918ba033cd17605dda67a4644ba49dfb671736ad8f8a6a62551bbd35"
     },
     {
       "path": "modules/phira/native/module.c",
@@ -350,7 +350,7 @@
     },
     {
       "path": "modules/phira/source-manifest.json",
-      "sha256": "32a32d87e45037d5293e031335a448ea3026f32e12206981b0ff3ab7b142067a"
+      "sha256": "67d3099616d11d608c2b0ee500bb79e6cffda3eb02c300a040e4971ffe1b1dcf"
     },
     {
       "path": "modules/phira/src/ConnectionReport.java",
@@ -422,11 +422,11 @@
     },
     {
       "path": "modules/phira/tests/controlled_frame_test.c",
-      "sha256": "a329fc5a55fc3c23ddfeebfe00ccd5f003796421f0071a52d6f11dbf4b4cf6f1"
+      "sha256": "9cba1c88e8e615c822b7ac56342e51794210d7184e73a4ae32b3bf0271e2e96c"
     },
     {
       "path": "modules/phira/tests/goal_plan_test.c",
-      "sha256": "043e9a8e355e5fed8090aecddc9092f07ce763e9502898ae8ba7819b5a62dcc5"
+      "sha256": "003084cba92c87ac43230c4ba7a8419dce2107fcaee8f72255091becc62f9eeb"
     },
     {
       "path": "modules/phira/tests/input_bridge_test.c",
@@ -434,7 +434,7 @@
     },
     {
       "path": "modules/phira/tests/touch_input_test.c",
-      "sha256": "6926b8672c2cfde368df555bd267760e08ee3643e44c3b2b78e5635cde9c5fbb"
+      "sha256": "47be6f6ed962d30a6048ea4d3b512977a5dd11b64c913333c888311e51e9c2fd"
     }
   ],
   "revision": "0.2-diagnostics-dev",
@@ -453,6 +453,5 @@
   },
   "private_keys_tokens_logs_or_private_saves_included": false,
   "device_tested": false,
-  "published_apks": false,
-  "hash_basis": "Git committed blob bytes (LF), not Windows checkout line endings"
+  "published_apks": false
 }

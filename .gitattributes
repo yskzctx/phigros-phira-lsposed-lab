@@ -9,3 +9,4 @@
 *.txt text eol=lf
 *.tsv text eol=lf
 *.html text eol=lf
+*.S text eol=lf

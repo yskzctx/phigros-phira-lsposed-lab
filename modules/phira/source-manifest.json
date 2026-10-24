@@ -58,11 +58,11 @@
     },
     {
       "path": "native/controlled-frame.h",
-      "sha256": "fd363bd5f04f69918434db337965dccdb00da8836953c40fd97b130ebddeb281"
+      "sha256": "3ebd18a0263a32f97e6ab65f21b162bd8eb09af1bb22d316701b4a8f08d1aa78"
     },
     {
       "path": "native/goal-plan.h",
-      "sha256": "e642a6f6a57c875fe561dfec08d39c4a4d7be5e0273e1fef8fb42d6410fef652"
+      "sha256": "4b227fa708c6b1dd47a4fb07f16cee8ddd0abb563401237943e08f93ec7d62b2"
     },
     {
       "path": "native/input-bridge.h",
@@ -70,7 +70,7 @@
     },
     {
       "path": "native/input-touch.h",
-      "sha256": "d89ce27e53043b255e6aef628da754b99ea7c63b16db1cc0785b32f61e676008"
+      "sha256": "2157118e918ba033cd17605dda67a4644ba49dfb671736ad8f8a6a62551bbd35"
     },
     {
       "path": "native/profile.h",
@@ -106,11 +106,11 @@
     },
     {
       "path": "tests/controlled_frame_test.c",
-      "sha256": "a329fc5a55fc3c23ddfeebfe00ccd5f003796421f0071a52d6f11dbf4b4cf6f1"
+      "sha256": "9cba1c88e8e615c822b7ac56342e51794210d7184e73a4ae32b3bf0271e2e96c"
     },
     {
       "path": "tests/goal_plan_test.c",
-      "sha256": "043e9a8e355e5fed8090aecddc9092f07ce763e9502898ae8ba7819b5a62dcc5"
+      "sha256": "003084cba92c87ac43230c4ba7a8419dce2107fcaee8f72255091becc62f9eeb"
     },
     {
       "path": "tests/input_bridge_test.c",
@@ -118,7 +118,7 @@
     },
     {
       "path": "tests/touch_input_test.c",
-      "sha256": "6926b8672c2cfde368df555bd267760e08ee3643e44c3b2b78e5635cde9c5fbb"
+      "sha256": "47be6f6ed962d30a6048ea4d3b512977a5dd11b64c913333c888311e51e9c2fd"
     }
   ],
   "original_game_binary_included": false,

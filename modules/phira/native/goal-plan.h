@@ -38,7 +38,7 @@ static inline PlanTimeline plan_timeline_windows(const PlanTiming *times,const u
             // Phira uses LIMIT_BAD for an untouched note timeout across note kinds.
             if(j==1)at=times[i].start+miss_delay;
             if(plan_is_good(j)){
-                float head=times[i].start+(plan_good_early(j,i,seed)?-good_delay:good_delay);
+                float head=times[i].start+(plan_good_early(j,i,seed)?-good_delay:good_delay*(19.f/12.f));
                 at=hold?fmaxf(head,times[i].end):head;
             }
             t.events[t.length++]=(PlanEvent){at,i,j};

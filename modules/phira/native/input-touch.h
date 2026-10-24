@@ -30,7 +30,9 @@ static inline bool lab_touch_submit(const LabTouchApi *api,const LabTouchContact
   api->set_time((unsigned char*)c->note+0x50,time);uint64_t packed=api->line_position(c->line,resource,lines,line_count);float pos[2];memcpy(pos,&packed,8);
   float radians=api->line_rotation(c->line,lines,line_count)*0.017453292519943295f,x=api->note_x((unsigned char*)c->note+0xf0);
   float wx=pos[0]+cosf(radians)*x,wy=pos[1]+sinf(radians)*x;
-  points[i][0]=(wx+1.f)*.5f*width;points[i][1]=(1.f-wy)*.5f*height;
+  /* Inverse of the original event-only to_local: y/height*2-1.
+   * This fallback uses screen-down coordinates, not GL's inverted Y. */
+  points[i][0]=(wx+1.f)*.5f*width;points[i][1]=(wy+1.f)*.5f*height;
   if(!isfinite(points[i][0])||!isfinite(points[i][1])||fabsf(points[i][0])>1e8f||fabsf(points[i][1])>1e8f)return false;
  }
  double now=api->uptime();if(!isfinite(now))return false;

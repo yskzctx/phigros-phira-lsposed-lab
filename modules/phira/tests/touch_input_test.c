@@ -12,7 +12,7 @@ static float note_x(const void *a){assert(a==note+0xf0);return .4f;}
 static float width(void){return 2000;}static float height(void){return 1000;}static double uptime(void){return 12345.25;}
 int main(void){
  unsigned char resource[2600]={0};LabTouchApi api={.input={key,repeat},.set_time=clock_at,.line_position=position,.line_rotation=rotation,.note_x=note_x,.screen_width=width,.screen_height=height,.uptime=uptime};LabTouchContact contact={.line=line,.note=note,.id=0x5048495241000001ULL};
- assert(lab_touch_submit(&api,&contact,1,resource,line,1,3.25));assert(events==2&&sent[0][0]==7&&sent[0][1]==0&&sent[1][1]==2);float x,y;memcpy(&x,sent[0]+4,4);memcpy(&y,sent[0]+8,4);assert(fabsf(x-1200)<.01&&fabsf(y-250)<.01);uint64_t id;double stamp;memcpy(&id,sent[0]+16,8);memcpy(&stamp,sent[0]+24,8);assert(id==contact.id&&stamp==12345.25);assert(!memcmp(resource,(unsigned char[2600]){0},2600));
+ assert(lab_touch_submit(&api,&contact,1,resource,line,1,3.25));assert(events==2&&sent[0][0]==7&&sent[0][1]==0&&sent[1][1]==2);float x,y;memcpy(&x,sent[0]+4,4);memcpy(&y,sent[0]+8,4);assert(fabsf(x-1200)<.01&&fabsf(y-750)<.01);assert(fabsf(x/2000*2-1-.2f)<1e-6&&fabsf(y/1000*2-1-.5f)<1e-6);uint64_t id;double stamp;memcpy(&id,sent[0]+16,8);memcpy(&stamp,sent[0]+24,8);assert(id==contact.id&&stamp==12345.25);assert(!memcmp(resource,(unsigned char[2600]){0},2600));
  int64_t borrowed=1;memcpy(cell,&borrowed,8);assert(!lab_touch_submit(&api,&contact,1,resource,line,1,3.25));assert(events==2);
  puts("PASS: rotated world-to-window contact, original Touch start/end event layout, finite native clock, no keyboard/network/score flags changed");
 }
