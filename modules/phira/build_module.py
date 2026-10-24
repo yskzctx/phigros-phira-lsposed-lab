@@ -18,12 +18,14 @@ dex=build/'dex';dex.mkdir(exist_ok=True)
 run('javac','--release','8','-encoding','UTF-8','-classpath',str(android)+os.pathsep+str(api),'-d',classes,*sorted((root/'src').glob('*.java')))
 run('java','-Djava.io.tmpdir='+str(build),'-cp',tools/'lib/d8.jar','com.android.tools.r8.D8','--min-api','26','--lib',android,'--lib',api,'--output',dex,*sorted(classes.rglob('*.class')))
 host='windows-x86_64'if os.name=='nt'else'linux-x86_64';compiler=a.ndk.resolve()/'toolchains/llvm/prebuilt'/host/'bin'/('aarch64-linux-android26-clang.cmd'if os.name=='nt'else'aarch64-linux-android26-clang')
-native=build/'libphira_lab.so';run(compiler,'-shared','-fPIC','-O2','-std=c11','-Wall','-Wextra','-Werror','-fstack-protector-strong','-Wl,-z,max-page-size=16384','-Wl,-z,relro,-z,now','-o',native,root/'native/module.c','-llog','-ldl')
+native=build/'libphira_lab.so';abi=build/'rust-abi.o';run(compiler,'-c','-fPIC',root/'native/rust-abi.S','-o',abi)
+run(compiler,'-shared','-fPIC','-O2','-std=c11','-Wall','-Wextra','-Werror','-fstack-protector-strong','-Wl,-z,max-page-size=16384','-Wl,-z,relro,-z,now','-o',native,root/'native/module.c',abi,'-llog','-ldl','-lm')
 resources=build/'resources.apk';run(tools/('aapt2.exe'if os.name=='nt'else'aapt2'),'link','-I',android,'--manifest',root/'AndroidManifest.xml','-o',resources)
 unsigned=build/'unsigned.apk';aligned=build/'aligned.apk'
 with zipfile.ZipFile(resources)as res,zipfile.ZipFile(unsigned,'w')as z:
  for e in res.infolist():z.writestr(e,res.read(e))
  z.write(dex/'classes.dex','classes.dex',compress_type=zipfile.ZIP_DEFLATED);z.write(native,'lib/arm64-v8a/libphira_lab.so',compress_type=zipfile.ZIP_STORED)
+ z.write(root/'assets/controls-ui.html','assets/controls-ui.html',compress_type=zipfile.ZIP_DEFLATED)
  z.writestr('assets/xposed_init','com.phira.lab.Entry\n');z.writestr('assets/native_init','libphira_lab.so\n');z.writestr('assets/xposed_scope','org.flos.phira\n')
 zipalign=tools/('zipalign.exe'if os.name=='nt'else'zipalign');run(zipalign,'-P','16','-f','4',unsigned,aligned)
 apk=out/'Phira-Lab-LSPosed-0.8.2-arm64-v0.2-DIAGNOSTICS-DEV.apk'

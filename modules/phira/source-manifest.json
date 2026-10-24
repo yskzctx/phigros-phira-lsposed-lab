@@ -2,7 +2,7 @@
   "source_files": [
     {
       "path": "AndroidManifest.xml",
-      "sha256": "72f5436db4cb9ce0ded02b3ee2ba5d7ad752b5d9b888e5938a70bbee67cc11a6"
+      "sha256": "f01bedfd3bc515acaa0d63fc3073667474fc9ba0c1188f7f4fa4788344747abf"
     },
     {
       "path": "src/ConnectionReport.java",
@@ -10,11 +10,15 @@
     },
     {
       "path": "src/Controls.java",
-      "sha256": "044401b6611ae2411e89680049fe192afdd8ad943e3552cfa7315b019f0b64f7"
+      "sha256": "496ac3f0f66e38543a4f6068849f1fbcfc0bab7c63b59ad0c1d673d5120f520f"
+    },
+    {
+      "path": "src/ControlsConfig.java",
+      "sha256": "92391c49e185e98d09e33a23c536a1331fd4f831d8fc449fe6983a4f13d7b01c"
     },
     {
       "path": "src/Dashboard.java",
-      "sha256": "9904f8dd67952626e66e25e95c9a2c0cfac547c16f37f644c4a179373840eb36"
+      "sha256": "865a69d8ee83257d38b33be1817b3cbd9b095290def9aec3decc0dbd0bc0390a"
     },
     {
       "path": "src/DiagnosticState.java",
@@ -26,7 +30,15 @@
     },
     {
       "path": "src/Entry.java",
-      "sha256": "4de5ab32877e6a387ffa31ced724c7ef998df06b9022d251fb215a85d93f67fb"
+      "sha256": "d48e4f935f34db0c97e68517e692c576f856625e355ec94b00a0f4b02d4b8b75"
+    },
+    {
+      "path": "src/GoalControls.java",
+      "sha256": "6b28f340282af3042ae4036dc95a29fe6cab4fd67acc408f2ab73678039f5658"
+    },
+    {
+      "path": "src/GoalPanel.java",
+      "sha256": "8a207f0dca71814b86bd007e85d18e0e4d75ea82a961f56f505ac1920641a3ca"
     },
     {
       "path": "src/InfoActivity.java",
@@ -34,23 +46,47 @@
     },
     {
       "path": "src/LabNative.java",
-      "sha256": "e11783a0efa8eb48509a0858f6c636d92e5c2aab6bd201656cf4b67e33fcfc3b"
+      "sha256": "63420779623bfb62202c8f9b1dd5b0dad6704353fd0e5f9be51ba1e3cc53600a"
     },
     {
       "path": "src/LabStore.java",
-      "sha256": "deb3ea42d06f097a57f57e32639aea42a4131343deefb485c2331e7ad9f81932"
+      "sha256": "edfa013e77d896013900125ba59bdaeeafb4f995bbbcee8babde1aa8016356b7"
     },
     {
       "path": "native/module.c",
-      "sha256": "3d5eafa58ac8dfa7e3880d5fd7d8257ca0d6499fe242457a5ec3e43136f46f90"
+      "sha256": "e098bcaacdc4d3ef98fc3e53c057617fbb592612ea45f1dac95d76f6ab65829b"
     },
     {
-      "path": "native/frame-policy.h",
-      "sha256": "18106e10301f8f714a25104ab650c8fa4ddeea122f6c957080953b0faf3206bd"
+      "path": "native/controlled-frame.h",
+      "sha256": "fd363bd5f04f69918434db337965dccdb00da8836953c40fd97b130ebddeb281"
+    },
+    {
+      "path": "native/goal-plan.h",
+      "sha256": "e642a6f6a57c875fe561dfec08d39c4a4d7be5e0273e1fef8fb42d6410fef652"
+    },
+    {
+      "path": "native/input-bridge.h",
+      "sha256": "7ec98ab760395efb00ff5ded26932b37359c852d1af366673a08e5f1abd31ec8"
+    },
+    {
+      "path": "native/input-touch.h",
+      "sha256": "d89ce27e53043b255e6aef628da754b99ea7c63b16db1cc0785b32f61e676008"
     },
     {
       "path": "native/profile.h",
-      "sha256": "91ce51fa6b043188405cff1a1a2132e4a96540479379e9a2dc2cab9be997d7d0"
+      "sha256": "9a577ae35d4b321fbd0db5d2084f7cee4b4c2cf11da5b6b9d44562f6d4b8e33e"
+    },
+    {
+      "path": "native/rust-abi.S",
+      "sha256": "92e6a76360e85ddcadb1c10a196774790b1441f9bd5a7dcbe711d2d7eb23d727"
+    },
+    {
+      "path": "assets/controls-ui.html",
+      "sha256": "ea4a72a10230df59b9977c53c1b6f8d706a83bb96b9cc137318e7afd5b7fddc6"
+    },
+    {
+      "path": "tests/ControlsConfigTest.java",
+      "sha256": "281906ce691460eb7923e8014d77631e5859d91bc554cd237ec30f81ab931015"
     },
     {
       "path": "tests/DiagnosticStateTest.java",
@@ -62,15 +98,27 @@
     },
     {
       "path": "tests/LabStoreTest.java",
-      "sha256": "0f2c60d0ede09957915087d0b8092741c90f1b60e4cf38ff7171e4e037bd59de"
+      "sha256": "40263c20b76b9378caef72c3ca08818b326b20fadfe0fd776a76b01c03dd8a94"
     },
     {
       "path": "tests/StorageLayoutTest.java",
-      "sha256": "4f44916d75435d7c4ec57f1f80b384c3e8780b8d8954e9634424ddb04f551df4"
+      "sha256": "38772f89fdd1db53a0c22d3b2bd3d93f0e64fd6b3fdf24c7144990572430cb73"
     },
     {
-      "path": "tests/frame-policy-test.c",
-      "sha256": "9fec3cf9950f2d07d8ca1d0054652a1e375192cdbd479d54b5428215f83e7d23"
+      "path": "tests/controlled_frame_test.c",
+      "sha256": "a329fc5a55fc3c23ddfeebfe00ccd5f003796421f0071a52d6f11dbf4b4cf6f1"
+    },
+    {
+      "path": "tests/goal_plan_test.c",
+      "sha256": "043e9a8e355e5fed8090aecddc9092f07ce763e9502898ae8ba7819b5a62dcc5"
+    },
+    {
+      "path": "tests/input_bridge_test.c",
+      "sha256": "25970ade9dacff55a715d18ed32a3d705932d030e18378209bea207ad49affd0"
+    },
+    {
+      "path": "tests/touch_input_test.c",
+      "sha256": "6926b8672c2cfde368df555bd267760e08ee3643e44c3b2b78e5635cde9c5fbb"
     }
   ],
   "original_game_binary_included": false,

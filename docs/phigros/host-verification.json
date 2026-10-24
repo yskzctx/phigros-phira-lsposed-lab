@@ -4,7 +4,7 @@
     "original preferences unchanged, private backups and persistent shadow",
     "hook rollback at every failure position",
     "late activation abort",
-    "isolated upload returns failure instead of success"
+    "isolated storage preserves exact original cloud calls and return values"
   ],
   "all_passed": true,
   "device_tested": false

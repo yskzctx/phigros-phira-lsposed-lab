@@ -1,6 +1,6 @@
 {
   "artifact": "Phigros-Lab-LSPosed-157-arm64-v0.2-DIAGNOSTICS-DEV.apk",
-  "sha256": "dea5d7dd5cf77a17546f618d072043070b0a600eb71adfa3bbbd38d4af576356",
+  "sha256": "b89e2970630c18939348a9b8f08af27fe75f329b542f07c8378ebef7d799804c",
   "bytes": 49528066,
   "package": "com.phigros.lab.lsp",
   "target": "com.PigeonGames.Phigros",
@@ -8,13 +8,16 @@
   "signature_verified": true,
   "alignment_16k_verified": true,
   "no_host_apk_or_engine": true,
+  "module_forces_offline": false,
+  "upload_attempts_follow_original": true,
+  "original_upload_eligibility_preserved": true,
   "device_tested": false,
   "installed": false,
   "published": false,
   "complete_feature_parity": false,
   "limitations": [
     "Native chapter extended FX/audio/line colors incomplete",
-    "Framework loading, real save isolation and upload guard await device verification",
+    "Framework loading, real save isolation and original upload behavior await device verification",
     "Custom chapter caller/config transfer and audio await device verification"
   ]
 }

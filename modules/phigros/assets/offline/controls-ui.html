@@ -5,6 +5,7 @@
 </style></head><body><main class="app">
 <nav class="tabs" aria-label="设置页面"><button class="tab active" data-tab="play">游玩</button><button class="tab" data-tab="rules">判定规则 <span id="rule-count">0</span></button><button class="tab" data-tab="history">存档</button></nav>
 <div class="pages">
+<details id="network-policy" class="card"><summary>离线修改版 · 仅限本地 · 不可登录账号</summary><p class="muted">不可登录账号，不提供排行榜、云存档或其他线上操作。此应用不声明网络权限。</p></details>
 <section id="play" class="page active">
  <div class="card"><div class="row between"><label class="switch"><input id="auto" type="checkbox">自动游玩</label><span class="pill" id="auto-label">关闭</span></div><p class="muted">冷启动默认关闭。自动会话成绩在下次冷启动恢复。</p></div>
  <div class="card"><h2>这局怎么打</h2><div class="mode" role="group" aria-label="自动游玩目标"><button data-mode="0" class="active">默认 AP</button><button data-mode="1">目标分数</button><button data-mode="2">目标准确率</button></div>
@@ -60,5 +61,8 @@ $('rks-apply').onclick=()=>send('rks',{target:$('rks').value});$('all-ap').oncli
 window.receive=function(s){$('auto').checked=!!s.auto;$('auto').disabled=false;$('auto-label').textContent=s.auto?'开启':'关闭';$('skin-state').textContent=s.skin||'默认皮肤';
  if(!initial||s.reload){initial=true;dirty=false;setMode(s.mode||0);$('score').value=s.score;$('accuracy').value=s.accuracy;rules=(s.rules||[]).map(r=>({...r,noteType:r.noteType||0}));renderRules();$('rks').value=s.rksTarget||'';showDirty()}
  let text=s.runtime||'在选曲页保存，下局使用新设置。';$('runtime').replaceChildren();let strong=document.createElement('strong');strong.textContent=s.auto?'自动游玩已开启':'当前为手动模式';$('runtime').append(strong,document.createTextNode(text));let history=s.history||'';$('history-state').textContent=history;$('history-state').classList.toggle('hidden',!history);if(s.message)toast(s.message);if(s.saved){dirty=false;showDirty()}};
+try{if(hasBridge&&typeof OfflineBridge.environment==='function'&&OfflineBridge.environment()==='module'){
+ const box=$('network-policy');box.replaceChildren();const title=document.createElement('summary');title.textContent='LSPosed 模块 · 保留宿主联网';const detail=document.createElement('p');detail.className='muted';detail.textContent='保留登录及原版上传流程，模拟成绩也可按原版条件尝试上传；是否接受由原版与服务器决定。本地重启恢复不会撤回已经上传的记录。';box.append(title,detail);
+}}catch(ignore){}
 if(hasBridge)send('ready');else window.receive({auto:false,mode:0,score:'900000',accuracy:'90',rules:[],runtime:'界面预览 · 手机上显示实际执行数量和预测成绩',history:'此页为浅色界面预览，不修改任何游戏数据。'});
 </script></body></html>

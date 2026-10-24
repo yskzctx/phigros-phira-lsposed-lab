@@ -16,6 +16,7 @@ public class Dashboard extends Activity {
   page.addView(text("本地实验 / LSPosed",13,0xff526278));TextView title=text(game(),30,0xff15213a);title.setTypeface(null,Typeface.BOLD);title.setPadding(0,dp(6),0,dp(2));page.addView(title);page.addView(text(expected(),14,0xff526278));
   LinearLayout connection=card(page);heading(connection,"连接状态");state=text("尚未诊断",19,0xff995400);state.setPadding(0,dp(12),0,dp(6));connection.addView(state);stamp=text("",12,0xff526278);connection.addView(stamp);action(connection,"启动游戏并检查连接",true,this::launch);body(connection,"首次使用先在 LSPosed 勾选目标游戏并彻底结束游戏进程。返回这里可查看本次启动报告。");
   LinearLayout play=card(page);heading(play,"游戏内控制");body(play,"音量上键打开面板，音量下键收起。自动游玩每次冷启动默认关闭；配置与本局开关分开保存。");body(play,"目标分数、目标准确率、判定规则与历史设置位于游戏内面板。独立实验存档，不把修改版记录覆盖到正版。原生章节扩展特效、音效和线色尚未完成。");
+  LinearLayout network=card(page);heading(network,"保留宿主登录与联网");body(network,"模块不统一断网，也不额外阻断成绩上传。自动游玩和规则干预成绩可按原版流程尝试上传，是否接受取决于原版资格判断与服务器；不会伪造上传成功。");body(network,"独立实验档的本地恢复不会撤回已上传记录。");
   extraCards(page);
   LinearLayout setup=card(page);heading(setup,"设置与恢复");action(setup,"打开 LSPosed",false,()->{Intent i=getPackageManager().getLaunchIntentForPackage("org.lsposed.manager");if(i!=null)startActivity(i);else new AlertDialog.Builder(this).setTitle("选择作用域").setMessage("请从你的 LSPosed 管理器入口打开，在模块中仅勾选 "+game()+"。管理器包名可能因安装方式而不同。").setPositiveButton("知道了",null).show();});body(setup,"禁用模块后彻底结束游戏并重新打开，回到原始存档路径。不要清除或覆盖原版数据。");body(setup,"开发中 · 未真机验收。旧0.1下载已撤回，此界面不代表所有计划功能已实现。");
  }

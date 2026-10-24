@@ -16,13 +16,10 @@ static BoolTask (*sync_original)(const void *method);
 static IntTask (*silent_original)(const void *method);
 static atomic_bool guard_ready=false,isolated=false;
 static BoolTask guard_sync(const void *method){
- if(!atomic_load(&isolated))return sync_original(method);
- return (BoolTask){.source=NULL,.result=false,.token=0};
+ return sync_original(method);
 }
 static IntTask guard_silent(const void *method){
- if(!atomic_load(&isolated))return silent_original(method);
- // Actual SilenceSyncResult.NetworkError enum value is 3; never report success.
- return (IntTask){.source=NULL,.result=3,.token=0};
+ return silent_original(method);
 }
 static bool activate_isolation(bool value){
  if(value&&!atomic_load(&guard_ready))return false;

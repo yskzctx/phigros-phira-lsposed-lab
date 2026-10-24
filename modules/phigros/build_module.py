@@ -32,7 +32,7 @@ with zipfile.ZipFile(resources)as res,zipfile.ZipFile(a.resources_from_apk)as ol
    assert '..'not in PurePosixPath(e.filename).parts and '\\'not in e.filename
    if e.filename in {'assets/xposed_init','assets/native_init','assets/xposed_scope'}:continue
    if e.filename.startswith(('assets/aa/','assets/bin/')):continue
-   z.writestr(e,old.read(e))
+   z.writestr(e,(root/'assets/offline/controls-ui.html').read_bytes()if e.filename=='assets/offline/controls-ui.html'else old.read(e))
  for name,file in native.items():z.write(file,'lib/arm64-v8a/'+name,compress_type=zipfile.ZIP_STORED)
  chapter=a.chapter_so.read_bytes()if a.chapter_so else old.read('lib/arm64-v8a/libphigros_chapter.so')
  assert chapter[:5]==b'\x7fELF\x02'and struct.unpack_from('<H',chapter,18)[0]==183

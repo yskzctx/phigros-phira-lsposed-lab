@@ -40,7 +40,7 @@ public final class LabStore {
    try{if(!data.exists()){
     File legacy=child(lab,"data.json");
     if(legacy.isFile())atomic(data,encode(json(legacy)));
-    else{JSONObject seed=new JSONObject();seed.put("config",new JSONObject().put("offlineMode",true).put("mpEnabled",false).put("mods","").put("autoplay",false));seed.put("tokens",JSONObject.NULL).put("me",JSONObject.NULL).put("charts",new JSONArray()).put("local_records",new JSONObject()).put("respacks",new JSONArray()).put("respack_id",0);atomic(data,encode(seed));}
+    else{JSONObject seed=new JSONObject();seed.put("config",new JSONObject().put("offlineMode",false).put("mpEnabled",false).put("mods","").put("autoplay",false));seed.put("tokens",JSONObject.NULL).put("me",JSONObject.NULL).put("charts",new JSONArray()).put("local_records",new JSONObject()).put("respacks",new JSONArray()).put("respack_id",0);atomic(data,encode(seed));}
    }else json(data);}
    catch(JSONException e){throw new IOException("实验种子无法创建",e);}
    // v1 metadata described the wrong file. Never replay those snapshots over the engine's real records.
@@ -48,7 +48,7 @@ public final class LabStore {
    atomic(marker,new byte[]{1});
   }
   if(!marker.isFile())throw new IOException("实验目录标记异常");
-  JSONObject state=json(data);File pending=child(lab,"session-records.json"),history=child(lab,"history-pending.json");
+  JSONObject state=json(data);File pending=child(lab,"session-records.json"),history=child(lab,"history-pending.json"),networkPolicy=child(lab,"native-network-policy-v1");
   try{
    if(pending.exists())restoreRecords(state,json(pending));
    if(history.exists()){
@@ -59,9 +59,14 @@ public final class LabStore {
     }else if(operation.equals("restore"))restoreRecords(state,json(backup));else throw new IOException("历史记录操作无效");
    }
    JSONObject config=state.optJSONObject("config");if(config==null)config=new JSONObject();
-   String mods=config.optString("mods","");ArrayList<String> kept=new ArrayList<>();for(String mod:mods.split("\\|")){mod=mod.trim();if(!mod.isEmpty()&&!mod.equals("AUTOPLAY"))kept.add(mod);}
-   config.put("mods",String.join(" | ",kept)).put("autoplay",false).put("offlineMode",true).put("mpEnabled",false);state.put("config",config);atomic(data,encode(state));
+   // The module switch lives only in its own native process state. Preserve
+   // the original game's own modifiers and autoplay choice in its data file.
+   // One-time migration removes this module's previous forced offline choice.
+   // Subsequent starts preserve the host settings chosen by the user.
+   if(!networkPolicy.exists())config.put("offlineMode",false);
+   state.put("config",config);atomic(data,encode(state));
   }catch(JSONException e){throw new IOException("实验会话恢复失败",e);}
+  if(!networkPolicy.exists())atomic(networkPolicy,new byte[]{1});
   if(pending.exists()&&!pending.delete())throw new IOException("实验会话标记无法清理");if(history.exists()&&!history.delete())throw new IOException("历史操作标记无法清理");return lab;
  }
  public static synchronized void beginAutoplay(File lab)throws IOException{

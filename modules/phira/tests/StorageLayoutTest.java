@@ -24,6 +24,8 @@ public final class StorageLayoutTest {
   check(!new File(old,"session-records.json").exists(),"wrong-root session pending survived migration");
   LabStore.queueHistory(old,"all-ap");LabStore.prepare(original,priv2);check(new JSONObject(read(new File(old,"data/data.json"))).getJSONArray("charts").getJSONObject(0).getJSONObject("record").getInt("score")==1000000,"AP did not reach actual engine file");
   LabStore.queueHistory(old,"restore");LabStore.prepare(original,priv2);check(new JSONObject(read(new File(old,"data/data.json"))).getJSONArray("charts").getJSONObject(0).getJSONObject("record").getInt("score")==800000,"restore did not reach actual engine file");
+  JSONObject options=new JSONObject(read(new File(old,"data/data.json")));options.getJSONObject("config").put("offlineMode",true).put("mpEnabled",true).put("mods","NO_SHADER");write(new File(old,"data/data.json"),options.toString());
+  LabStore.prepare(original,priv2);options=new JSONObject(read(new File(old,"data/data.json")));check(options.getJSONObject("config").getBoolean("offlineMode")&&options.getJSONObject("config").getBoolean("mpEnabled"),"native network options overwritten on later cold start");check(options.getJSONObject("config").getString("mods").equals("NO_SHADER"),"original unrated flag removed");
   System.out.println("PASS: actual engine data/ layout, correct original backup, v1 metadata quarantine, imported resources and AP restore retained");
  }
 }

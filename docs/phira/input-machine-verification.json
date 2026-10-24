@@ -1,0 +1,22 @@
+{
+  "original_sha256": "5c2c484265d05b36e792fba328244b195360e799da296292a569446b42dee782",
+  "original_event_repeat_rva": "0xd8e4ac",
+  "code_bytes": 448,
+  "original_arm64_machine_code_executed": true,
+  "cases": [
+    "first press",
+    "additional press",
+    "repeat ignored",
+    "release preserves press count",
+    "signed release delta"
+  ],
+  "context_null_valid_for_key_variants": true,
+  "ordinary_input_only": true,
+  "protected_score_memory_not_accessed": true,
+  "device_tested": false,
+  "full_judge_tested": false,
+  "gameplay_tested": false,
+  "original_touch_start_move_end_cancel": true,
+  "touch_id_position_time_and_phase_verified": true,
+  "context_null_valid_for_touch_variants": true
+}

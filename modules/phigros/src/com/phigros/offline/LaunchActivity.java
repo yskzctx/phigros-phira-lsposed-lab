@@ -19,7 +19,7 @@ public final class LaunchActivity {
   RksEditor.applyPending(c);autoplay=false;
  }
  public static synchronized void changeAutoplay(Context c,boolean value)throws IOException{
-  if(!LabNative.ready())throw new IOException("原生接口或上传保护尚未就绪，未开启修改");
+  if(!LabNative.ready())throw new IOException("原生接口或独立存档路径尚未就绪，未开启修改");
   File state=new File(c.getFilesDir(),"offline-session"),pending=new File(state,"autoplay.pending");
   if(value&&!pending.exists()){
    if(!state.isDirectory()&&!state.mkdirs())throw new IOException("会话目录无法创建");

@@ -89,6 +89,7 @@ public final class OverlayMenu {
         web.evaluateJavascript("window.receive("+state.toString()+")",null);
     }catch(Exception e){toast("读取控制状态失败");}}
     private final class Bridge {
+        @JavascriptInterface public String environment(){return "module";}
         @JavascriptInterface public void submit(final String action,final String payload){if(action==null||payload==null||payload.length()>100000)return;handler.post(new Runnable(){public void run(){handle(action,payload);}});}
     }
     private void handle(String action,String payload){try{

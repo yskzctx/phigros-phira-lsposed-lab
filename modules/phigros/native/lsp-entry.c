@@ -54,7 +54,7 @@ static void install_library(void *handle){
   }
  }
  atomic_store(&guard_ready,true);activate_isolation(true);atomic_store(&ready,true);gate.ready=true;
- __android_log_print(ANDROID_LOG_INFO,"PhigrosLab","157 control, local save isolation and upload guard installed; autoplay off");
+ __android_log_print(ANDROID_LOG_INFO,"PhigrosLab","157 controls and local storage installed; native cloud calls preserved; autoplay off");
 }
 static void on_library(const char *name,void *handle){
  if(!name)return;const char *leaf=strrchr(name,'/');leaf=leaf?leaf+1:name;if(strcmp(leaf,"libil2cpp.so"))return;

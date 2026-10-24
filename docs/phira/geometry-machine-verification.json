@@ -1,0 +1,16 @@
+{
+  "original_sha256": "5c2c484265d05b36e792fba328244b195360e799da296292a569446b42dee782",
+  "original_arm64_geometry_executed": true,
+  "compiled_module_rust_abi_shim_executed": true,
+  "cases": [
+    "None Option<f32> becomes zero",
+    "Some Option<f32> retains value",
+    "line position packed x0 and aspect normalization",
+    "line rotation float result",
+    "Object.set_time uses d0 and updates six animations"
+  ],
+  "protected_score_memory_not_accessed": true,
+  "device_tested": false,
+  "full_judge_tested": false,
+  "gameplay_tested": false
+}
