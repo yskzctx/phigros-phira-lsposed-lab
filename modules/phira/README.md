@@ -17,7 +17,7 @@
 
 ## 数据位置与恢复
 
-实验目录：`<原版 Context.getFilesDir()>/phira-lab-082/`。其中 `original-data-backup.json` 是首次启动时读取原始 data.json 的私人备份；不要上传。实验 data.json、charts、respacks 等由原版引擎写在独立根目录中。`session-records.json` 是待恢复的实验记录快照。
+实验目录：`<原版 Context.getFilesDir()>/phira-lab-082/`。其中 `original-game-data-backup-v2.json` 是首次启动时读取原始 data.json 的私人备份；不要上传。引擎实际读取 `<实验根>/data/data.json`，谱面位于 `<实验根>/data/charts/`，皮肤位于 `<实验根>/data/respack/`；元数据快照位于实验根目录。`session-records.json` 是待恢复的实验记录快照。
 
 退出 Phira，在 LSPosed 禁用模块并冷启动，恢复原始数据路径。不要把实验数据覆盖回原版，不要删除或清除原版应用数据。此操作方案仍需设备验证。
 
@@ -40,3 +40,5 @@ python build_module.py --sdk <SDK目录> --ndk <NDK目录> --xposed-api <api-82.
 主机测试覆盖配置字段的改动范围、原始文件保持、独立备份、冷启动关闭、两处记录恢复保留新导入资源、历史全 AP/恢复及异常目录拒绝。APK 已检查签名和 16 KB 对齐。
 
 待设备验证：LSPosed 加载、Phira 冷启动、实际导入与皮肤切换、音量键面板、原版自动游玩及真实结算、离线结算的网络行为、禁用后的原始数据恢复。
+
+0.2 另修复：原版在 DATA_PATH 下继续进入 data/，旧模块写在上一层。现按实际引擎布局处理备份、历史和会话恢复；原始备份读取 `<原始DATA_PATH>/data/data.json`。升级时保留实际引擎文件和资源，将旧层级的错误会话/历史元数据归档到 `legacy-layout-v1/`，不覆盖到真实实验记录。加载模块原生回调也提前到解析游戏原生入口类之前。尚未设备验证。

@@ -1,0 +1,10 @@
+{
+  "original_sha256": "5c2c484265d05b36e792fba328244b195360e799da296292a569446b42dee782",
+  "save_data_rva": "0xb0933c",
+  "ensure_rva": "0x83f060",
+  "save_data_root_literal_rva": "0x274b84",
+  "save_data_root_literal": "data",
+  "format_pieces": [],
+  "engine_file": "DATA_PATH/data/data.json",
+  "binary_unmodified": true
+}

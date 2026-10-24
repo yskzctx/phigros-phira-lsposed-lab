@@ -9,6 +9,16 @@ public final class LabStore {
  private static void atomic(File file,byte[] bytes)throws IOException{if(bytes.length>LIMIT)throw new IOException("实验数据过大");File temp=child(file.getParentFile(),file.getName()+".lab-tmp");try{try(FileOutputStream out=new FileOutputStream(temp)){out.write(bytes);out.getFD().sync();}try{Files.move(temp.toPath(),file.toPath(),StandardCopyOption.ATOMIC_MOVE,StandardCopyOption.REPLACE_EXISTING);}catch(AtomicMoveNotSupportedException e){Files.move(temp.toPath(),file.toPath(),StandardCopyOption.REPLACE_EXISTING);}}finally{Files.deleteIfExists(temp.toPath());}}
  private static JSONObject json(File f)throws IOException{try{return new JSONObject(new String(read(f),StandardCharsets.UTF_8));}catch(JSONException e){throw new IOException("实验 JSON 无法解析，未切换存档",e);}}
  private static byte[] encode(JSONObject object){return object.toString().getBytes(StandardCharsets.UTF_8);}
+ private static File engineData(File lab)throws IOException{return child(child(lab,"data"),"data.json");}
+ private static void archiveLegacy(File lab)throws IOException{
+  File archive=child(lab,"legacy-layout-v1");directory(archive);
+  for(String name:new String[]{"data.json","session-records.json","history-pending.json","history-before-edit.json"}){
+   File old=child(lab,name);if(!old.exists())continue;File saved=child(archive,name);
+   byte[] bytes=read(old);if(saved.exists()){if(!Arrays.equals(bytes,read(saved)))throw new IOException("旧实验元数据备份冲突，未继续迁移");}
+   else atomic(saved,bytes);
+   Files.delete(old.toPath());
+  }
+ }
  private static JSONObject snapshot(JSONObject state)throws IOException{
   try{JSONObject records=state.optJSONObject("local_records"),chartRecords=new JSONObject();JSONArray charts=state.optJSONArray("charts");
    if(charts!=null)for(int i=0;i<charts.length();i++){JSONObject chart=charts.optJSONObject(i);if(chart==null)continue;String path=chart.optString("local_path","");if(path.isEmpty()||chartRecords.has(path))throw new IOException("谱面记录路径缺失或重复，未修改记录");Object record=chart.opt("record");if(record!=null&&record!=JSONObject.NULL&&!(record instanceof JSONObject))throw new IOException("谱面记录类型异常");chartRecords.put(path,record==null?JSONObject.NULL:record);}
@@ -23,12 +33,18 @@ public final class LabStore {
  private static JSONObject ap()throws JSONException{return new JSONObject().put("score",1000000).put("accuracy",1.0).put("fullCombo",true);}
  public static synchronized File prepare(File originalRoot,File privateFiles)throws IOException{
   File files=privateFiles.getCanonicalFile();if(!files.isDirectory())throw new IOException("应用文件目录缺失");File lab=child(files,"phira-lab-082");directory(lab);directory(child(lab,"cache"));
-  File data=child(lab,"data.json"),marker=child(lab,"initialized-v1");
+  directory(child(lab,"data"));File data=engineData(lab),marker=child(lab,"storage-layout-v2");
   if(!marker.exists()){
-   File original=child(originalRoot.getCanonicalFile(),"data.json"),backup=child(lab,"original-data-backup.json");
+   File original=engineData(originalRoot.getCanonicalFile()),backup=child(lab,"original-game-data-backup-v2.json");
    if(original.exists()&&!backup.exists())atomic(backup,read(original));
-   try{JSONObject seed=new JSONObject();seed.put("config",new JSONObject().put("offlineMode",true).put("mpEnabled",false).put("mods","").put("autoplay",false));seed.put("tokens",JSONObject.NULL).put("me",JSONObject.NULL).put("charts",new JSONArray()).put("local_records",new JSONObject()).put("respacks",new JSONArray()).put("respack_id",0);atomic(data,encode(seed));}
+   try{if(!data.exists()){
+    File legacy=child(lab,"data.json");
+    if(legacy.isFile())atomic(data,encode(json(legacy)));
+    else{JSONObject seed=new JSONObject();seed.put("config",new JSONObject().put("offlineMode",true).put("mpEnabled",false).put("mods","").put("autoplay",false));seed.put("tokens",JSONObject.NULL).put("me",JSONObject.NULL).put("charts",new JSONArray()).put("local_records",new JSONObject()).put("respacks",new JSONArray()).put("respack_id",0);atomic(data,encode(seed));}
+   }else json(data);}
    catch(JSONException e){throw new IOException("实验种子无法创建",e);}
+   // v1 metadata described the wrong file. Never replay those snapshots over the engine's real records.
+   if(child(lab,"initialized-v1").exists()||child(lab,"data.json").exists())archiveLegacy(lab);
    atomic(marker,new byte[]{1});
   }
   if(!marker.isFile())throw new IOException("实验目录标记异常");
@@ -49,7 +65,7 @@ public final class LabStore {
   if(pending.exists()&&!pending.delete())throw new IOException("实验会话标记无法清理");if(history.exists()&&!history.delete())throw new IOException("历史操作标记无法清理");return lab;
  }
  public static synchronized void beginAutoplay(File lab)throws IOException{
-  File pending=child(lab,"session-records.json");if(pending.exists())return;atomic(pending,encode(snapshot(json(child(lab,"data.json")))));
+  File pending=child(lab,"session-records.json");if(pending.exists())return;atomic(pending,encode(snapshot(json(engineData(lab)))));
  }
  public static synchronized void queueHistory(File lab,String operation)throws IOException{
   if(!operation.equals("all-ap")&&!operation.equals("restore"))throw new IOException("历史记录操作无效");

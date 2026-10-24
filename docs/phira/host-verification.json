@@ -1,6 +1,10 @@
 {
   "all_passed": true,
   "tests": [
+    "module native callback precedes host class initialization (JVM integration, negative baseline)",
+    "actual DATA_PATH/data/data.json layout and correct original backup",
+    "v1 wrong-root metadata quarantine preserves real engine records and resources",
+    "activation diagnostics fail closed",
     "original ELF SHA and supported offline gate",
     "DEX Java/native signatures",
     "only config fields changed; protected score bytes untouched",

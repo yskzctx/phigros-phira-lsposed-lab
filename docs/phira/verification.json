@@ -1,6 +1,6 @@
 {
   "artifact": "Phira-Lab-LSPosed-0.8.2-arm64-v0.2-DIAGNOSTICS-DEV.apk",
-  "sha256": "2ba8df075a327bc0dadb617a83062f998084d0f219f9c63355afdeaaaf880f60",
+  "sha256": "8ae5afa682522308c88e28a76bff7ee56c99948a2128981236240e7f2baee81a",
   "bytes": 57816,
   "package": "com.phira.lab.lsp",
   "target": "org.flos.phira",
@@ -14,6 +14,9 @@
   "original_chart_skin_import": false,
   "original_game_import_ui_preserved": true,
   "connection_diagnostics": true,
+  "early_native_registration": true,
+  "engine_storage_layout_v2": true,
+  "legacy_metadata_preserved": true,
   "volume_key_menu": true,
   "cold_autoplay_default_off": true,
   "record_only_session_restore": true,
