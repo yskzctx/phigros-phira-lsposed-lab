@@ -1,6 +1,6 @@
-**状态：旧0.2已撤回，当前源码为0.2诊断修订，已提供0.2测试预发行、未真机验收。** 见 [修订记录](../../docs/DIAGNOSTICS-0.2.md)。
+**当前：0.2.2正式发行；Phigros模块未真机验收，按用户要求发布。** 安装见[统一说明](../../docs/INSTALL-v0.2.2.md)。
 
-# Phigros 4.0.2（157）ARM64 LSPosed 开发模块
+# Phigros 4.0.1（157）ARM64 LSPosed 模块
 
 源代码包括宿主适配、复用的控制/皮肤/章节 Java、原生控制与皮肤源码。不是改包名共存版；只作用于 `com.PigeonGames.Phigros`。
 

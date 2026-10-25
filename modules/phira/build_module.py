@@ -28,7 +28,7 @@ with zipfile.ZipFile(resources)as res,zipfile.ZipFile(unsigned,'w')as z:
  z.write(root/'assets/controls-ui.html','assets/controls-ui.html',compress_type=zipfile.ZIP_DEFLATED)
  z.writestr('assets/xposed_init','com.phira.lab.Entry\n');z.writestr('assets/native_init','libphira_lab.so\n');z.writestr('assets/xposed_scope','org.flos.phira\n')
 zipalign=tools/('zipalign.exe'if os.name=='nt'else'zipalign');run(zipalign,'-P','16','-f','4',unsigned,aligned)
-apk=out/'Phira-Lab-LSPosed-0.8.2-arm64-v0.2.2-TEST.apk'
+apk=out/'Phira-Lab-LSPosed-0.8.2-arm64-v0.2.2.apk'
 run('java','-Djava.io.tmpdir='+str(build),'-jar',tools/'lib/apksigner.jar','sign','--ks',a.keystore.resolve(),'--ks-key-alias',a.alias,'--ks-pass','file:'+str(a.password_file.resolve()),'--min-sdk-version','26','--v1-signing-enabled','false','--v2-signing-enabled','true','--v3-signing-enabled','true','--v4-signing-enabled','false','--out',apk,aligned)
 run('java','-jar',tools/'lib/apksigner.jar','verify','--verbose',apk);run(zipalign,'-c','-P','16','4',apk)
 with apk.open('rb')as f:sha=hashlib.file_digest(f,'sha256').hexdigest()

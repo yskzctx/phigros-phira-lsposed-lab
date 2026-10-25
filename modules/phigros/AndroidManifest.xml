@@ -1,9 +1,10 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.phigros.lab.lsp" android:versionCode="2" android:versionName="0.2-diagnostics-dev">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.phigros.lab.lsp" android:versionCode="5" android:versionName="0.2.2">
     <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
     <queries><package android:name="com.PigeonGames.Phigros" /><package android:name="org.lsposed.manager" /></queries>
     <application android:label="Phigros 本地实验模块" android:theme="@android:style/Theme.Material.Light.NoActionBar" android:allowBackup="false" android:extractNativeLibs="true" android:multiArch="true" android:usesCleartextTraffic="false">
         <meta-data android:name="xposedmodule" android:value="true" />
-        <meta-data android:name="xposeddescription" android:value="仅适配 4.0.1(157) arm64；独立测试存档；开发候选，尚未真机验收" />
+        <meta-data android:name="xposedscope" android:value="com.PigeonGames.Phigros" />
+        <meta-data android:name="xposeddescription" android:value="仅适配 4.0.1(157) arm64；独立实验存档；兼容范围见发行说明" />
         <meta-data android:name="xposedminversion" android:value="93" />
         <activity android:name="com.phigros.lab.InfoActivity" android:exported="true">
             <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>

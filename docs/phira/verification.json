@@ -1,6 +1,6 @@
 {
-  "artifact": "Phira-Lab-LSPosed-0.8.2-arm64-v0.2.2-TEST.apk",
-  "sha256": "4e6f0368c91171522e01aefbc752ce91a590cfa52efb7aa2142583d40dc9cefd",
+  "artifact": "Phira-Lab-LSPosed-0.8.2-arm64-v0.2.2.apk",
+  "sha256": "94d650009548acde896118f86c55323d47b1e5c5bd25f4095c5f533b5fa468e7",
   "bytes": 147997,
   "package": "com.phira.lab.lsp",
   "target": "org.flos.phira",
@@ -18,6 +18,9 @@
   "original_game_import_ui_preserved": true,
   "connection_diagnostics": true,
   "early_native_registration": true,
+  "bootstrap_eager_host_class_initialization": true,
+  "lazy_initialization_negative_baseline_tested": true,
+  "in_game_copy_diagnostics": true,
   "engine_storage_layout_v2": true,
   "legacy_metadata_preserved": true,
   "volume_key_menu": true,
@@ -36,7 +39,7 @@
   "network_behavior_device_tested": false,
   "installed": false,
   "published": false,
-  "bootstrap_eager_host_class_initialization": true,
-  "lazy_initialization_negative_baseline_tested": true,
-  "in_game_copy_diagnostics": true
+  "module_version": "0.2.2",
+  "module_version_code": 5,
+  "report_type": "automated build checks; user feedback recorded separately"
 }

@@ -2,7 +2,7 @@
   "source_files": [
     {
       "path": "AndroidManifest.xml",
-      "sha256": "e1cd277ef8da4be1842eb6c22e443e2193266a9dd6c127631df8087e69fb0b05"
+      "sha256": "5ba1e7880cc09702914e4869f724d9836319636203c389c7b256e02b98890712"
     },
     {
       "path": "src/ConnectionReport.java",
@@ -18,7 +18,7 @@
     },
     {
       "path": "src/Dashboard.java",
-      "sha256": "23d4db37b287779bc2ee915fca2c583fc054454f4af7ab2cd5e17157f07b4531"
+      "sha256": "16b3b63a7b7c8370fec9f7650032b3ae28be0087c2622c2474474a580891aa1e"
     },
     {
       "path": "src/DiagnosticState.java",
