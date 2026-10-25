@@ -14,7 +14,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "70c1f31d859dbaa1c17bada443d4e71ea0472f6fe0559e2469e7f483f0641b99"
+      "sha256": "76e72edf88e4f189b0ebd83395dcd8f4b01638d0a45e967c7091897fd9f490b5"
     },
     {
       "path": "chapter-player/LICENSE-GPL-3.0.txt",
@@ -63,6 +63,10 @@
     {
       "path": "docs/NETWORK-POLICY.md",
       "sha256": "26ebd937bb3ce22163361683fcfa7c20ebb99fd9cdc8c914a49282ad8806d7f5"
+    },
+    {
+      "path": "docs/RELEASE-v0.2.1.json",
+      "sha256": "5427fe440e63df0e669504b1d1b236cb428c012935a0068648499a45752d06ed"
     },
     {
       "path": "docs/RELEASE-v0.2.json",
