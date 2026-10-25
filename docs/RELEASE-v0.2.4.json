@@ -1,0 +1,81 @@
+{
+  "repository": "https://github.com/yskzctx/phigros-phira-lsposed-lab",
+  "release": "https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/tag/v0.2.4-pre.1",
+  "tag": "v0.2.4-pre.1",
+  "source_commit": "e1c42ac35c79b26b007bf47717db4f2a77dabdda",
+  "date": "2026-10-25",
+  "published": true,
+  "draft": false,
+  "prerelease": true,
+  "device_tested": false,
+  "withdrawn_obsolete_releases_preserved_as_drafts": [
+    "v0.2.3-pre.1",
+    "v0.2.2"
+  ],
+  "assets": [
+    {
+      "name": "Phigros-Lab-LSPosed-157-arm64-v0.2.4-TEST.apk",
+      "bytes": 49544450,
+      "sha256": "a77534c9e81febe3cde0ba5c7dec5183694c7b9c0d73bf17810ce7b63cb3dd32",
+      "url": "https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.2.4-pre.1/Phigros-Lab-LSPosed-157-arm64-v0.2.4-TEST.apk",
+      "server_digest_verified": true,
+      "anonymous_full_download_verified": true,
+      "anonymous_range_verified": false
+    },
+    {
+      "name": "Phira-Lab-LSPosed-0.8.2-arm64-v0.2.4-TEST.apk",
+      "bytes": 152093,
+      "sha256": "0d40f80d7b949572b9b58cd6574d34e1c4704670a1cd75baebeee4b61aa76720",
+      "url": "https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.2.4-pre.1/Phira-Lab-LSPosed-0.8.2-arm64-v0.2.4-TEST.apk",
+      "server_digest_verified": true,
+      "anonymous_full_download_verified": true,
+      "anonymous_range_verified": false
+    },
+    {
+      "name": "INSTALL-v0.2.4.md",
+      "bytes": 4520,
+      "sha256": "c550bf49b0bf45b08695e14fc6e770211156c19203421a1d2cbf6cb4df0bb6e5",
+      "url": "https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.2.4-pre.1/INSTALL-v0.2.4.md",
+      "server_digest_verified": true,
+      "anonymous_full_download_verified": true,
+      "anonymous_range_verified": false
+    },
+    {
+      "name": "DISCLAIMER.md",
+      "bytes": 1273,
+      "sha256": "361d20efee2c840a820a87d81679204fbf9ac5a3386860a1fe66e49de1ecb238",
+      "url": "https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.2.4-pre.1/DISCLAIMER.md",
+      "server_digest_verified": true,
+      "anonymous_full_download_verified": true,
+      "anonymous_range_verified": false
+    },
+    {
+      "name": "Phigros-chapter-corresponding-source-v0.2.4.tar.gz",
+      "bytes": 4395438,
+      "sha256": "72902dfa6a33034014b6436cdce2d04aae29ff27cad41ca0eade0bf707f2f228",
+      "url": "https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.2.4-pre.1/Phigros-chapter-corresponding-source-v0.2.4.tar.gz",
+      "server_digest_verified": true,
+      "anonymous_full_download_verified": true,
+      "anonymous_range_verified": false
+    },
+    {
+      "name": "VERIFICATION-v0.2.4.json",
+      "bytes": 4751,
+      "sha256": "786f9caca15c40eb5e036d0e4eeccb56f3ef7a4bf0e0199121a3cb2ff4d8aa14",
+      "url": "https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.2.4-pre.1/VERIFICATION-v0.2.4.json",
+      "server_digest_verified": true,
+      "anonymous_full_download_verified": true,
+      "anonymous_range_verified": false
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "bytes": 602,
+      "sha256": "243d931ad3cb930bf3216f76d803d236e6df625371112204cc47d64634cc49a1",
+      "url": "https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.2.4-pre.1/SHA256SUMS.txt",
+      "server_digest_verified": true,
+      "anonymous_full_download_verified": true,
+      "anonymous_range_verified": false
+    }
+  ],
+  "embedded_startup_and_panel_disclaimer": true
+}
