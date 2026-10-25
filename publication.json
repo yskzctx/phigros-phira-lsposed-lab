@@ -125,5 +125,44 @@
       "original_repository": "https://github.com/yskzctx/phigros-offline-lab",
       "original_repository_main_commit": "c2e6d01447185c466d75957f1721294646844871"
     }
+  },
+  "phira_startup_revision": {
+    "release": "https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/tag/v0.2.1-pre.1",
+    "tag": "v0.2.1-pre.1",
+    "date": "2026-10-25",
+    "draft": false,
+    "prerelease": true,
+    "assets": [
+      {
+        "name": "Phira-Lab-LSPosed-0.8.2-arm64-v0.2.1-TEST.apk",
+        "bytes": 147997,
+        "sha256": "d87f36f5dff55c04cfee99e8cb1ad1b2c5c620fa1e07f61860fbb8c52e20d454",
+        "url": "https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.2.1-pre.1/Phira-Lab-LSPosed-0.8.2-arm64-v0.2.1-TEST.apk",
+        "anonymous_download_verified": true
+      },
+      {
+        "name": "INSTALL-v0.2.1.md",
+        "bytes": 2081,
+        "sha256": "1ce836ce02f7ebbccb8deedfe6b0316bd29629785bd24a298b71646099235a2b",
+        "url": "https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.2.1-pre.1/INSTALL-v0.2.1.md",
+        "anonymous_download_verified": true
+      },
+      {
+        "name": "VERIFICATION-v0.2.1.json",
+        "bytes": 1665,
+        "sha256": "a7bea9603077ecb10d8191c45bc65ce6af108609d7e6d1725669efc8efc987b5",
+        "url": "https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.2.1-pre.1/VERIFICATION-v0.2.1.json",
+        "anonymous_download_verified": true
+      },
+      {
+        "name": "SHA256SUMS.txt",
+        "bytes": 290,
+        "sha256": "74a4d84d634f2ddabb0fb09925ab5a7f4bc4268f8bb1e198a84a2ed01a818f4a",
+        "url": "https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.2.1-pre.1/SHA256SUMS.txt",
+        "anonymous_download_verified": true
+      }
+    ],
+    "device_tested": false,
+    "underlying_phone_failure_confirmed": false
   }
 }
