@@ -23,13 +23,13 @@ public final class Entry implements IXposedHookLoadPackage,IXposedHookZygoteInit
   if(!android.os.Process.is64Bit()||!Arrays.asList(Build.SUPPORTED_ABIS).contains("arm64-v8a")){failure="当前游戏进程不是 arm64";return;}
   phase="核对游戏原生库";String actual=hash(host.getApplicationInfo());if(!HASH.equals(actual)){failure="游戏原生库不匹配（SHA256前12位："+(actual.length()>=12?actual.substring(0,12):"未找到")+"），未套用偏移";return;}
   phase="注册模块原生回调";
-  quad=EarlyNative.loadBeforeTarget(()->System.loadLibrary("phira_lab"),()->XposedHelpers.findClass("quad_native.QuadNative",loader));
+  quad=EarlyNative.loadAndInitialize(()->System.loadLibrary("phira_lab"),"quad_native.QuadNative",loader);
   phase="读取判定配置";GoalControls.apply(GoalControls.load(host));
   phase="安装路径回调";
   XposedHelpers.findAndHookMethod(quad,"setDataPath",String.class,new XC_MethodHook(){protected void beforeHookedMethod(MethodHookParam p)throws Throwable{
    pathCalls++;phase="收到游戏存档路径调用";
    if(redirected&&root!=null){p.args[0]=root.getCanonicalPath();return;}File original=new File((String)p.args[0]).getCanonicalFile();if(!original.isAbsolute()||!original.isDirectory())throw new IOException("原数据目录异常");
-   File prepared;try{prepared=LabStore.prepare(original,host.getFilesDir());}catch(Exception e){failure="准备独立存档失败（"+e.getClass().getSimpleName()+"）";return;}armAttempts++;phase="激活独立存档";if(!LabNative.arm()){failure="独立存档激活被拒绝";return;}
+   File prepared;try{prepared=LabStore.prepare(original,host.getFilesDir());}catch(Exception e){failure="准备独立存档失败（"+e.getClass().getSimpleName()+"）";return;}armAttempts++;phase="激活独立存档";if(!LabNative.arm()){int[] rejected=LabNative.safeStatus();failure="独立存档激活被拒绝（当时 N="+rejected[0]+" S="+rejected[5]+" E="+rejected[6]+"）";return;}
    root=prepared;p.args[0]=root.getCanonicalPath();p.setObjectExtra("lab.redirect",true);redirected=true;phase="独立存档已切换";
   }protected void afterHookedMethod(MethodHookParam p){if(Boolean.TRUE.equals(p.getObjectExtra("lab.redirect"))&&p.hasThrowable()){LabNative.disarm();redirected=false;}else if(redirected)XposedHelpers.callStaticMethod(quad,"setTempDir","cache");}});
   XposedHelpers.findAndHookMethod(quad,"setTempDir",String.class,new XC_MethodHook(){protected void beforeHookedMethod(MethodHookParam p){if(redirected&&root!=null)p.args[0]="cache";}protected void afterHookedMethod(MethodHookParam p){if(redirected)LabNative.setTemporaryRoot(new File(root,"cache").getAbsolutePath());}});

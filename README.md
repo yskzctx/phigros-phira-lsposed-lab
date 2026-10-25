@@ -8,12 +8,12 @@
 
 ## 下载
 
-**Phira 0.2.1诊断修订已公开：[下载发行页](https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/tag/v0.2.1-pre.1)。用户反馈0.2在0.8.2 arm64仍未就绪；本修订补推荐作用域与可复制启动阶段，不表示底层故障已经解决。** [启动诊断步骤](docs/STARTUP-0.2.1.md)。安装后请在系统设置强行停止游戏再启动，不要清除数据。
+**Phira 0.2.2启动修订：[发行页](https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/tag/v0.2.2-pre.1)。** 根据用户截图发现并修订lazy类解析未完成原生初始化的问题；增加游戏面板内“复制诊断”。JVM回归通过，仍待手机验证。见 [修订与安装步骤](docs/STARTUP-0.2.2.md)。
 
 [0.2 测试预发行下载页](https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/tag/v0.2.0-pre.1)。直接安装对应 APK，无需解压或下载源码包。
 
 - [Phigros 模块 APK（约47 MB）](https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.2.0-pre.1/Phigros-Lab-LSPosed-157-arm64-v0.2-DIAGNOSTICS-DEV.apk)：官方 Phigros 4.0.1（157），com.PigeonGames.Phigros，arm64。
-- [Phira 模块 APK（约145 KB）](https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.2.1-pre.1/Phira-Lab-LSPosed-0.8.2-arm64-v0.2.1-TEST.apk)：官方 Phira 0.8.2（39），org.flos.phira，arm64。
+- [Phira 模块 APK（约145 KB）](https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.2.2-pre.1/Phira-Lab-LSPosed-0.8.2-arm64-v0.2.2-TEST.apk)：官方 Phira 0.8.2（39），org.flos.phira，arm64。
 - [安装与启用步骤](docs/INSTALL-v0.2.md)。需要 root / LSPosed，勾选对应原版宿主并冷启动；音量上键打开面板，下键收起，自动游玩默认关闭。
 
 旧 `v0.1.0-pre.1` 仍为撤回草稿。Phira 原有自制谱、资源包导入不作为本项目新增功能。两个新 APK 及所有附带文件已经匿名完整下载并核对 SHA-256；这只证明附件传输完整，不是手机功能验收。
