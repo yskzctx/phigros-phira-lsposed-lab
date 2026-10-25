@@ -2,7 +2,7 @@
   "source_files": [
     {
       "path": "AndroidManifest.xml",
-      "sha256": "f01bedfd3bc515acaa0d63fc3073667474fc9ba0c1188f7f4fa4788344747abf"
+      "sha256": "44e381e2f8c5c9e9e08afbe777dd224b3f7f051dadcfae3ea493a9da799d976f"
     },
     {
       "path": "src/ConnectionReport.java",
@@ -18,11 +18,11 @@
     },
     {
       "path": "src/Dashboard.java",
-      "sha256": "865a69d8ee83257d38b33be1817b3cbd9b095290def9aec3decc0dbd0bc0390a"
+      "sha256": "23d4db37b287779bc2ee915fca2c583fc054454f4af7ab2cd5e17157f07b4531"
     },
     {
       "path": "src/DiagnosticState.java",
-      "sha256": "7b6d23ea42d4520354c09ce0143eac90abacef863c643db8a75634d7495aac4f"
+      "sha256": "461d6bd6109d2fabffbeb7d95f1d9f05a3dbdacbf18ade4ff79f63918c1b76af"
     },
     {
       "path": "src/EarlyNative.java",
@@ -30,7 +30,7 @@
     },
     {
       "path": "src/Entry.java",
-      "sha256": "d48e4f935f34db0c97e68517e692c576f856625e355ec94b00a0f4b02d4b8b75"
+      "sha256": "01a3ef8cda98e9d2eb8f7c58fcc3988457721134fd21ec2cb5c9d5bf156b8565"
     },
     {
       "path": "src/GoalControls.java",
@@ -90,7 +90,7 @@
     },
     {
       "path": "tests/DiagnosticStateTest.java",
-      "sha256": "49d9cd2b82669822707a2d27b45511d92ebc33eeb73cc91d085186da38d71f47"
+      "sha256": "47d47432c3865425123f46ab5ebfcd13c1b83c377716bf6378bd0661c63f5d50"
     },
     {
       "path": "tests/EarlyNativeTest.java",

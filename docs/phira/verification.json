@@ -1,6 +1,6 @@
 {
-  "artifact": "Phira-Lab-LSPosed-0.8.2-arm64-v0.2-DIAGNOSTICS-DEV.apk",
-  "sha256": "1feb9567c8a2185dc1b3a67778c910468773943c33e837536b98ea7e2f4dc83f",
+  "artifact": "Phira-Lab-LSPosed-0.8.2-arm64-v0.2.1-TEST.apk",
+  "sha256": "d87f36f5dff55c04cfee99e8cb1ad1b2c5c620fa1e07f61860fbb8c52e20d454",
   "bytes": 147997,
   "package": "com.phira.lab.lsp",
   "target": "org.flos.phira",

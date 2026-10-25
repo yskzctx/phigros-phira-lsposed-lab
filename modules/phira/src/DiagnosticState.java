@@ -15,9 +15,15 @@ public final class DiagnosticState {
    case 5:break;
    default:return "原生状态格式异常";
   }
-  if(s[0]!=1||s[1]!=1)return "原生接口未就绪";
+  if(s[0]!=1)return "原生就绪状态异常";
+  if(s[1]!=1)return "原生 Hook 已安装，独立存档尚未激活";
   if(!redirected)return "独立存档未切换";
   return s[2]==1?"已接入 · 自动游玩开启":"已接入 · 自动游玩关闭";
+ }
+ public static String report(boolean redirected,int[] s,String failure,String phase,int pathCalls,int armAttempts){
+  String text=describe(redirected,s,failure);
+  if(s==null||s.length<7)return text;
+  return text+"\n阶段："+phase+"\n诊断 N="+s[0]+" A="+s[1]+" S="+s[5]+" E="+s[6]+" R="+(redirected?1:0)+" P="+pathCalls+" T="+armAttempts;
  }
  private DiagnosticState(){}
 }
