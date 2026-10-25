@@ -89,6 +89,10 @@
       "sha256": "5c0140e98af66a3c28135636dc6024cd9b0bbdccd23e39a1459ed85fd24f0e7e"
     },
     {
+      "path": "docs/RELEASE-v0.2.4.json",
+      "sha256": "0e7dd094f3222b8fd5e20d4f6b7d5d2a388f09474c3fe931e4449d24732ee0cf"
+    },
+    {
       "path": "docs/RELEASE-v0.2.json",
       "sha256": "c4ba2201df8e96e667b4600c2938061fe018a4ae5fc6f5c16dcc28d2d1b67468"
     },
