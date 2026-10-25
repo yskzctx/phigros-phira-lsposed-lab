@@ -59,7 +59,10 @@ public final class RksEditor {
             else {String entry=m.group();int a=entry.indexOf('>')+1,b=entry.lastIndexOf("</string>");
                 m.appendReplacement(out,Matcher.quoteReplacement(entry.substring(0,a)+value+entry.substring(b)));found++;}
         }
-        m.appendTail(out);if(found!=changes.size())throw new IOException("实际存档字段与版本不一致，未写入："+found+" / "+changes.size());
+        m.appendTail(out);if(found!=changes.size()){
+          Set<String> existing=entries(out.toString()).keySet();StringBuilder additions=new StringBuilder();for(Map.Entry<String,String> e:changes.entrySet())if(!existing.contains(e.getKey()))additions.append("<string name=\"").append(e.getKey()).append("\">").append(e.getValue()).append("</string>\n");
+          int end=out.lastIndexOf("</map>");if(end<0)throw new IOException("原版存档结构异常");out.insert(end,additions);
+        }
         return out.toString();
     }
     private static Map<String,String> entries(String raw){Map<String,String> result=new HashMap<String,String>();Matcher m=ENTRY.matcher(raw);while(m.find())result.put(m.group(1),m.group(2));return result;}
@@ -72,13 +75,14 @@ public final class RksEditor {
         return replace(raw,changes);
     }
     public static synchronized void applyPending(Context c)throws IOException {
-        if(!"com.PigeonGames.Phigros.offline".equals(c.getPackageName()))throw new IOException("拒绝修改其他包的存档");
+        if(!"com.PigeonGames.Phigros".equals(c.getPackageName()))throw new IOException("拒绝修改其他包的存档");
+        if(!new File(c.getApplicationInfo().dataDir,"shared_prefs/com.PigeonGames.Phigros.v2.playerprefs.xml").isFile())return;
         SharedPreferences prefs=NativeControls.preferences(c);
         File state=new File(c.getFilesDir(),"offline-rks"),backups=new File(state,"backups"),txn=new File(state,"transaction");
         File marker=new File(txn,"ready.properties");
         boolean seedData=!prefs.getBoolean("data_10000mb_v165",false);
         if(!marker.isFile() && !prefs.getBoolean("rks_pending",false) && !prefs.getBoolean("rks_restore",false)&&!prefs.getBoolean("all_ap_pending",false)&&!seedData)return;
-        String[] names={c.getPackageName()+".v2.playerprefs.xml","com.PigeonGames.Phigros.v2.playerprefs.xml"};
+        String[] names={"com.PigeonGames.Phigros.v2.playerprefs.xml"};
         File games=new File(c.getApplicationInfo().dataDir,"shared_prefs");
         Properties meta=new Properties();
         try {
@@ -91,8 +95,7 @@ public final class RksEditor {
                 if(restore) {
                     File backup=new File(prefs.getString("rks_backup",""));
                     if(!backup.getCanonicalPath().startsWith(backups.getCanonicalPath()+File.separator))throw new IOException("无有效历史备份");
-                    for(String name:names){Map<String,String> previous=entries(read(new File(backup,name)));updates.clear();for(RksPlanner.Chart chart:charts){String key=encrypt(chart.key);String value=previous.get(key);if(value==null)throw new IOException("历史备份内容不完整");updates.put(key,value);}
-                        String edited=replace(read(new File(games,name)),updates);if(seedData)edited=seedData(edited);
+                    for(String name:names){String edited=restoreRecordsXml(c,new File(backup,name),new File(games,name));if(seedData)edited=seedData(edited);
                         try(InputStream in=new ByteArrayInputStream(edited.getBytes(StandardCharsets.UTF_8))){LaunchActivity.copyAtomic(in,new File(txn,name));}}
                     meta.setProperty("status","已恢复修改前历史成绩");
                 } else {
@@ -122,5 +125,19 @@ public final class RksEditor {
             Log.i("PhigrosOffline","rks.history.applied; "+meta.getProperty("status"));
         } catch(IOException e){throw e;}
         catch(Exception e){throw new IOException("历史成绩生成失败："+e.getClass().getSimpleName(),e);}
+    }
+
+    private static String restoreRecordsXml(Context c,File backup,File current)throws IOException{
+      try{Map<String,String> previous=entries(read(backup));Set<String> keys=new HashSet<String>();for(RksPlanner.Chart chart:catalog(c))keys.add(encrypt(chart.key));
+        Matcher m=ENTRY.matcher(read(current));StringBuffer result=new StringBuffer();Set<String> restored=new HashSet<String>();
+        while(m.find()){String key=m.group(1);if(!keys.contains(key)){m.appendReplacement(result,Matcher.quoteReplacement(m.group()));continue;}
+          String value=previous.get(key);restored.add(key);if(value==null)m.appendReplacement(result,"");else{String entry=m.group();int start=entry.indexOf('>')+1; m.appendReplacement(result,Matcher.quoteReplacement(entry.substring(0,start)+value+"</string>"));}}
+        m.appendTail(result);StringBuilder missing=new StringBuilder();for(String key:keys)if(!restored.contains(key)&&previous.containsKey(key))missing.append("<string name=\"").append(key).append("\">").append(previous.get(key)).append("</string>\n");
+        int end=result.lastIndexOf("</map>");if(end<0)throw new IOException("原版存档结构异常");result.insert(end,missing);
+        return result.toString();
+      }catch(IOException e){throw e;}catch(Exception e){throw new IOException("会话成绩恢复失败",e);}
+    }
+    public static void restoreSessionRecords(Context c,File backup,File current)throws IOException{
+      try(InputStream in=new ByteArrayInputStream(restoreRecordsXml(c,backup,current).getBytes(StandardCharsets.UTF_8))){LaunchActivity.copyAtomic(in,current);}
     }
 }

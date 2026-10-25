@@ -8,5 +8,5 @@ public final class ConnectionReport extends BroadcastReceiver {
   public void onActivityResumed(Activity a){new Handler(Looper.getMainLooper()).postDelayed(()->send(a,state.get()),600);}
   public void onActivityCreated(Activity a,Bundle b){}public void onActivityStarted(Activity a){}public void onActivityPaused(Activity a){}public void onActivityStopped(Activity a){}public void onActivitySaveInstanceState(Activity a,Bundle b){}public void onActivityDestroyed(Activity a){}
  });}
- static void send(Activity a,String state){try{PendingIntent p=a.getIntent().getParcelableExtra(EXTRA);if(p==null||!MODULE.equals(p.getCreatorPackage()))return;Intent fill=new Intent();fill.putExtra("state",state);p.send(a,0,fill);}catch(PendingIntent.CanceledException|RuntimeException ignored){}}
+ public static void send(Activity a,String state){try{PendingIntent p=a.getIntent().getParcelableExtra(EXTRA);if(p==null||!MODULE.equals(p.getCreatorPackage()))return;Intent fill=new Intent();fill.putExtra("state",state);p.send(a,0,fill);}catch(PendingIntent.CanceledException|RuntimeException ignored){}}
 }

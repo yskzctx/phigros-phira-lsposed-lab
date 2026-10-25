@@ -1,11 +1,38 @@
 {
-  "host_tests": [
-    "exact profile rejection",
-    "original preferences unchanged, private backups and persistent shadow",
-    "hook rollback at every failure position",
-    "late activation abort",
-    "isolated storage preserves exact original cloud calls and return values"
-  ],
+  "legacy_helper_tests": {
+    "host_tests": [
+      "exact profile rejection",
+      "original preferences unchanged, private backups and persistent shadow",
+      "hook rollback at every failure position",
+      "late activation abort",
+      "isolated storage preserves exact original cloud calls and return values"
+    ],
+    "all_passed": true,
+    "device_tested": false
+  },
+  "runtime024": {
+    "date": "2026-10-25",
+    "original_package_guard_red_reproduced": true,
+    "original_package_guard_green": true,
+    "original_backup_and_new_original_backup": true,
+    "record_only_restore_preserves_account_and_settings": true,
+    "library_before_or_after_prepare": true,
+    "exact_native_hash_verified": true,
+    "executable_hook_prefixes_verified": [
+      "click",
+      "drag",
+      "flick",
+      "hold",
+      "record",
+      "perfect",
+      "result",
+      "miss",
+      "good"
+    ],
+    "embedded_disclaimers_verified": true,
+    "device_tested": false,
+    "full_lsposed_runtime_tested": false
+  },
   "all_passed": true,
   "device_tested": false
 }

@@ -1,5 +1,5 @@
 #define MODULE_HOST_TEST
-#include "../src/cloud-guard.c"
+#include "../native/cloud-guard.c"
 #include <assert.h>
 static BoolTask original_bool(const void *m){(void)m;return (BoolTask){.source=(void*)123,.result=true,.token=42};}
 static IntTask original_int(const void *m){(void)m;return (IntTask){.source=(void*)456,.result=1,.token=17};}

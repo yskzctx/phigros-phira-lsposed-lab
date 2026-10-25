@@ -1,9 +1,9 @@
 {
-  "module_version": "0.2.3-test",
-  "module_version_code": 6,
-  "artifact": "Phigros-Lab-LSPosed-157-arm64-v0.2.3-TEST.apk",
-  "sha256": "821b15be26abb5856abb577d0750719cb84be89c07ba51174183332bd9ab24b7",
-  "bytes": 49528066,
+  "module_version": "0.2.4-test",
+  "module_version_code": 7,
+  "artifact": "Phigros-Lab-LSPosed-157-arm64-v0.2.4-TEST.apk",
+  "sha256": "a77534c9e81febe3cde0ba5c7dec5183694c7b9c0d73bf17810ce7b63cb3dd32",
+  "bytes": 49544450,
   "package": "com.phigros.lab.lsp",
   "target": "com.PigeonGames.Phigros",
   "target_version_code": 157,
@@ -18,8 +18,15 @@
   "published": false,
   "complete_feature_parity": false,
   "limitations": [
-    "Native chapter extended FX/audio/line colors incomplete",
-    "Framework loading, real save isolation and original upload behavior await device verification",
-    "Custom chapter caller/config transfer and audio await device verification"
-  ]
+    "Real LSPosed loading, gameplay and original upload behavior await device verification",
+    "Native chapter extended FX/audio/line colors incomplete"
+  ],
+  "embedded_startup_and_panel_disclaimer": true,
+  "uses_original_host_storage": true,
+  "automatic_original_data_backup": true,
+  "record_only_session_restore": true,
+  "original_package_guard_regression_fixed": true,
+  "library_load_order_replayed": true,
+  "delayed_readiness_retried": true,
+  "no_persistent_path_or_cloud_hooks": true
 }

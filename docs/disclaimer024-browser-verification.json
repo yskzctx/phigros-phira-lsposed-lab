@@ -1,0 +1,36 @@
+{
+  "tests": [
+    {
+      "kind": "offline",
+      "width": 360,
+      "passed": true
+    },
+    {
+      "kind": "offline",
+      "width": 680,
+      "passed": true
+    },
+    {
+      "kind": "module",
+      "width": 360,
+      "passed": true
+    },
+    {
+      "kind": "module",
+      "width": 680,
+      "passed": true
+    },
+    {
+      "kind": "phira-module",
+      "width": 360,
+      "passed": true
+    },
+    {
+      "kind": "phira-module",
+      "width": 680,
+      "passed": true
+    }
+  ],
+  "android_native_dialog_tested": false,
+  "device_tested": false
+}

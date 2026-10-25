@@ -2,7 +2,39 @@
   "source_files": [
     {
       "path": "AndroidManifest.xml",
-      "sha256": "6df93a6eb2e27b28f23cffe5a3b4e89225dd8e604a06ef71e7370e2e10dd4893"
+      "sha256": "9bca7acb04dbe7bc2ed554e132dc33a12adde8a8cd6b46ee6d9383c7cc5dc110"
+    },
+    {
+      "path": "assets/controls-ui.html",
+      "sha256": "0175d31e880945851f0fecbf5936e48e4b28cd08e1e20a9d3c0144f18598dbf2"
+    },
+    {
+      "path": "native/controlled-frame.h",
+      "sha256": "6c6cd3e0cb9ba6933286ed035365e602f2fb3cd0b47825dda7e542c53abec58a"
+    },
+    {
+      "path": "native/goal-plan.h",
+      "sha256": "4b227fa708c6b1dd47a4fb07f16cee8ddd0abb563401237943e08f93ec7d62b2"
+    },
+    {
+      "path": "native/input-bridge.h",
+      "sha256": "7ec98ab760395efb00ff5ded26932b37359c852d1af366673a08e5f1abd31ec8"
+    },
+    {
+      "path": "native/input-touch.h",
+      "sha256": "3c6d9eed22254d1e9139362b80f553f92be7823df1775d772a19fbe9002b41f0"
+    },
+    {
+      "path": "native/module.c",
+      "sha256": "d6ea5acb66bfa060f0d6b9c5bb4b87314d3b2ceae4ed25e9e98702b8f0efb618"
+    },
+    {
+      "path": "native/profile.h",
+      "sha256": "9a577ae35d4b321fbd0db5d2084f7cee4b4c2cf11da5b6b9d44562f6d4b8e33e"
+    },
+    {
+      "path": "native/rust-abi.S",
+      "sha256": "92e6a76360e85ddcadb1c10a196774790b1441f9bd5a7dcbe711d2d7eb23d727"
     },
     {
       "path": "src/ConnectionReport.java",
@@ -10,7 +42,7 @@
     },
     {
       "path": "src/Controls.java",
-      "sha256": "32b56b725b123d05b68a3d0f14b900f21f6fa0a465c399ece63d5bd6a4e77678"
+      "sha256": "ed24ab4c90d6d28b36bfd71367f7b4aa7c26de6487d7e364f8b8db3b0856af35"
     },
     {
       "path": "src/ControlsConfig.java",
@@ -18,7 +50,7 @@
     },
     {
       "path": "src/Dashboard.java",
-      "sha256": "343edc8cdf15854c4c780f922e6c2f0a4ec66d4268df7b775d1b563a196e8576"
+      "sha256": "67fe236c21d2668d83b6ffa23742d4832adc5f19207586af2e31278b45d28436"
     },
     {
       "path": "src/DiagnosticState.java",
@@ -53,36 +85,12 @@
       "sha256": "83084873a47ed1cd9a3699cc36a29ecf6f5c0dee43022ea8493616434a56fe49"
     },
     {
-      "path": "native/module.c",
-      "sha256": "d6ea5acb66bfa060f0d6b9c5bb4b87314d3b2ceae4ed25e9e98702b8f0efb618"
+      "path": "src/UsageNotice.java",
+      "sha256": "410ceb579f0e889ccdb9b696789bf140a5dea19b9caed4e9e33606c412395267"
     },
     {
-      "path": "native/controlled-frame.h",
-      "sha256": "6c6cd3e0cb9ba6933286ed035365e602f2fb3cd0b47825dda7e542c53abec58a"
-    },
-    {
-      "path": "native/goal-plan.h",
-      "sha256": "4b227fa708c6b1dd47a4fb07f16cee8ddd0abb563401237943e08f93ec7d62b2"
-    },
-    {
-      "path": "native/input-bridge.h",
-      "sha256": "7ec98ab760395efb00ff5ded26932b37359c852d1af366673a08e5f1abd31ec8"
-    },
-    {
-      "path": "native/input-touch.h",
-      "sha256": "3c6d9eed22254d1e9139362b80f553f92be7823df1775d772a19fbe9002b41f0"
-    },
-    {
-      "path": "native/profile.h",
-      "sha256": "9a577ae35d4b321fbd0db5d2084f7cee4b4c2cf11da5b6b9d44562f6d4b8e33e"
-    },
-    {
-      "path": "native/rust-abi.S",
-      "sha256": "92e6a76360e85ddcadb1c10a196774790b1441f9bd5a7dcbe711d2d7eb23d727"
-    },
-    {
-      "path": "assets/controls-ui.html",
-      "sha256": "f7fbcf30a8cf8561a8b1089337dcdd1e2ece1be79eea9d35bd0d0ec4593e8ec0"
+      "path": "tests/controlled_frame_test.c",
+      "sha256": "1c33e8e8ab86ca9bae2a9d365707662ad00ea4ee22d9ae33b9ee118c3e90ebab"
     },
     {
       "path": "tests/ControlsConfigTest.java",
@@ -97,6 +105,14 @@
       "sha256": "cb4577035eb1c00707a602b9816fa2c3a7dcb257bac64ef9c905811ddff8ee62"
     },
     {
+      "path": "tests/goal_plan_test.c",
+      "sha256": "003084cba92c87ac43230c4ba7a8419dce2107fcaee8f72255091becc62f9eeb"
+    },
+    {
+      "path": "tests/input_bridge_test.c",
+      "sha256": "25970ade9dacff55a715d18ed32a3d705932d030e18378209bea207ad49affd0"
+    },
+    {
       "path": "tests/LabStoreTest.java",
       "sha256": "40263c20b76b9378caef72c3ca08818b326b20fadfe0fd776a76b01c03dd8a94"
     },
@@ -107,18 +123,6 @@
     {
       "path": "tests/StorageLayoutTest.java",
       "sha256": "38772f89fdd1db53a0c22d3b2bd3d93f0e64fd6b3fdf24c7144990572430cb73"
-    },
-    {
-      "path": "tests/controlled_frame_test.c",
-      "sha256": "1c33e8e8ab86ca9bae2a9d365707662ad00ea4ee22d9ae33b9ee118c3e90ebab"
-    },
-    {
-      "path": "tests/goal_plan_test.c",
-      "sha256": "003084cba92c87ac43230c4ba7a8419dce2107fcaee8f72255091becc62f9eeb"
-    },
-    {
-      "path": "tests/input_bridge_test.c",
-      "sha256": "25970ade9dacff55a715d18ed32a3d705932d030e18378209bea207ad49affd0"
     },
     {
       "path": "tests/touch_input_test.c",

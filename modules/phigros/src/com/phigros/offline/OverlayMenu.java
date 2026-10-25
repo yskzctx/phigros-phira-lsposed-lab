@@ -84,7 +84,7 @@ public final class OverlayMenu {
         if(s.length>=14&&s[11]==1)runtime+="；实际结算 "+s[12]+" 分 / "+String.format(Locale.ROOT,"%.2f",s[13]/100.0)+"%（差 "+(s[12]-s[6])+" 分 / "+String.format(Locale.ROOT,"%+.2f",(s[13]-s[7])/100.0)+" 个百分点）";
         if(s.length>=19&&s[11]==1)runtime+="；实际 P "+s[14]+" / G "+s[15]+" / B "+s[16]+" / M "+s[17]+"；最长连击 "+s[18]+" / "+s[2];
         if(s.length>=21&&s[11]==1)runtime+="；Early "+s[19]+" / Late "+s[20];
-        state.put("runtime",runtime);state.put("rksTarget",prefs.getString("rks_target",""));String history=prefs.getString("rks_status","");
+        state.put("runtime",com.phigros.lab.Entry.connection()+"\n"+runtime);state.put("rksTarget",prefs.getString("rks_target",""));String history=prefs.getString("rks_status","");
         if(prefs.getBoolean("all_ap_pending",false))history="等待冷启动：恢复全部 AP";else if(prefs.getBoolean("rks_restore",false))history="等待冷启动：恢复上次历史备份";else if(prefs.getBoolean("rks_pending",false))history="等待冷启动：目标 RKS "+prefs.getString("rks_target","");state.put("history",history);if(message!=null)state.put("message",message);
         web.evaluateJavascript("window.receive("+state.toString()+")",null);
     }catch(Exception e){toast("读取控制状态失败");}}

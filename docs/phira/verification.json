@@ -1,8 +1,8 @@
 {
-  "module_version": "0.2.3-test",
-  "module_version_code": 6,
-  "artifact": "Phira-Lab-LSPosed-0.8.2-arm64-v0.2.3-TEST.apk",
-  "sha256": "c44a119f41411484949915222cc1a4bac0c2ddcda9d7c59be7836e275bef14e6",
+  "module_version": "0.2.4-test",
+  "module_version_code": 7,
+  "artifact": "Phira-Lab-LSPosed-0.8.2-arm64-v0.2.4-TEST.apk",
+  "sha256": "0d40f80d7b949572b9b58cd6574d34e1c4704670a1cd75baebeee4b61aa76720",
   "bytes": 152093,
   "package": "com.phira.lab.lsp",
   "target": "org.flos.phira",
@@ -44,5 +44,6 @@
   "device_tested": false,
   "network_behavior_device_tested": false,
   "installed": false,
-  "published": false
+  "published": false,
+  "embedded_startup_and_panel_disclaimer": true
 }

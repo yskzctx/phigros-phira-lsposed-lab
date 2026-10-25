@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.phira.lab.lsp" android:versionCode="6" android:versionName="0.2.3-test">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.phira.lab.lsp" android:versionCode="7" android:versionName="0.2.4-test">
  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
  <queries><package android:name="org.flos.phira" /><package android:name="org.lsposed.manager" /></queries>
  <application android:label="Phira 本地实验模块" android:theme="@android:style/Theme.Material.Light.NoActionBar" android:allowBackup="false" android:extractNativeLibs="true" android:multiArch="true">

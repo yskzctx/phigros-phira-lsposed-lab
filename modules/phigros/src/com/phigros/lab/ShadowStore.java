@@ -11,6 +11,16 @@ public final class ShadowStore {
  private static void regular(File path)throws IOException{
   if(Files.isSymbolicLink(path.toPath())||!path.getCanonicalFile().equals(path.getAbsoluteFile())||!path.isFile())throw new IOException("Unexpected lab file");
  }
+ public static synchronized File prepareOriginal(File applicationData)throws IOException{
+  File app=applicationData.getCanonicalFile();if(!app.isDirectory())throw new IOException("Application data missing");
+  File files=directory(app,"files"),backups=directory(files,"phigros-module-backups");
+  File original=new File(new File(app,"shared_prefs"),PREF),backup=new File(backups,"original-playerprefs-before-module.xml"),absent=new File(backups,"original-playerprefs-absent-v1");
+  if(backup.exists()){regular(backup);return app;}
+  if(absent.exists()){regular(absent);if(!original.exists())return app;}
+  if(original.exists()){regular(original);try(InputStream in=new FileInputStream(original)){writeAtomic(in,backup,16L*1024*1024);}}
+  else try(InputStream in=new ByteArrayInputStream(new byte[]{1})){writeAtomic(in,absent,1);}
+  return app;
+ }
  public static synchronized File prepare(File applicationData,InputStream anonymousSeed)throws IOException{
   File app=applicationData.getCanonicalFile();if(!app.isDirectory())throw new IOException("Application data missing");
   File files=directory(app,"files"),lab=directory(files,"phigros-lab-v157"),prefs=directory(lab,"shared_prefs");directory(lab,"files");

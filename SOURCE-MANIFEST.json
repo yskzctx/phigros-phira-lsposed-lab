@@ -1,8 +1,36 @@
 {
   "files": [
     {
+      "path": "docs/runtime024-verification.json",
+      "sha256": "43b9ac9a6f0a37dc0bb550ee36de4a162e9e73e36dbe9cf04b2ed88de8e7ea81"
+    },
+    {
+      "path": "modules/phigros/native/attachment-order.h",
+      "sha256": "ab604c6c1db6d452ef28d0de106f44c184c476829b643543573876964197d7bf"
+    },
+    {
+      "path": "modules/phigros/src/com/phigros/lab/UsageNotice.java",
+      "sha256": "6da3815e62b63fd4c0b2f2708ae25a129b71dece55f718551c4a8865d4f66ece"
+    },
+    {
+      "path": "modules/phigros/tests/BootstrapGuardTest.java",
+      "sha256": "b33d35895bcb5a35a9ddb9d59119adeb3ba38fee5dd4765cefa02b02760cb293"
+    },
+    {
+      "path": "modules/phigros/tests/OriginalPrefsTest.java",
+      "sha256": "e3b0a765b7bcb50f57a99494213333e2a13f25d45e3c8a02ff6d1f8b4e5f267f"
+    },
+    {
+      "path": "modules/phigros/tests/attachment-order-test.c",
+      "sha256": "31325a7090ad19bdacf1bdd8cde29e7bd81b7ef5d81224a1d91c498d774662a5"
+    },
+    {
+      "path": "modules/phira/src/UsageNotice.java",
+      "sha256": "410ceb579f0e889ccdb9b696789bf140a5dea19b9caed4e9e33606c412395267"
+    },
+    {
       "path": ".gitattributes",
-      "sha256": "e4d05fd8e62ac113cac48d2402713b74dd6f4583357e45cf4a40f2c8802d90db"
+      "sha256": "bd5c3af388df70973ab1472e839afdbf56009d273ef554c6be38305ed3213f56"
     },
     {
       "path": ".gitignore",
@@ -10,11 +38,11 @@
     },
     {
       "path": "DISCLAIMER.md",
-      "sha256": "d3be7f3cce92770dd47ac355070824a227bd7d450bafdfd8c3933c0434e74ef2"
+      "sha256": "361d20efee2c840a820a87d81679204fbf9ac5a3386860a1fe66e49de1ecb238"
     },
     {
       "path": "README.md",
-      "sha256": "4e7417885267f487a2d11da25047bd6adc69dc797b70c25c814155028a6bc7dc"
+      "sha256": "465e71439918fedb69d7c342cf96724829c522077df340358716a84666868a65"
     },
     {
       "path": "chapter-player/LICENSE-GPL-3.0.txt",
@@ -22,7 +50,7 @@
     },
     {
       "path": "chapter-player/README.md",
-      "sha256": "cb0e53395da0978abf22e14eb97e97466d7582f135bc6e26c778a0ca11475b23"
+      "sha256": "9f97d4ba9b12a550144e4039421b0b6ad08a57251f6579e158e66ba7a4e85c44"
     },
     {
       "path": "chapter-player/apply_player_patch.py",
@@ -50,7 +78,7 @@
     },
     {
       "path": "docs/CONTROLS-20261025.md",
-      "sha256": "a70cc1a67636760575bd25f696709d2435cb22dbd4a4642a45450d4f8e5ccec0"
+      "sha256": "118e90a5be3bec95de707dc3d0ee80312ad1853551bc04c76ae7a2de8bcae9a2"
     },
     {
       "path": "docs/DIAGNOSTICS-0.2.md",
@@ -58,43 +86,43 @@
     },
     {
       "path": "docs/INSTALL-v0.2.2.md",
-      "sha256": "73c6c345bd8f29f001b7d208e420fec7de85ca922d36817c1be085cb7a3d67ed"
+      "sha256": "d69be62a54fb1beae6cc66de21df9b05c2893144101a73eb5e16cf1ce8f95736"
     },
     {
       "path": "docs/INSTALL-v0.2.3.md",
-      "sha256": "0348520c8e25fa1bddc4ffca80df0ff51ba43f99ddbc959f6133e9d599a5a86e"
+      "sha256": "efc045580809ccafc995606ff58542050d72680f46183bcbbd3cbd6aad630a45"
     },
     {
       "path": "docs/INSTALL-v0.2.md",
-      "sha256": "8add6a630926bb6378a408331ce5cc50357472600a500acee09db9d25ae041f4"
+      "sha256": "09e7c3c80800360d62742601d982d1fa098116df8d12a838e4f4141517b9959e"
     },
     {
       "path": "docs/NETWORK-POLICY.md",
-      "sha256": "c3430c159285fcb985910272147be65834def65ea812ea19755341781f57df2a"
+      "sha256": "37bb70ccf7d3ac15b865bc1000880574cc5876743f59dcbb94c2141cf74592af"
     },
     {
       "path": "docs/RELEASE-v0.2.1.json",
-      "sha256": "5427fe440e63df0e669504b1d1b236cb428c012935a0068648499a45752d06ed"
+      "sha256": "298ee2509a491e9f31abcf83b0a6732c744637b4ee661454afaf667624c99685"
     },
     {
       "path": "docs/RELEASE-v0.2.2.json",
-      "sha256": "03756e2580664ca71d1f75db5361ef50c034ae6faa8347bce9650929f63cf789"
+      "sha256": "cbf3d0b9dfb328c70b066e7edbc1a5c6ce2dc3baf310d2ca9df5fc60137e4dcf"
     },
     {
       "path": "docs/RELEASE-v0.2.3.json",
-      "sha256": "5c0140e98af66a3c28135636dc6024cd9b0bbdccd23e39a1459ed85fd24f0e7e"
+      "sha256": "ceec56b2eeebe1c71d537a0601c83a736649cbc1924f434a2a039d7e144d37df"
     },
     {
       "path": "docs/RELEASE-v0.2.json",
-      "sha256": "c4ba2201df8e96e667b4600c2938061fe018a4ae5fc6f5c16dcc28d2d1b67468"
+      "sha256": "03cdfafcae86944b7ac99a9b97352a6cdb14ccb5edabbc7b2535ee0cdc943020"
     },
     {
       "path": "docs/STARTUP-0.2.1.md",
-      "sha256": "6287944392ac3b53f46ec4a36f9e362e5d57686e94226852b5e1740cad41be25"
+      "sha256": "e47a65127eb9e0e26c8a2fb3efd90ef62ada1720e0c283d2d2727383bf5f63e4"
     },
     {
       "path": "docs/STARTUP-0.2.2.md",
-      "sha256": "9d1df8b0f2d46ef1d80f803b74d0c6d7eabf3c918447a2deb16620ba3c918366"
+      "sha256": "c08c5037052dff619105601a8de350fa75119ecf6f0cdc23ebb0e6207c0079af"
     },
     {
       "path": "docs/phigros/SHA256SUMS.txt",
@@ -102,19 +130,19 @@
     },
     {
       "path": "docs/phigros/host-verification.json",
-      "sha256": "db72d7e14035a920063ceb3fbaf633dbd3455f588ce340fe3c2e123089cd4a05"
+      "sha256": "efca7e6851841e54523612d32b3d4d7479ccac77788096d19e93c7516889cd0a"
     },
     {
       "path": "docs/phigros/shared-core-verification175.json",
-      "sha256": "ba049c25c1c274d4e1afa7f168ed3698040a06f9641398213ae344d2c8993e34"
+      "sha256": "4b513b8f1faa1dfe5ff4fb305cfe0a9dac6ee0bdb8baf6332e7f3cc9d99d6ed1"
     },
     {
       "path": "docs/phigros/verification.json",
-      "sha256": "5bd43fb9bc5435925b5656d9ecefb31a8cd92f969ac5b4f28947d5c8b989de19"
+      "sha256": "9983d5cc86f49f258ca40a73495808cd80d35f4de908358b6882a713869b25dd"
     },
     {
       "path": "docs/phigros/使用与验收.md",
-      "sha256": "7b9ada635b06f088474b569dae02057fe27f0f912369783e39eab9a32939e57b"
+      "sha256": "937e8fb4f075a42f89710b0df619a8baff4d9d889aa82566464095152fcc20ec"
     },
     {
       "path": "docs/phira/SHA256SUMS.txt",
@@ -122,7 +150,7 @@
     },
     {
       "path": "docs/phira/geometry-machine-verification.json",
-      "sha256": "1eb2254a2e741f5c067c74734f03c2ada1d2f001c2fa3c6cfd3166f13a3b08a9"
+      "sha256": "6bdc3d7d345adaccdce960a275927d643ef6d82007c82242a49292459bab63b2"
     },
     {
       "path": "docs/phira/host-verification.json",
@@ -130,7 +158,7 @@
     },
     {
       "path": "docs/phira/input-machine-verification.json",
-      "sha256": "0573a45fd7dcd66195893492b0804956f58a2587067a9a84d79100c069c06461"
+      "sha256": "b6fc4174e87ad72846f5388e1ae6e0f1a5263d12dc15ad7dd48c18ff98c41994"
     },
     {
       "path": "docs/phira/storage-layout-evidence.json",
@@ -138,11 +166,11 @@
     },
     {
       "path": "docs/phira/verification.json",
-      "sha256": "d70d2cea3e427b3319ae74438f4a6bfbb74ff46cde95840effa7569268d75932"
+      "sha256": "92a1344bd55d2c482c6539c2328e4a392c0581c95dcca4c96c044ef18f4b3bab"
     },
     {
       "path": "docs/phira/使用与验收.md",
-      "sha256": "036dc6cce381be4243c3ef903f41566264924423f1550f1f6e157ae57440070b"
+      "sha256": "87ca19eb8902dd9ae3a0a02d24cef8451a39346a3c0936988fd9dff4ba191f31"
     },
     {
       "path": "modules/common/activation-gate.h",
@@ -154,11 +182,11 @@
     },
     {
       "path": "modules/phigros/AndroidManifest.xml",
-      "sha256": "ccaf17280d1c41d3c177686a715ab91b8d960bce110b09134061159d01728a36"
+      "sha256": "58f3cbab74ee1cfe358e8cb70939d91a96391a68c5c356ac8f425830ad8449a8"
     },
     {
       "path": "modules/phigros/README.md",
-      "sha256": "8a1326531a601f22d081dc5eeba68f444e1a6a9c4ce06a6ca9cec6ddd7986048"
+      "sha256": "9c6a47da8d848793ab8697d78f1472104b04386d869f189fec287847a120abde"
     },
     {
       "path": "modules/phigros/assets/offline/chapter-player-GPL-3.0.txt",
@@ -174,15 +202,15 @@
     },
     {
       "path": "modules/phigros/assets/offline/chart-catalog.tsv",
-      "sha256": "c1e29497e33654cc4483754385f6921fda85dc877550d5c4b929bc856632abb6"
+      "sha256": "0aa88db44ccec2b5c264d84e3d1d031f0fff0ab50a317aa7b3441934300db496"
     },
     {
       "path": "modules/phigros/assets/offline/controls-ui.html",
-      "sha256": "46f0dd910f773f88cf5d96c08e2b538466f1b2b4938393cfde985622beaccf19"
+      "sha256": "b53e25634faadcd07ad1e527afc827bc1954ccd07dfef825387b3e44630abe52"
     },
     {
       "path": "modules/phigros/build_module.py",
-      "sha256": "a608d741534396164f6be9e619cb6031ae9f959ac3e8814ca37128c798703c26"
+      "sha256": "d7dc3e53285cefb8c7af460d43dae8398e7b4c80787e270b5f33799f097b28cd"
     },
     {
       "path": "modules/phigros/native/cloud-guard.c",
@@ -206,7 +234,7 @@
     },
     {
       "path": "modules/phigros/native/lsp-entry.c",
-      "sha256": "139be5edd3960ceddd5871511eb040d690a11b177d7db87ff24ac0a790dea588"
+      "sha256": "b4055038f3f8869ad8f642383b9b390c2ee091a951796a67036f85156f6a1ef4"
     },
     {
       "path": "modules/phigros/native/native-hook-impl.h",
@@ -226,15 +254,15 @@
     },
     {
       "path": "modules/phigros/src/com/phigros/lab/ConnectionReport.java",
-      "sha256": "2b9944d6d5b169c37623a26a3cc53b901e81c8ef2368475eae2e732aa3347b3f"
+      "sha256": "d50638206a71d9229884e56ce543d5bf1c64a8faea6356fe8875b7e48055f9cb"
     },
     {
       "path": "modules/phigros/src/com/phigros/lab/Dashboard.java",
-      "sha256": "ca52bc01fded40def9c29546dc055c0ef3f0aad9086a5d5f24bcb8906c75c991"
+      "sha256": "f927de9f0425a93febf4f91042856df2f46faa8f61c6709d1e956f2ddf954257"
     },
     {
       "path": "modules/phigros/src/com/phigros/lab/Entry.java",
-      "sha256": "3aff0c159d49fb09c4fe1fbeb53cf3f5bd161c62673e9cad304ddaa5a0e0f2ce"
+      "sha256": "becd4b4bd186cf07b9c3b53ad548bc5155beed5dd323ff4671bf76a9f4bf5b1b"
     },
     {
       "path": "modules/phigros/src/com/phigros/lab/GameProfile.java",
@@ -246,19 +274,19 @@
     },
     {
       "path": "modules/phigros/src/com/phigros/lab/LabBootstrap.java",
-      "sha256": "e7589602b1d06c02b5055bcdea3e960a64974bb7cc40a31cddf0400a15a0f7f0"
+      "sha256": "747be8c87285125602226b7da96ad68229b24c896eb66e7b9e26a2985387471a"
     },
     {
       "path": "modules/phigros/src/com/phigros/lab/LabContext.java",
-      "sha256": "05bc67041ca5130acc6607fe2904c4a6d353be90a24e98b146c71edb9c4e80ca"
+      "sha256": "dd26ac8d65568620f5167d84e722b40bab0374d77992e09fdb45320c5094f255"
     },
     {
       "path": "modules/phigros/src/com/phigros/lab/LabNative.java",
-      "sha256": "39316b4f2af20c46d570dfbb84370c5673233fe138ec5d5d5bf23b6d95f06de7"
+      "sha256": "704fb7bfe4950a146efb151eb86bb56dfb84387b18107d2a04d267112bb9a46d"
     },
     {
       "path": "modules/phigros/src/com/phigros/lab/ShadowStore.java",
-      "sha256": "06bf20f804e6d2e6526e1c679de2f325c3253e33aef097f65364ad9321723f5d"
+      "sha256": "90a3f9451bc6e0dce8e132b8d8bb717b6906789238e2a3210f317d0cd33552f5"
     },
     {
       "path": "modules/phigros/src/com/phigros/offline/ChapterFiles.java",
@@ -290,7 +318,7 @@
     },
     {
       "path": "modules/phigros/src/com/phigros/offline/LaunchActivity.java",
-      "sha256": "95a5e26b441e486058e511045038e18dec122d0fdc22ba7a9bebdbc67a067505"
+      "sha256": "536b95ccc402efe466ebe2794960079624c65c052e5327f93cfc6436754a77a2"
     },
     {
       "path": "modules/phigros/src/com/phigros/offline/ModuleGuest.java",
@@ -306,11 +334,11 @@
     },
     {
       "path": "modules/phigros/src/com/phigros/offline/OverlayMenu.java",
-      "sha256": "8b37f7eb49562f984333fec41b1fe93770b4a574d89260ec84ad8aaf7d9082a0"
+      "sha256": "5740e7556c6ad120ede6ac64e5486e5c9fd7548b209296600d11b9748572da5d"
     },
     {
       "path": "modules/phigros/src/com/phigros/offline/RksEditor.java",
-      "sha256": "fbc0d43d5e5e60e2e95d34afe23a37ea24c6ad3a5bd04c26788d4994a04d6d68"
+      "sha256": "3b7cc2cab80da72d2f2c23e10b8a8fa541a46beaad831807cfe5d327b9a0ba44"
     },
     {
       "path": "modules/phigros/src/com/phigros/offline/RksPlanner.java",
@@ -342,35 +370,35 @@
     },
     {
       "path": "modules/phigros/tests/cloud_guard_test.c",
-      "sha256": "c2b46fec40812f063427ee554950b2408676d20e21a9c9a85ee5adc446e1d730"
+      "sha256": "dd381e9bf593ffe931cefe1f75dd2f1a2bc0aaff25c314b532f4f8bdad714869"
     },
     {
       "path": "modules/phigros/tests/custom_ap175_test.c",
-      "sha256": "56b9c81617a998bb46e78fd61bf2a68f8c5eb95f6264e8688c74044be4596b39"
+      "sha256": "0a5d00c5c56daf4e3d88f399c29a917228b31494dbac2ee22ae6278c6f4202c2"
     },
     {
       "path": "modules/phigros/tests/dense_lookup175_test.c",
-      "sha256": "d2fceb576dc2089c0e5a3ca00b1952cfc5a7d20ffaf1d1c416e81a38c9ee7d73"
+      "sha256": "c0e8837e792e72b484cc18b9af743fc95df002a06dfe0276709bec2d526660b5"
     },
     {
       "path": "modules/phigros/tests/unity_good_fixture.c",
-      "sha256": "72bc91947d14badb8f5218820850ddd65aee819fa005af84c6f991de236a57c8"
+      "sha256": "da12348390e126b5503d47dddd516b6304dbfe8d8e266f2667b742148d44790d"
     },
     {
       "path": "modules/phira/AndroidManifest.xml",
-      "sha256": "6df93a6eb2e27b28f23cffe5a3b4e89225dd8e604a06ef71e7370e2e10dd4893"
+      "sha256": "9bca7acb04dbe7bc2ed554e132dc33a12adde8a8cd6b46ee6d9383c7cc5dc110"
     },
     {
       "path": "modules/phira/README.md",
-      "sha256": "e690699e7b3a63232be36ee508563eaba597861d15c3d030a713799da1702da8"
+      "sha256": "44b8d42f65346d1377c8b2917674d9456a03f20575f47e8dc9f58100a163875c"
     },
     {
       "path": "modules/phira/assets/controls-ui.html",
-      "sha256": "f7fbcf30a8cf8561a8b1089337dcdd1e2ece1be79eea9d35bd0d0ec4593e8ec0"
+      "sha256": "0175d31e880945851f0fecbf5936e48e4b28cd08e1e20a9d3c0144f18598dbf2"
     },
     {
       "path": "modules/phira/build_module.py",
-      "sha256": "103ed5029ca321ca2e96f5a1b06b66dc9459a2bb7ca699fd7c1106e64e6e8d55"
+      "sha256": "15d527cf9af1f2fe1d29fab7a4817917f45cb9646231a31288685e55077d0a3e"
     },
     {
       "path": "modules/phira/native/controlled-frame.h",
@@ -402,7 +430,7 @@
     },
     {
       "path": "modules/phira/source-manifest.json",
-      "sha256": "e7e9c01ffcfe39e7b0302c0687756951982f5ed3866eac173b0fd8fdbe670472"
+      "sha256": "601448f5e88988423666e3e20671b20cbe58a516df4f7a9448a90ea5851d9c38"
     },
     {
       "path": "modules/phira/src/ConnectionReport.java",
@@ -410,7 +438,7 @@
     },
     {
       "path": "modules/phira/src/Controls.java",
-      "sha256": "32b56b725b123d05b68a3d0f14b900f21f6fa0a465c399ece63d5bd6a4e77678"
+      "sha256": "ed24ab4c90d6d28b36bfd71367f7b4aa7c26de6487d7e364f8b8db3b0856af35"
     },
     {
       "path": "modules/phira/src/ControlsConfig.java",
@@ -418,7 +446,7 @@
     },
     {
       "path": "modules/phira/src/Dashboard.java",
-      "sha256": "343edc8cdf15854c4c780f922e6c2f0a4ec66d4268df7b775d1b563a196e8576"
+      "sha256": "67fe236c21d2668d83b6ffa23742d4832adc5f19207586af2e31278b45d28436"
     },
     {
       "path": "modules/phira/src/DiagnosticState.java",
@@ -493,7 +521,7 @@
       "sha256": "3c139e52fe89c4139f5ab53f20b2c3f60c21c97917bbdec49fc9e886e5632865"
     }
   ],
-  "revision": "0.2.2",
+  "revision": "0.2.4",
   "module_dex_and_native_payloads_match_candidates": true,
   "checks": {
     "phira": {
@@ -509,6 +537,5 @@
   },
   "private_keys_tokens_logs_or_private_saves_included": false,
   "device_tested": false,
-  "published_apks": true,
-  "hash_basis": "Git committed blob bytes (LF), not Windows checkout line endings"
+  "published_apks": true
 }

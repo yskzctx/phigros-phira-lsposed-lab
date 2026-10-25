@@ -12,14 +12,15 @@ public final class LaunchActivity {
   File state=new File(c.getFilesDir(),"offline-session");if(!state.isDirectory()&&!state.mkdirs())throw new IOException("独立会话目录无法创建");
   File pending=new File(state,"autoplay.pending");if(pending.exists()){
    File backup=new File(state,"playerprefs.xml");if(!backup.isFile())throw new IOException("自动游玩会话备份缺失");
-   try(InputStream in=new FileInputStream(backup)){copyAtomic(in,prefs(c));}
+   RksEditor.restoreSessionRecords(c,backup,prefs(c));
    File rollback=new File(prefs(c).getPath()+".bak");if(rollback.exists()&&!rollback.delete())throw new IOException("独立会话旧备份无法清理");
    if(!pending.delete())throw new IOException("会话恢复标记无法清理");
   }
   RksEditor.applyPending(c);autoplay=false;
  }
  public static synchronized void changeAutoplay(Context c,boolean value)throws IOException{
-  if(!LabNative.ready())throw new IOException("原生接口或独立存档路径尚未就绪，未开启修改");
+  com.phigros.lab.ShadowStore.prepareOriginal(new File(c.getApplicationInfo().dataDir));
+  if(!LabNative.ready())throw new IOException(com.phigros.lab.Entry.connection());
   File state=new File(c.getFilesDir(),"offline-session"),pending=new File(state,"autoplay.pending");
   if(value&&!pending.exists()){
    if(!state.isDirectory()&&!state.mkdirs())throw new IOException("会话目录无法创建");
