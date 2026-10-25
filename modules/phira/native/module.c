@@ -29,7 +29,6 @@ static LabInputApi input_api;
 static LabTouchApi touch_api;static void *anim_value_original;
 extern float lab_anim_value(const void*,void*);
 static float note_x_value(const void *animation){return lab_anim_value(animation,anim_value_original);}
-static double input_uptime(void){struct timespec ts;if(clock_gettime(CLOCK_MONOTONIC,&ts))return NAN;return (double)ts.tv_sec+(double)ts.tv_nsec*1e-9;}
 typedef struct {int counts[4],combo,max_combo,early,late;uint64_t generation;} Observed;
 static Observed observed;
 static _Thread_local void *observed_judge;
@@ -62,7 +61,7 @@ static void judge_update(void *judge,void *resource,void *chart,void *bad_notes)
  if(observed.generation!=plan.generation){memset(&observed,0,sizeof(observed));observed.generation=plan.generation;}
  void *previous=observed_judge;observed_judge=okay&&requested?judge:NULL;
  judge_original(judge,resource,chart,bad_notes);
- observed_judge=previous;lab_frame_end(&plan);publish_controls();
+ observed_judge=previous;lab_frame_end(&plan);if(plan.cleanup_failed)atomic_store(&enabled,false);publish_controls();
 }
 static uintptr_t (*game_original)(void*,void*);
 static uintptr_t game_update(void *scene,void *time_manager){
@@ -92,7 +91,7 @@ static void loaded(const char *name,void *handle){
  if(!valid){atomic_store(&stage,3);__android_log_print(ANDROID_LOG_ERROR,"PhiraLab","Input/native profile mismatch; no activation");pthread_mutex_unlock(&lock);return;}
  input_api.local_key=(void*(*)(void*))key_function;input_api.repeat=(void(*)(const void*,void*,void*))(r.base+INPUT_REPEAT_RVA);
  anim_value_original=(void*)(r.base+ANIM_VALUE_RVA);
- touch_api=(LabTouchApi){.input=input_api,.set_time=(void(*)(void*,double))(r.base+OBJECT_TIME_RVA),.line_position=(uint64_t(*)(const void*,const void*,const void*,size_t))(r.base+LINE_POSITION_RVA),.line_rotation=(float(*)(const void*,const void*,size_t))(r.base+LINE_ROTATION_RVA),.note_x=note_x_value,.screen_width=(float(*)(void))(r.base+SCREEN_WIDTH_RVA),.screen_height=(float(*)(void))(r.base+SCREEN_HEIGHT_RVA),.uptime=input_uptime};
+ touch_api=(LabTouchApi){.input=input_api,.set_time=(void(*)(void*,double))(r.base+OBJECT_TIME_RVA),.line_position=(uint64_t(*)(const void*,const void*,const void*,size_t))(r.base+LINE_POSITION_RVA),.line_rotation=(float(*)(const void*,const void*,size_t))(r.base+LINE_ROTATION_RVA),.note_x=note_x_value,.screen_width=(float(*)(void))(r.base+SCREEN_WIDTH_RVA),.screen_height=(float(*)(void))(r.base+SCREEN_HEIGHT_RVA)};
  void *replacements[]={(void*)game_update,(void*)judge_update,(void*)commit_observer};void **backups[]={(void**)&game_original,(void**)&judge_original,(void**)&commit_original};uintptr_t hook_entries[]={GAME_UPDATE_RVA,JUDGE_UPDATE_RVA,JUDGE_COMMIT_RVA};bool installed=true;
  for(size_t k=0;k<3;k++)if(batch_install(&batch,(void*)(r.base+hook_entries[k]),replacements[k],backups[k])){installed=false;break;}
  if(installed&&game_original&&judge_original&&commit_original){atomic_store(&stage,5);atomic_store(&ready,true);__android_log_print(ANDROID_LOG_INFO,"PhiraLab","Original judging/input adapter installed; native upload eligibility preserved; autoplay off");}else{atomic_store(&stage,4);batch_rollback(&batch);}

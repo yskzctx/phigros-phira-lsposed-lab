@@ -1,6 +1,8 @@
 {
-  "artifact": "Phigros-Lab-LSPosed-157-arm64-v0.2.2.apk",
-  "sha256": "4bf8e91ac0277021875a42333a8a1279c0b9aa2ab11605b2f52eccd73b19a2d0",
+  "module_version": "0.2.3-test",
+  "module_version_code": 6,
+  "artifact": "Phigros-Lab-LSPosed-157-arm64-v0.2.3-TEST.apk",
+  "sha256": "821b15be26abb5856abb577d0750719cb84be89c07ba51174183332bd9ab24b7",
   "bytes": 49528066,
   "package": "com.phigros.lab.lsp",
   "target": "com.PigeonGames.Phigros",
@@ -19,8 +21,5 @@
     "Native chapter extended FX/audio/line colors incomplete",
     "Framework loading, real save isolation and original upload behavior await device verification",
     "Custom chapter caller/config transfer and audio await device verification"
-  ],
-  "module_version": "0.2.2",
-  "module_version_code": 5,
-  "report_type": "automated build checks; user feedback recorded separately"
+  ]
 }

@@ -1,7 +1,9 @@
 {
-  "artifact": "Phira-Lab-LSPosed-0.8.2-arm64-v0.2.2.apk",
-  "sha256": "94d650009548acde896118f86c55323d47b1e5c5bd25f4095c5f533b5fa468e7",
-  "bytes": 147997,
+  "module_version": "0.2.3-test",
+  "module_version_code": 6,
+  "artifact": "Phira-Lab-LSPosed-0.8.2-arm64-v0.2.3-TEST.apk",
+  "sha256": "c44a119f41411484949915222cc1a4bac0c2ddcda9d7c59be7836e275bef14e6",
+  "bytes": 152093,
   "package": "com.phira.lab.lsp",
   "target": "org.flos.phira",
   "target_version": "0.8.2 (39)",
@@ -22,6 +24,10 @@
   "lazy_initialization_negative_baseline_tested": true,
   "in_game_copy_diagnostics": true,
   "engine_storage_layout_v2": true,
+  "uses_original_host_storage": true,
+  "automatic_original_data_backup": true,
+  "custom_autoplay_only": true,
+  "touch_events_scoped_to_judge": true,
   "legacy_metadata_preserved": true,
   "volume_key_menu": true,
   "cold_autoplay_default_off": true,
@@ -38,8 +44,5 @@
   "device_tested": false,
   "network_behavior_device_tested": false,
   "installed": false,
-  "published": false,
-  "module_version": "0.2.2",
-  "module_version_code": 5,
-  "report_type": "automated build checks; user feedback recorded separately"
+  "published": false
 }

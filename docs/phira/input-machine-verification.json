@@ -17,6 +17,7 @@
   "full_judge_tested": false,
   "gameplay_tested": false,
   "original_touch_start_move_end_cancel": true,
+  "original_infinite_time_touch_layout_verified": true,
   "touch_id_position_time_and_phase_verified": true,
   "context_null_valid_for_touch_variants": true
 }

@@ -5,8 +5,8 @@ public final class DiagnosticStateTest {
   check(DiagnosticState.describe(false,new int[]{0,0,0,0,0,1,0},null),"等待游戏原生库");
   check(DiagnosticState.describe(false,new int[]{0,0,0,0,0,3,0},null),"函数特征不匹配");
   check(DiagnosticState.describe(false,new int[]{1,0,0,0,0,5,1},null),"游戏已提前运行");
-  check(DiagnosticState.describe(false,new int[]{1,1,0,0,0,5,0},null),"独立存档未切换");
-  check(DiagnosticState.describe(false,new int[]{1,0,0,0,0,5,0},null),"原生 Hook 已安装，独立存档尚未激活");
+  check(DiagnosticState.describe(false,new int[]{1,1,0,0,0,5,0},null),"原版存档未确认");
+  check(DiagnosticState.describe(false,new int[]{1,0,0,0,0,5,0},null),"原生 Hook 已安装，原版存档备份尚未就绪");
   check(DiagnosticState.describe(false,new int[]{0,0,0,0,0,5,0},null),"原生就绪状态异常");
   check(DiagnosticState.describe(true,new int[]{1,1,0,0,0,5,0},null),"已接入 · 自动游玩关闭");
   check(DiagnosticState.describe(true,new int[]{1,1,1,1,12,5,0},null),"已接入 · 自动游玩开启");

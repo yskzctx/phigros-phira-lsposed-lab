@@ -16,8 +16,8 @@
 </section>
 <section id="rules" class="page"><div class="row between section-top"><div><strong>按顺序执行</strong><div class="muted">重叠音符以靠前的规则为准；Perfect 可保护指定音符</div></div><button id="add" class="primary">＋ 添加规则</button></div><div id="rules-list"></div><p class="muted">编号按整张谱面的时间顺序，从 1 开始。范围包含两端；随机不重复，超出谱面长度的编号忽略。</p></section>
 <section id="history" class="page">
- <div class="card"><h2>Phira 历史记录</h2><p class="muted">仅修改独立实验档的本地记录。账号 RKS 由原版服务器返回，不在这里直接修改。</p><input id="rks" class="hidden"><button id="rks-apply" class="hidden"></button><div id="history-state" class="pending hidden"></div></div>
- <div class="card"><h2>恢复历史成绩</h2><div class="history-actions"><button id="all-ap" class="primary">恢复全部 AP</button><button id="restore">恢复上次备份</button></div><p class="muted">两项都在下次冷启动执行。“全部 AP”调整实验档中已有谱面的记录；“备份”恢复修改前的历史，保留新增谱面与皮肤。</p></div>
+ <div class="card"><h2>Phira 历史记录</h2><p class="muted">直接修改原版存档中的本地成绩，修改前自动备份。账号 RKS 由原版服务器返回，不在这里直接修改。</p><input id="rks" class="hidden"><button id="rks-apply" class="hidden"></button><div id="history-state" class="pending hidden"></div></div>
+ <div class="card"><h2>恢复历史成绩</h2><div class="history-actions"><button id="all-ap" class="primary">恢复全部 AP</button><button id="restore">恢复上次备份</button></div><p class="muted">两项都在下次冷启动执行。“全部 AP”调整原版存档中已有谱面的记录；“备份”恢复修改前的历史，保留新增谱面与皮肤。</p></div>
  <div class="hidden"><button id="chapter-open"></button><button id="skin-open"></button><span id="skin-state"></span></div>
 </section></div>
 <footer class="footer"><button id="reset">重置游玩设置</button><button id="save" class="primary">保存 · 下一局生效</button></footer>

@@ -2,7 +2,7 @@
   "source_files": [
     {
       "path": "AndroidManifest.xml",
-      "sha256": "5ba1e7880cc09702914e4869f724d9836319636203c389c7b256e02b98890712"
+      "sha256": "6df93a6eb2e27b28f23cffe5a3b4e89225dd8e604a06ef71e7370e2e10dd4893"
     },
     {
       "path": "src/ConnectionReport.java",
@@ -18,11 +18,11 @@
     },
     {
       "path": "src/Dashboard.java",
-      "sha256": "16b3b63a7b7c8370fec9f7650032b3ae28be0087c2622c2474474a580891aa1e"
+      "sha256": "343edc8cdf15854c4c780f922e6c2f0a4ec66d4268df7b775d1b563a196e8576"
     },
     {
       "path": "src/DiagnosticState.java",
-      "sha256": "461d6bd6109d2fabffbeb7d95f1d9f05a3dbdacbf18ade4ff79f63918c1b76af"
+      "sha256": "3c067b9f3cdf06d645fbf112107270581607c93a5403960b0cead97b4c2c1857"
     },
     {
       "path": "src/EarlyNative.java",
@@ -30,7 +30,7 @@
     },
     {
       "path": "src/Entry.java",
-      "sha256": "4e6df881a4e243a02403096870c4432e0c4f93bc9faaa91ade91b470e05129e1"
+      "sha256": "22835e562e54652494432bb245128035cc991d59970eacf80561887c567312b1"
     },
     {
       "path": "src/GoalControls.java",
@@ -38,7 +38,7 @@
     },
     {
       "path": "src/GoalPanel.java",
-      "sha256": "8a207f0dca71814b86bd007e85d18e0e4d75ea82a961f56f505ac1920641a3ca"
+      "sha256": "22d70a0d71521d9ae0175a6bfad565c40f4bb7645dbbf9a1edd936a76b75262e"
     },
     {
       "path": "src/InfoActivity.java",
@@ -50,15 +50,15 @@
     },
     {
       "path": "src/LabStore.java",
-      "sha256": "edfa013e77d896013900125ba59bdaeeafb4f995bbbcee8babde1aa8016356b7"
+      "sha256": "83084873a47ed1cd9a3699cc36a29ecf6f5c0dee43022ea8493616434a56fe49"
     },
     {
       "path": "native/module.c",
-      "sha256": "e098bcaacdc4d3ef98fc3e53c057617fbb592612ea45f1dac95d76f6ab65829b"
+      "sha256": "d6ea5acb66bfa060f0d6b9c5bb4b87314d3b2ceae4ed25e9e98702b8f0efb618"
     },
     {
       "path": "native/controlled-frame.h",
-      "sha256": "3ebd18a0263a32f97e6ab65f21b162bd8eb09af1bb22d316701b4a8f08d1aa78"
+      "sha256": "6c6cd3e0cb9ba6933286ed035365e602f2fb3cd0b47825dda7e542c53abec58a"
     },
     {
       "path": "native/goal-plan.h",
@@ -70,7 +70,7 @@
     },
     {
       "path": "native/input-touch.h",
-      "sha256": "2157118e918ba033cd17605dda67a4644ba49dfb671736ad8f8a6a62551bbd35"
+      "sha256": "3c6d9eed22254d1e9139362b80f553f92be7823df1775d772a19fbe9002b41f0"
     },
     {
       "path": "native/profile.h",
@@ -82,7 +82,7 @@
     },
     {
       "path": "assets/controls-ui.html",
-      "sha256": "ea4a72a10230df59b9977c53c1b6f8d706a83bb96b9cc137318e7afd5b7fddc6"
+      "sha256": "f7fbcf30a8cf8561a8b1089337dcdd1e2ece1be79eea9d35bd0d0ec4593e8ec0"
     },
     {
       "path": "tests/ControlsConfigTest.java",
@@ -90,7 +90,7 @@
     },
     {
       "path": "tests/DiagnosticStateTest.java",
-      "sha256": "47d47432c3865425123f46ab5ebfcd13c1b83c377716bf6378bd0661c63f5d50"
+      "sha256": "aaaf187998ab3e598bd28c6e0e611d17af51f08518992f2efd0a5f21973cf2ed"
     },
     {
       "path": "tests/EarlyNativeTest.java",
@@ -101,12 +101,16 @@
       "sha256": "40263c20b76b9378caef72c3ca08818b326b20fadfe0fd776a76b01c03dd8a94"
     },
     {
+      "path": "tests/OriginalStoreTest.java",
+      "sha256": "b4fa93427ee9c9e0ca641b530a99ada27edee8815f8e3dfe157cedc1432c6f27"
+    },
+    {
       "path": "tests/StorageLayoutTest.java",
       "sha256": "38772f89fdd1db53a0c22d3b2bd3d93f0e64fd6b3fdf24c7144990572430cb73"
     },
     {
       "path": "tests/controlled_frame_test.c",
-      "sha256": "9cba1c88e8e615c822b7ac56342e51794210d7184e73a4ae32b3bf0271e2e96c"
+      "sha256": "1c33e8e8ab86ca9bae2a9d365707662ad00ea4ee22d9ae33b9ee118c3e90ebab"
     },
     {
       "path": "tests/goal_plan_test.c",
@@ -118,7 +122,7 @@
     },
     {
       "path": "tests/touch_input_test.c",
-      "sha256": "47be6f6ed962d30a6048ea4d3b512977a5dd11b64c913333c888311e51e9c2fd"
+      "sha256": "3c139e52fe89c4139f5ab53f20b2c3f60c21c97917bbdec49fc9e886e5632865"
     }
   ],
   "original_game_binary_included": false,

@@ -8,7 +8,7 @@ a=p.parse_args();root=Path(__file__).resolve().parent;out=a.out.resolve();out.mk
 def run(*args):subprocess.run([str(v)for v in args],check=True)
 def digest(path):
  with path.open('rb')as f:return hashlib.file_digest(f,'sha256').hexdigest()
-assert digest(a.resources_from_apk)in {'28ea2851b276024e1fe41c7f1f7ff8ac9f334b6e7b9c75cf9bc31b9003cd726c','d186832bd2600a1353ef6421d9159987d88639756ffc02f2a120bcd5f6597968'},'Use the exact published v174 modified APK (or retained 0.1 module), not an original game or private APK'
+assert digest(a.resources_from_apk)in {'28ea2851b276024e1fe41c7f1f7ff8ac9f334b6e7b9c75cf9bc31b9003cd726c','d186832bd2600a1353ef6421d9159987d88639756ffc02f2a120bcd5f6597968','61fedd402042ad301de66b87a0e2ed844568b242a1052c1e8cf07401041195ac'},'Use the exact verified v174/v175 modified APK (or retained 0.1 module), not an original game or private APK'
 sdk=a.sdk.resolve();tools=sdk/'build-tools'/a.build_tools;android=sdk/'platforms'/a.platform/'android.jar';api=a.xposed_api.resolve()
 classes=build/'classes';classes.mkdir(exist_ok=True)
 # A fresh javac output prevents removed anonymous classes entering the DEX.
@@ -39,7 +39,7 @@ with zipfile.ZipFile(resources)as res,zipfile.ZipFile(a.resources_from_apk)as ol
  z.writestr('lib/arm64-v8a/libphigros_chapter.so',chapter,compress_type=zipfile.ZIP_STORED)
  z.writestr('assets/xposed_init','com.phigros.lab.Entry\n');z.writestr('assets/native_init','libphigros_lsp.so\n');z.writestr('assets/xposed_scope','com.PigeonGames.Phigros\n')
 zipalign=tools/('zipalign.exe'if os.name=='nt'else'zipalign');run(zipalign,'-P','16','-f','4',unsigned,aligned)
-apk=out/'Phigros-Lab-LSPosed-157-arm64-v0.2.2.apk'
+apk=out/'Phigros-Lab-LSPosed-157-arm64-v0.2.3-TEST.apk'
 run('java','-Djava.io.tmpdir='+str(build),'-jar',tools/'lib/apksigner.jar','sign','--ks',a.keystore.resolve(),'--ks-key-alias',a.alias,'--ks-pass','file:'+str(a.password_file.resolve()),'--min-sdk-version','26','--v1-signing-enabled','false','--v2-signing-enabled','true','--v3-signing-enabled','true','--v4-signing-enabled','false','--out',apk,aligned)
 run('java','-jar',tools/'lib/apksigner.jar','verify','--verbose',apk);run(zipalign,'-c','-P','16','4',apk)
 with zipfile.ZipFile(apk)as z:

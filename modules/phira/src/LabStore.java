@@ -1,6 +1,7 @@
 package com.phira.lab;
 import java.io.*;import java.nio.charset.StandardCharsets;import java.nio.file.*;import java.util.*;import org.json.*;
-/** Original data is read only for a private backup; the engine gets a fresh lab root. */
+/** Legacy isolation helpers remain for regression. Original-mode methods back up
+ * the existing engine data and change/restore only record fields as requested. */
 public final class LabStore {
  private static final long LIMIT=64L*1024*1024;
  private static File child(File base,String name)throws IOException{File f=new File(base,name);if(Files.isSymbolicLink(f.toPath())||!f.getAbsoluteFile().equals(f.getCanonicalFile()))throw new IOException("实验路径不能是链接");return f;}
@@ -76,6 +77,45 @@ public final class LabStore {
   if(!operation.equals("all-ap")&&!operation.equals("restore"))throw new IOException("历史记录操作无效");
   if(operation.equals("restore")&&!child(lab,"history-before-edit.json").isFile())throw new IOException("尚无历史记录备份");
   try{atomic(child(lab,"history-pending.json"),encode(new JSONObject().put("operation",operation)));}catch(JSONException e){throw new IOException("历史操作无法保存",e);}
+ }
+ private static File originalMetadata(File root)throws IOException{
+  File canonical=root.getCanonicalFile();if(!canonical.isDirectory())throw new IOException("原版存档根目录缺失");
+  File meta=child(canonical,"phira-module-backups");directory(meta);File data=engineData(canonical),backup=child(meta,"original-data-before-module.json");
+  if(data.exists()){json(data);if(!backup.exists())atomic(backup,read(data));else json(backup);}
+  else if(!backup.exists()){File absent=child(meta,"original-file-absent-v1");if(!absent.exists())atomic(absent,new byte[]{1});}
+  return meta;
+ }
+ /** Keep the engine on the original root. Backups contain private host data
+  * and remain in its internal directory; never export or log their contents. */
+ public static synchronized File prepareOriginal(File originalRoot)throws IOException{
+  File root=originalRoot.getCanonicalFile(),meta=originalMetadata(root),pending=child(meta,"session-records.json"),history=child(meta,"history-pending.json");
+  if(pending.exists()||history.exists())try{
+   File data=engineData(root);JSONObject state=json(data);
+   if(pending.exists())restoreRecords(state,json(pending));
+   if(history.exists()){
+    String operation=json(history).getString("operation");File backup=child(meta,"history-before-edit.json");
+    if(operation.equals("all-ap")){
+     if(!backup.exists())atomic(backup,encode(snapshot(state)));
+     JSONObject records=state.optJSONObject("local_records");if(records==null)records=new JSONObject();
+     ArrayList<String> paths=new ArrayList<>();Iterator<String> keys=records.keys();while(keys.hasNext())paths.add(keys.next());for(String path:paths)records.put(path,ap());state.put("local_records",records);
+     JSONArray charts=state.optJSONArray("charts");if(charts!=null)for(int i=0;i<charts.length();i++){JSONObject chart=charts.optJSONObject(i);if(chart!=null)chart.put("record",ap());}
+    }else if(operation.equals("restore"))restoreRecords(state,json(backup));else throw new IOException("历史记录操作无效");
+   }
+   // Account, configuration, chart/resource indexes and other fields are kept.
+   atomic(data,encode(state));
+  }catch(JSONException e){throw new IOException("原版成绩记录恢复失败，未继续激活",e);}
+  if(pending.exists()&&!pending.delete())throw new IOException("会话记录恢复标记无法清理");
+  if(history.exists()&&!history.delete())throw new IOException("历史操作标记无法清理");
+  return root;
+ }
+ public static synchronized void beginOriginalAutoplay(File root)throws IOException{
+  File meta=originalMetadata(root),pending=child(meta,"session-records.json");
+  if(!pending.exists())atomic(pending,encode(snapshot(json(engineData(root.getCanonicalFile())))));
+ }
+ public static synchronized void queueOriginalHistory(File root,String operation)throws IOException{
+  if(!operation.equals("all-ap")&&!operation.equals("restore"))throw new IOException("历史记录操作无效");
+  File meta=originalMetadata(root);if(operation.equals("restore")&&!child(meta,"history-before-edit.json").isFile())throw new IOException("尚无历史记录备份");
+  try{atomic(child(meta,"history-pending.json"),encode(new JSONObject().put("operation",operation)));}catch(JSONException e){throw new IOException("历史操作无法保存",e);}
  }
  private LabStore(){}
 }
