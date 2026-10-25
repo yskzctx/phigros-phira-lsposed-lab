@@ -2,7 +2,7 @@
   "files": [
     {
       "path": ".gitattributes",
-      "sha256": "bd5c3af388df70973ab1472e839afdbf56009d273ef554c6be38305ed3213f56"
+      "sha256": "e4d05fd8e62ac113cac48d2402713b74dd6f4583357e45cf4a40f2c8802d90db"
     },
     {
       "path": ".gitignore",
@@ -10,11 +10,11 @@
     },
     {
       "path": "DISCLAIMER.md",
-      "sha256": "fd58e6c1b4fd74e24f9521e784b983a44e4778f2e6445a1fb4c68f961d0c702b"
+      "sha256": "d3be7f3cce92770dd47ac355070824a227bd7d450bafdfd8c3933c0434e74ef2"
     },
     {
       "path": "README.md",
-      "sha256": "d4ae270af6c034bfe4c375ab41f25189d00c6c097a841fc18aa35ea6319b9c49"
+      "sha256": "88b031154d3d6f1b92a803bdd0391ad330159c19de38e3dcf28ac317c03f6a7d"
     },
     {
       "path": "chapter-player/LICENSE-GPL-3.0.txt",
@@ -22,7 +22,7 @@
     },
     {
       "path": "chapter-player/README.md",
-      "sha256": "563cea982a08f032930c720ee8ef5f329adba53a8d9223930230dcd7d0e784c9"
+      "sha256": "cb0e53395da0978abf22e14eb97e97466d7582f135bc6e26c778a0ca11475b23"
     },
     {
       "path": "chapter-player/apply_player_patch.py",
@@ -50,39 +50,43 @@
     },
     {
       "path": "docs/CONTROLS-20261025.md",
-      "sha256": "118e90a5be3bec95de707dc3d0ee80312ad1853551bc04c76ae7a2de8bcae9a2"
+      "sha256": "a70cc1a67636760575bd25f696709d2435cb22dbd4a4642a45450d4f8e5ccec0"
     },
     {
       "path": "docs/DIAGNOSTICS-0.2.md",
       "sha256": "1bc0afb3607f868845158817811889f02c01a50b373b254222f0cfc4f5f71ef2"
     },
     {
+      "path": "docs/INSTALL-v0.2.2.md",
+      "sha256": "73c6c345bd8f29f001b7d208e420fec7de85ca922d36817c1be085cb7a3d67ed"
+    },
+    {
       "path": "docs/INSTALL-v0.2.md",
-      "sha256": "09e7c3c80800360d62742601d982d1fa098116df8d12a838e4f4141517b9959e"
+      "sha256": "8add6a630926bb6378a408331ce5cc50357472600a500acee09db9d25ae041f4"
     },
     {
       "path": "docs/NETWORK-POLICY.md",
-      "sha256": "3e9701547b6894ef9f5072f768ee0ceddc5d25566491d6bc60e6ea83feaecbb3"
+      "sha256": "26ebd937bb3ce22163361683fcfa7c20ebb99fd9cdc8c914a49282ad8806d7f5"
     },
     {
       "path": "docs/RELEASE-v0.2.1.json",
-      "sha256": "298ee2509a491e9f31abcf83b0a6732c744637b4ee661454afaf667624c99685"
+      "sha256": "5427fe440e63df0e669504b1d1b236cb428c012935a0068648499a45752d06ed"
     },
     {
       "path": "docs/RELEASE-v0.2.2.json",
-      "sha256": "47cd74cb24637357291f7b282f8c2a4855414966943a05fa35750bde1c880358"
+      "sha256": "19c047ea8537a0b2ca42aa5f35e11cde66e6e102eb44b9be8fcd614e2bbfd45d"
     },
     {
       "path": "docs/RELEASE-v0.2.json",
-      "sha256": "03cdfafcae86944b7ac99a9b97352a6cdb14ccb5edabbc7b2535ee0cdc943020"
+      "sha256": "c4ba2201df8e96e667b4600c2938061fe018a4ae5fc6f5c16dcc28d2d1b67468"
     },
     {
       "path": "docs/STARTUP-0.2.1.md",
-      "sha256": "e47a65127eb9e0e26c8a2fb3efd90ef62ada1720e0c283d2d2727383bf5f63e4"
+      "sha256": "6287944392ac3b53f46ec4a36f9e362e5d57686e94226852b5e1740cad41be25"
     },
     {
       "path": "docs/STARTUP-0.2.2.md",
-      "sha256": "15891cc8603a0cc69d63caf627bd69d032b4ca5ef25bf53b9b19d23708af64d8"
+      "sha256": "b7064d62f9a82adae2d3f6fbd60870063966e5bc0a78e8d17e32e4450e99ea1c"
     },
     {
       "path": "docs/phigros/SHA256SUMS.txt",
@@ -90,15 +94,15 @@
     },
     {
       "path": "docs/phigros/host-verification.json",
-      "sha256": "efca7e6851841e54523612d32b3d4d7479ccac77788096d19e93c7516889cd0a"
+      "sha256": "db72d7e14035a920063ceb3fbaf633dbd3455f588ce340fe3c2e123089cd4a05"
     },
     {
       "path": "docs/phigros/verification.json",
-      "sha256": "9fea771406027e7eab41b1f4b66f6fbd7e9cbd1849fcebae46d0f0436e6a05fd"
+      "sha256": "ac75c620bea57682e6c67d41f45c699378515aaa4adea534418d6323411107b8"
     },
     {
       "path": "docs/phigros/使用与验收.md",
-      "sha256": "8e4591d58143f5e5783c5abb7bc5f7994c660ed803a9442e24b565f96893a344"
+      "sha256": "7b9ada635b06f088474b569dae02057fe27f0f912369783e39eab9a32939e57b"
     },
     {
       "path": "docs/phira/SHA256SUMS.txt",
@@ -106,15 +110,15 @@
     },
     {
       "path": "docs/phira/geometry-machine-verification.json",
-      "sha256": "6bdc3d7d345adaccdce960a275927d643ef6d82007c82242a49292459bab63b2"
+      "sha256": "1eb2254a2e741f5c067c74734f03c2ada1d2f001c2fa3c6cfd3166f13a3b08a9"
     },
     {
       "path": "docs/phira/host-verification.json",
-      "sha256": "d507f05a8ddb242d6ad7c6a94c37059b387580d7ff155bcaacb6d1697748f671"
+      "sha256": "b216252c8b4ff89302a72f5bd87e700ee7ebd36143c714a4d71e4d9f616d9761"
     },
     {
       "path": "docs/phira/input-machine-verification.json",
-      "sha256": "df1b0ed7813831c87baa8dd93e2ec620b3712e7c108812e83f8371dafa3c7b6f"
+      "sha256": "cb18d0ad6a58518cd1a63d887402b6f98b2d220f522c786bb5490cc678e27f4a"
     },
     {
       "path": "docs/phira/storage-layout-evidence.json",
@@ -122,11 +126,11 @@
     },
     {
       "path": "docs/phira/verification.json",
-      "sha256": "64f7e983d15d5de3578608d451cea27e55c864a92cc03c7897fdd55764575cef"
+      "sha256": "bafbbcf2d9e23b92d52f607fd92416353dc5c7cf881f4c66b13f4d2f56a3732f"
     },
     {
       "path": "docs/phira/使用与验收.md",
-      "sha256": "1474d94cf669da64c26f59a2da58231b8c5fb0ef4c5cdac72df866ab06c6766f"
+      "sha256": "207ee2690e9fbadd3b0815066f2a3f51b2273e301ce8d707fd67ff9db8988345"
     },
     {
       "path": "modules/common/activation-gate.h",
@@ -138,11 +142,11 @@
     },
     {
       "path": "modules/phigros/AndroidManifest.xml",
-      "sha256": "037596c8c5b76477c266d91733edd775b4a9817b68fc771f3b86298f46bc78d2"
+      "sha256": "3f25820655d9e5778ed78070810da57abf476feb5fbe7b06aa148729181be691"
     },
     {
       "path": "modules/phigros/README.md",
-      "sha256": "339cb460944a7cd5a432081619051b81fddada67793ec38607db9bc9217bca2f"
+      "sha256": "a0c483aa8074e1e7ce37fe8cc30a251255d486b445db27dd9fb64e0ba592e4ff"
     },
     {
       "path": "modules/phigros/assets/offline/chapter-player-GPL-3.0.txt",
@@ -158,7 +162,7 @@
     },
     {
       "path": "modules/phigros/assets/offline/chart-catalog.tsv",
-      "sha256": "0aa88db44ccec2b5c264d84e3d1d031f0fff0ab50a317aa7b3441934300db496"
+      "sha256": "c1e29497e33654cc4483754385f6921fda85dc877550d5c4b929bc856632abb6"
     },
     {
       "path": "modules/phigros/assets/offline/controls-ui.html",
@@ -166,7 +170,7 @@
     },
     {
       "path": "modules/phigros/build_module.py",
-      "sha256": "c067596b7f40dc1a97a18da05fb142bb4f6c0dfaba3c5be5a32b39885aebbf05"
+      "sha256": "02923be909bdf87530760415ccec2255a8b77aae191b0d8745ff380e43266dbd"
     },
     {
       "path": "modules/phigros/native/cloud-guard.c",
@@ -214,7 +218,7 @@
     },
     {
       "path": "modules/phigros/src/com/phigros/lab/Dashboard.java",
-      "sha256": "e502bea4b9bdb1c73717c18a5b798f80fb22b1a58c6334eecd5ae2acc95d5def"
+      "sha256": "be0e82edb7602b699998417eac603aad82b04ffa6480f7e727059def9c455c37"
     },
     {
       "path": "modules/phigros/src/com/phigros/lab/Entry.java",
@@ -334,7 +338,7 @@
     },
     {
       "path": "modules/phira/README.md",
-      "sha256": "27cf62cd26cac94e28e55ba138971188177db13fed7a43b997ed00239e317b0e"
+      "sha256": "79010512c9d728da9b58b5db142263ed531fa4fec66cb4d788e15c5407b9bc84"
     },
     {
       "path": "modules/phira/assets/controls-ui.html",
@@ -342,7 +346,7 @@
     },
     {
       "path": "modules/phira/build_module.py",
-      "sha256": "0e20819f25e4b32383b0480f79c3b5f5af8f944df0e58484d292b0159b9f0df1"
+      "sha256": "1cdfcf40fb8f6a84d20bcf56ec8e80c7e9b51117da4d6279c61314f5051b53dd"
     },
     {
       "path": "modules/phira/native/controlled-frame.h",
@@ -374,7 +378,7 @@
     },
     {
       "path": "modules/phira/source-manifest.json",
-      "sha256": "6403659ade5a414ac8ee1bd9a29b289ddb34e857eaaf978f7ad1b6772a32a1ef"
+      "sha256": "753a0bbf7e6feeacb6a5b8b7b4f63f0b265e6c5ccf0ca998965ce645e084c2c3"
     },
     {
       "path": "modules/phira/src/ConnectionReport.java",
@@ -490,5 +494,6 @@
       "published_without_waiting_for_device_test_at_user_request": true
     },
     "agent_device_tested": false
-  }
+  },
+  "hash_basis": "Git committed blob bytes (LF), not Windows checkout line endings"
 }
