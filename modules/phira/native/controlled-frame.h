@@ -3,6 +3,7 @@
 #include "goal-plan.h"
 #include "input-bridge.h"
 #include "input-touch.h"
+#include "timing-jitter.h"
 #include <stdio.h>
 /* Pinned original 0.8.2 ABI, verified by original disassembly. This adapter
  * adapts ordinary chart timing/kind/index inputs for one Judge.update and
@@ -20,14 +21,14 @@ typedef struct {unsigned char *memory;size_t line,id,kind;double start,end,saved
 typedef struct {unsigned char *notes,*live;uint32_t *indices,*order,*rank;size_t count,notes_len,start,end;bool reordered;} LabChartRow;
 typedef struct {
  void *judge,*lines,*judge_rows;size_t row_count;int n;uint32_t seed;uint64_t generation;double last_time;
- LabChartNote *notes;LabChartRow *rows;unsigned char *selected,*types;ControlConfig config;PlanEstimate estimate;
+ LabChartNote *notes;LabChartRow *rows;unsigned char *selected,*types;double *timing_offsets;ControlConfig config;PlanEstimate estimate;LabTimingEstimate timing_estimate;
  const LabTouchApi *touch;LabTouchContact *contacts;LabTouchScope touch_scope;bool cleanup_failed;void *frame_resource;uint32_t saved_autoplay;
  LabInputOwner input;bool valid,controlled,in_frame,inspected,expired_miss;unsigned fired;unsigned char first_state;char error[160];
 } LabPlan;
 static void lab_plan_release(LabPlan *p){
  if(!p)return;
  if(p->rows)for(size_t i=0;i<p->row_count;i++){free(p->rows[i].order);free(p->rows[i].rank);}
- free(p->rows);free(p->notes);free(p->selected);free(p->types);free(p->contacts);memset(p,0,sizeof(*p));
+ free(p->rows);free(p->notes);free(p->selected);free(p->types);free(p->contacts);free(p->timing_offsets);memset(p,0,sizeof(*p));
 }
 static int lab_compare_notes(const void *aa,const void *bb){const LabChartNote *a=aa,*b=bb;if(a->start<b->start)return -1;if(a->start>b->start)return 1;if(a->line!=b->line)return a->line<b->line?-1:1;return a->id<b->id?-1:a->id>b->id;}
 static int lab_fail(LabPlan *p,const char *message){snprintf(p->error,sizeof(p->error),"%s",message);return 0;}
@@ -63,7 +64,11 @@ static bool lab_plan_collect(LabPlan *p,void *judge,void *chart,const ControlCon
  p->config=*cfg;p->controlled=true;
  PlanTimeline timeline=plan_timeline_windows(timing,p->types,p->n,.12f*speed,.221f*speed,.19f*speed,p->seed);free(timing);
  if(!timeline.events)return lab_fail(p,"谱面判定时间计划无法创建");
- make_profile_timed(cfg,p->n,p->seed,p->selected,&p->estimate,p->types,&timeline);free(timeline.events);p->valid=true;return true;
+ make_profile_timed(cfg,p->n,p->seed,p->selected,&p->estimate,p->types,&timeline);
+ p->timing_offsets=calloc((size_t)p->n+1,sizeof(double));if(!p->timing_offsets||!lab_timing_plan(p->selected,p->n,cfg->timing_tenths_ms,p->seed,p->timing_offsets,&p->timing_estimate)){free(timeline.events);return lab_fail(p,"命中误差计划无法创建");}
+ if(cfg->timing_tenths_ms>0){for(int i=0;i<timeline.length;i++)if(timeline.events[i].judgment==0){int id=timeline.events[i].note;LabChartNote *note=p->notes+id;double at=note->start+p->timing_offsets[id]*speed;timeline.events[i].time=(float)(note->kind==1?fmax(note->end,at):at);}qsort(timeline.events,(size_t)timeline.length,sizeof(PlanEvent),compare_events);estimate_timed(p->selected,p->n,&p->estimate,&timeline);}
+ free(timeline.events);
+ p->valid=true;return true;
 }
 static _Thread_local LabChartRow *lab_sort_row;
 static int lab_compare_indices(const void *aa,const void *bb){uint32_t a,b;memcpy(&a,aa,4);memcpy(&b,bb,4);double ta=lab_f64(lab_sort_row->notes+(size_t)a*LAB_NOTE_BYTES,0x140),tb=lab_f64(lab_sort_row->notes+(size_t)b*LAB_NOTE_BYTES,0x140);if(ta<tb)return -1;if(ta>tb)return 1;return a<b?-1:a>b;}
@@ -107,13 +112,13 @@ static bool lab_frame_begin(LabPlan *p,void *judge,void *resource,void *chart,bo
   /* Original touch matching subtracts EARLY_OFFSET=.07 from late offsets.
    * +.12 would become .05 (Perfect); +.19 becomes .12 (Good). */
   double good_offset=plan_good_early(judgment,i,p->seed)?-.12:.19;
-  double event=n->start;if(judgment==1)event+=.221*speed;else if(judgment==3)event-=.19*speed;else if(plan_is_good(judgment))event+=good_offset*speed;
+  double perfect_offset=p->timing_offsets[i];double event=n->start;if(judgment==1)event+=.221*speed;else if(judgment==3)event-=.19*speed;else if(plan_is_good(judgment))event+=good_offset*speed;else event+=perfect_offset*speed;
   bool ready=time>=event;if(judgment==1&&ready)p->expired_miss=true;
   if(n->start>time+.25*speed&&!ready)continue;
   n->saved_time=lab_f64(n->memory,0x140);n->saved_kind=lab_size(n->memory,0);n->changed=true;
   if(judgment!=1&&(n->kind!=1||judgment==3))lab_put_size(n->memory,0,0); // ordinary chart input classification; never a score-field write
   if(!ready)lab_put_f64(n->memory,0x140,time+.221*speed);
-  else if(judgment!=1){double diff=judgment==3?-.19:plan_is_good(judgment)?good_offset:0;lab_put_f64(n->memory,0x140,time-diff*speed);n->contact_ready=true;p->fired++;}
+  else if(judgment!=1){double diff=judgment==3?-.19:plan_is_good(judgment)?good_offset:perfect_offset;lab_put_f64(n->memory,0x140,time-diff*speed);n->contact_ready=true;p->fired++;}
  }
  for(size_t i=0;i<p->row_count;i++){
   LabChartRow *r=p->rows+i;r->start=lab_size(r->live,24);if(r->start>r->count){lab_frame_end(p);memcpy((char*)resource+0x88,&mods,4);((unsigned char*)resource)[0xbc]=old_keyboard;return lab_fail(p,"谱面判定游标越界");}

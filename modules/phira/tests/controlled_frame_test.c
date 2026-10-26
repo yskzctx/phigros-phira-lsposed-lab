@@ -42,5 +42,11 @@ int main(void){
  for(int k=0;k<3;k++){notes[k*0x188+0x30]=0;}
  count(rows,24,0);memset(cell,0,sizeof(cell));touch_cell();plan.touch=&touch;cfg=(ControlConfig){0};mods=0;memcpy(resource+0x88,&mods,4);real(resource,0x9e0,1.02);int before_events=touch_events;
  assert(lab_frame_begin(&plan,judge,resource,chart,true,&cfg,123,&api));assert(plan.controlled&&plan.fired==1&&touch_events==before_events+2);memcpy(&mods,resource+0x88,4);assert(mods==0);assert(lab_size(cell,24)==2);lab_frame_end(&plan);assert(!plan.cleanup_failed&&lab_size(cell,24)==0);memcpy(&mods,resource+0x88,4);assert(mods==0);
- lab_plan_release(&plan);puts("PASS: Early/Late Good, Bad lifecycle, original score canary, custom AP without native autoplay, and contacts removed before UI");
+ lab_plan_release(&plan);
+ for(int k=0;k<3;k++){notes[k*0x188+0x30]=0;count(notes+k*0x188,0,0);}count(rows,24,0);memset(cell,0,sizeof(cell));touch_cell();plan.touch=&touch;cfg=(ControlConfig){.timing_tenths_ms=205};real(resource,0x9e0,1.20);
+ assert(lab_frame_begin(&plan,judge,resource,chart,true,&cfg,123,&api));assert(plan.fired==1&&plan.config.timing_tenths_ms==205);double offset=1.20-lab_f64(notes,0x140);assert(fabs(offset-plan.timing_offsets[1])<1e-9&&fabs(offset)<=.075&&fabs(offset)>0);assert(fabs(plan.timing_estimate.expected-.0205)<1e-9);lab_frame_end(&plan);assert(lab_f64(notes,0x140)==1&&!memcmp(protected_before,judge+0x58,sizeof(protected_before)));
+ cfg.timing_tenths_ms=0;real(resource,0x9e0,1.21);assert(lab_frame_begin(&plan,judge,resource,chart,true,&cfg,123,&api));assert(plan.config.timing_tenths_ms==205);lab_frame_end(&plan);
+ speed=2;memcpy(resource+0x9c,&speed,4);real(resource,0x9e0,1.22);assert(lab_frame_begin(&plan,judge,resource,chart,true,&cfg,123,&api));assert(fabs((1.22-lab_f64(notes,0x140))/speed-plan.timing_offsets[1])<1e-9);lab_frame_end(&plan);speed=1;memcpy(resource+0x9c,&speed,4);
+ memcpy(unchanged,resource,sizeof(resource));assert(lab_frame_begin(&plan,judge,resource,chart,false,&cfg,123,&api));lab_frame_end(&plan);assert(!memcmp(unchanged,resource,sizeof(resource)));assert(!memcmp(protected_before,judge+0x58,sizeof(protected_before)));
+ lab_plan_release(&plan);puts("PASS: Early/Late Good, Bad lifecycle, original score canary, custom AP, scoped input, timing offsets, frozen per-chart setting and disable restoration");
 }

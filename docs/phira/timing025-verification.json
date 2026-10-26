@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-26",
+  "original_native_sha256": "5c2c484265d05b36e792fba328244b195360e799da296292a569446b42dee782",
+  "original_settlement_formula": "round(1000*sqrt(sum(diff_seconds^2)/num_of_notes)); original commit substitutes0.25s for Miss",
+  "evidence": "read-only original commit/result decompilation; open ending UI consumes res.std; no protected memory writes or new result hook",
+  "unit_and_component_tests": [
+    "RMS0..75ms in2.5ms steps, small and large note counts",
+    "20000-note early/late distribution and Perfect bounds",
+    "rule priority and unreachable target with no Perfect notes",
+    "actual frame adapter injects nonzero offsets and restores note metadata",
+    "speed normalization, per-chart frozen configuration, disabled input and protected-memory canary",
+    "decimal parser and save/load/reset UI, blank score in accuracy mode, unsaved edits retained"
+  ],
+  "public_source_matches_dex_native_html": true,
+  "browser": {
+    "tests": [
+      {
+        "width": 360,
+        "passed": true
+      },
+      {
+        "width": 680,
+        "passed": true
+      }
+    ],
+    "android_webview_tested": false,
+    "device_tested": false
+  },
+  "original_full_judge_executed": false,
+  "device_tested": false
+}

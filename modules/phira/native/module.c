@@ -29,10 +29,10 @@ static LabInputApi input_api;
 static LabTouchApi touch_api;static void *anim_value_original;
 extern float lab_anim_value(const void*,void*);
 static float note_x_value(const void *animation){return lab_anim_value(animation,anim_value_original);}
-typedef struct {int counts[4],combo,max_combo,early,late;uint64_t generation;} Observed;
+typedef struct {int counts[4],combo,max_combo,early,late;double square;uint64_t generation;} Observed;
 static Observed observed;
 static _Thread_local void *observed_judge;
-static jint controls_status[21];static char controls_detail[192];
+static jint controls_status[21];static char controls_detail[512];
 static void (*judge_original)(void*,void*,void*,void*);
 static void (*commit_original)(void*,unsigned,double);
 /* Observation only: forward every original parameter unchanged and let the
@@ -41,6 +41,7 @@ static void commit_observer(void *inner,unsigned what,double diff){
  commit_original(inner,what,diff);
  if(!observed_judge||inner!=(unsigned char*)observed_judge+0x58||what>3)return;
  observed.counts[what]++;
+ double timing=what==3?.25:diff;if(isfinite(timing))observed.square+=timing*timing;
  if(what<2){observed.combo++;if(observed.combo>observed.max_combo)observed.max_combo=observed.combo;}else observed.combo=0;
  if(what==1){if(diff<0)observed.early++;else observed.late++;}
 }
@@ -50,7 +51,9 @@ static void publish_controls(void){
  int score=n?(int)floor((.9*accuracy+.1*(double)observed.max_combo/n)*1000000.+.5):0;
  PlanEstimate *e=&plan.estimate;
  jint v[]={atomic_load(&ready),atomic_load(&enabled),n,e->good+e->bad+e->miss,observed.counts[1]+observed.counts[2]+observed.counts[3],(jint)atomic_load(&config_revision),e->score,e->accuracy,e->miss,e->good,e->bad,n>0&&total>=n,score,(int)floor(accuracy*10000.+.5),observed.counts[0],observed.counts[1],observed.counts[2],observed.counts[3],observed.max_combo,observed.early,observed.late};
- pthread_mutex_lock(&status_lock);memcpy(controls_status,v,sizeof(v));snprintf(controls_detail,sizeof(controls_detail),"%s",plan.error);pthread_mutex_unlock(&status_lock);
+ pthread_mutex_lock(&status_lock);memcpy(controls_status,v,sizeof(v));
+ if(plan.valid&&plan.config.timing_tenths_ms>0)snprintf(controls_detail,sizeof(controls_detail),"%s%s误差目标 ±%.1f ms · 计划 ±%.1f ms · 已判定观测 ±%.1f ms%s",plan.error,plan.error[0]?"\n":"",plan.config.timing_tenths_ms/10.,plan.timing_estimate.expected*1000.,total?sqrt(observed.square/total)*1000.:0.,plan.timing_estimate.reachable?"":"（规则优先，当前目标无法精确达到）");
+ else snprintf(controls_detail,sizeof(controls_detail),"%s",plan.error);pthread_mutex_unlock(&status_lock);
 }
 static void judge_update(void *judge,void *resource,void *chart,void *bad_notes){
  if(!atomic_load(&armed)){judge_original(judge,resource,chart,bad_notes);return;}
@@ -103,12 +106,12 @@ JNIEXPORT void JNICALL Java_com_phira_lab_LabNative_disarm(JNIEnv *env,jclass ty
 JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_setEnabled(JNIEnv *env,jclass type,jboolean value){(void)env;(void)type;if(!atomic_load(&ready)||!atomic_load(&armed))return JNI_FALSE;atomic_store(&enabled,value==JNI_TRUE);return JNI_TRUE;}
 JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_setTemporaryRoot(JNIEnv *env,jclass type,jstring directory){(void)type;if(!directory||!atomic_load(&armed))return JNI_FALSE;const char *p=(*env)->GetStringUTFChars(env,directory,NULL);if(!p)return JNI_FALSE;size_t n=strnlen(p,1024);bool okay=n>0&&n<1024&&p[0]=='/'&&!strstr(p,"..")&&!strchr(p,'\n');if(okay)okay=setenv("TMPDIR",p,1)==0;(*env)->ReleaseStringUTFChars(env,directory,p);return okay?JNI_TRUE:JNI_FALSE;}
 JNIEXPORT jintArray JNICALL Java_com_phira_lab_LabNative_status(JNIEnv *env,jclass type){(void)type;jint v[]={atomic_load(&ready),atomic_load(&armed),atomic_load(&enabled),atomic_load(&tainted),(jint)atomic_load(&frames),atomic_load(&stage),atomic_load(&early_frame)};jintArray out=(*env)->NewIntArray(env,7);if(out)(*env)->SetIntArrayRegion(env,out,0,7,v);return out;}
-JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_configure(JNIEnv *env,jclass type,jint mode,jint target,jint accuracy,jintArray words){
- (void)type;if(mode<0||mode>2||target<0||target>1000000||accuracy<0||accuracy>10000||!words)return JNI_FALSE;
+JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_configure(JNIEnv *env,jclass type,jint mode,jint target,jint accuracy,jint timing,jintArray words){
+ (void)type;if(mode<0||mode>2||target<0||target>1000000||accuracy<0||accuracy>10000||timing<0||timing>750||!words)return JNI_FALSE;
  int length=(*env)->GetArrayLength(env,words);if(length<1||length>MAX_CONFIG_WORDS)return JNI_FALSE;
  jint packed[MAX_CONFIG_WORDS];(*env)->GetIntArrayRegion(env,words,0,length,packed);if((*env)->ExceptionCheck(env))return JNI_FALSE;
  bool typed=packed[0]==-168;if(typed&&length<2)return JNI_FALSE;
- ControlConfig c={.mode=mode,.target=target,.accuracy=accuracy,.rule_count=packed[typed?1:0]};if(c.rule_count<0||c.rule_count>MAX_RULES)return JNI_FALSE;int cursor=typed?2:1;
+ ControlConfig c={.mode=mode,.target=target,.accuracy=accuracy,.timing_tenths_ms=timing,.rule_count=packed[typed?1:0]};if(c.rule_count<0||c.rule_count>MAX_RULES)return JNI_FALSE;int cursor=typed?2:1;
  for(int i=0;i<c.rule_count;i++){
   if(cursor+(typed?7:6)>length)return JNI_FALSE;
   NoteRule *r=&c.rules[i];r->judgment=packed[cursor++];r->position=packed[cursor++];r->start=packed[cursor++];r->end=packed[cursor++];r->count=packed[cursor++];if(typed)r->note_type=packed[cursor++];r->length=packed[cursor++];

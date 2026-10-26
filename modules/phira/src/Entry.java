@@ -24,7 +24,7 @@ public final class Entry implements IXposedHookLoadPackage,IXposedHookZygoteInit
   phase="核对游戏原生库";String actual=hash(host.getApplicationInfo());if(!HASH.equals(actual)){failure="游戏原生库不匹配（SHA256前12位："+(actual.length()>=12?actual.substring(0,12):"未找到")+"），未套用偏移";return;}
   phase="注册模块原生回调";
   quad=EarlyNative.loadAndInitialize(()->System.loadLibrary("phira_lab"),"quad_native.QuadNative",loader);
-  phase="读取判定配置";GoalControls.apply(GoalControls.load(host));
+  phase="读取判定配置";GoalControls.apply(GoalControls.load(host),GoalControls.timing(host));
   phase="安装路径回调";
   XposedHelpers.findAndHookMethod(quad,"setDataPath",String.class,new XC_MethodHook(){protected void beforeHookedMethod(MethodHookParam p)throws Throwable{
    pathCalls++;phase="收到原版存档路径调用";

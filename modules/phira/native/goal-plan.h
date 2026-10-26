@@ -9,7 +9,7 @@
 #define MAX_RULES 16
 #define MAX_CONFIG_WORDS (2+MAX_RULES*(7+MAX_INDICES))
 typedef struct {int judgment,position,start,end,count,length,note_type;int indices[MAX_INDICES];} NoteRule;
-typedef struct {int mode,target,accuracy,rule_count;NoteRule rules[MAX_RULES];} ControlConfig;
+typedef struct {int mode,target,accuracy,rule_count,timing_tenths_ms;NoteRule rules[MAX_RULES];} ControlConfig;
 typedef struct {int score,accuracy,perfect,good,bad,miss,max_combo;} PlanEstimate;
 typedef struct {float start,end;} PlanTiming;
 typedef struct {float time;int note,judgment;} PlanEvent;

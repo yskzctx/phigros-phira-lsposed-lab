@@ -19,19 +19,19 @@ public final class GoalPanel {
  }
  private void handle(String action,String payload){if(destroyed)return;try{
   JSONObject p=new JSONObject(payload);boolean reload=false;
-  if(action.equals("ready")){GoalControls.apply(GoalControls.load(activity));reload=true;}
-  else if(action.equals("save")){ControlsConfig c=ControlsConfig.parse(p.getInt("mode"),p.optString("score",""),p.optString("accuracy",""),p.optString("rules",""));GoalControls.save(activity,c);publish(true,"已保存，下次开始谱面时使用新计划");return;}
-  else if(action.equals("reset")){GoalControls.save(activity,ControlsConfig.parse(0,"1000000","100",""));publish(true,"已重置目标与规则，下局生效");return;}
+  if(action.equals("ready")){GoalControls.apply(GoalControls.load(activity),GoalControls.timing(activity));reload=true;}
+  else if(action.equals("save")){ControlsConfig c=ControlsConfig.parse(p.getInt("mode"),p.optString("score",""),p.optString("accuracy",""),p.optString("rules",""));GoalControls.save(activity,c,TimingSetting.parse(p.optString("timingMs","0")));publish(true,"已保存，下次开始谱面时使用新计划");return;}
+  else if(action.equals("reset")){GoalControls.save(activity,ControlsConfig.parse(0,"1000000","100",""),0);publish(true,"已重置目标与规则，下局生效");return;}
   else if(action.equals("auto")){
    int[] s=LabNative.safeStatus();if(!Entry.storageReady||Entry.root==null||s[0]!=1||s[1]!=1)throw new IllegalStateException(Entry.connection());boolean on=p.getBoolean("enabled");
-   if(on)LabStore.beginOriginalAutoplay(Entry.root);GoalControls.apply(GoalControls.load(activity));if(!LabNative.setEnabled(on))throw new IllegalStateException("原生接口未就绪");
+   if(on)LabStore.beginOriginalAutoplay(Entry.root);GoalControls.apply(GoalControls.load(activity),GoalControls.timing(activity));if(!LabNative.setEnabled(on))throw new IllegalStateException("原生接口未就绪");
   }else if(action.equals("all-ap")||action.equals("restore")){
    if(!Entry.storageReady||Entry.root==null)throw new IllegalStateException("原版存档备份未就绪");LabStore.queueOriginalHistory(Entry.root,action.equals("all-ap")?"all-ap":"restore");publish(false,"历史操作已保存，完全退出并冷启动后生效");return;
   }else throw new IllegalArgumentException("当前模块不支持此操作");
   publish(reload,null);
  }catch(Throwable e){publish(false,e.getMessage()==null?e.getClass().getSimpleName():e.getMessage());}}
  private void publish(boolean reload,String message){if(destroyed)return;try{
-  ControlsConfig c=GoalControls.load(activity);int[] s=GoalControls.status();JSONObject data=new JSONObject();data.put("auto",s[1]==1).put("mode",c.mode).put("score",Integer.toString(c.target)).put("accuracy",new BigDecimal(c.accuracy).divide(new BigDecimal(100)).toPlainString()).put("reload",reload).put("rksTarget","").put("skin","由 Phira 原版管理");
+  ControlsConfig c=GoalControls.load(activity);int[] s=GoalControls.status();JSONObject data=new JSONObject();data.put("timingMs",TimingSetting.format(GoalControls.timing(activity)));data.put("auto",s[1]==1).put("mode",c.mode).put("score",Integer.toString(c.target)).put("accuracy",new BigDecimal(c.accuracy).divide(new BigDecimal(100)).toPlainString()).put("reload",reload).put("rksTarget","").put("skin","由 Phira 原版管理");
   JSONArray rules=new JSONArray();for(ControlsConfig.Rule r:c.rules){StringBuilder list=new StringBuilder();for(int id:r.indices){if(list.length()>0)list.append(',');list.append(id);}rules.put(new JSONObject().put("judgment",r.judgment).put("position",r.position).put("start",r.start).put("end",r.end).put("count",r.count).put("indices",list.toString()).put("noteType",r.noteType));}data.put("rules",rules);
   String runtime=Entry.connection();String detail="";try{detail=LabNative.controlDetail();}catch(UnsatisfiedLinkError ignored){}
   if(s[0]==1&&s[1]==1&&s[2]>0){runtime="音符 "+s[2]+" · 计划 "+s[6]+" 分 / "+new BigDecimal(s[7]).divide(new BigDecimal(100)).toPlainString()+"% · P "+(s[2]-s[8]-s[9]-s[10])+" G "+s[9]+" B "+s[10]+" M "+s[8];runtime+="\n"+(s[11]==1?"完整判定事件统计":"模块启用期间事件统计")+"：P "+s[14]+" G "+s[15]+" B "+s[16]+" M "+s[17]+" · 最大连击 "+s[18]+" · Good早/晚 "+s[19]+"/"+s[20]+" · 推算 "+s[12]+" 分。最终以原版结算为准。";}
