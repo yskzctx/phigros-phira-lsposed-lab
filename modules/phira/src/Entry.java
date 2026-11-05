@@ -1,7 +1,7 @@
 package com.phira.lab;
 import android.app.*;import android.content.*;import android.content.pm.*;import android.os.*;import java.io.*;import java.security.*;import java.util.*;import java.util.zip.*;import de.robv.android.xposed.*;import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public final class Entry implements IXposedHookLoadPackage,IXposedHookZygoteInit {
- public static final String TARGET="org.flos.phira";private static final String HASH="5c2c484265d05b36e792fba328244b195360e799da296292a569446b42dee782";
+ public static final String TARGET="org.flos.phira";private static final String HASH="823832db62f385af5238aef18831f1562d8037e319cbac183c276376cc4d98da";
  static File root;static Class<?> quad;static volatile boolean storageReady;static String modulePath;static volatile int pathCalls,armAttempts;static volatile String failure,phase="等待 Application.attach";
  public void initZygote(StartupParam p){modulePath=p.modulePath;}
  static String connection(){return DiagnosticState.report(storageReady,LabNative.safeStatus(),failure,phase,pathCalls,armAttempts);}
@@ -19,7 +19,7 @@ public final class Entry implements IXposedHookLoadPackage,IXposedHookZygoteInit
  }
  private static void prepare(Context host,Application app,ClassLoader loader)throws Exception{
   phase="核对游戏版本";PackageInfo info=host.getPackageManager().getPackageInfo(TARGET,0);long code=Build.VERSION.SDK_INT>=28?info.getLongVersionCode():info.versionCode;
-  if(code!=39){failure="游戏版本不匹配："+info.versionName+"（"+code+"），需要0.8.2（39）";return;}
+  if(code!=40){failure="游戏版本不匹配："+info.versionName+"（"+code+"），需要0.8.3（40）";return;}
   if(!android.os.Process.is64Bit()||!Arrays.asList(Build.SUPPORTED_ABIS).contains("arm64-v8a")){failure="当前游戏进程不是 arm64";return;}
   phase="核对游戏原生库";String actual=hash(host.getApplicationInfo());if(!HASH.equals(actual)){failure="游戏原生库不匹配（SHA256前12位："+(actual.length()>=12?actual.substring(0,12):"未找到")+"），未套用偏移";return;}
   phase="注册模块原生回调";

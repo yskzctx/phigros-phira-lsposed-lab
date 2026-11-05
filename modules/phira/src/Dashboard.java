@@ -2,7 +2,7 @@ package com.phira.lab;
 import android.app.*;import android.content.*;import android.content.res.ColorStateList;import android.graphics.Typeface;import android.graphics.drawable.GradientDrawable;import android.os.*;import android.view.*;import android.widget.*;import java.text.DateFormat;import java.util.Date;
 /** Native light dashboard. Scope selection alone never sets the connection card to active. */
 public class Dashboard extends Activity {
- protected String game(){return "Phira";}protected String target(){return "org.flos.phira";}protected String expected(){return "Phira 0.8.2（39）· arm64";}
+ protected String game(){return "Phira";}protected String target(){return "org.flos.phira";}protected String expected(){return "Phira 0.8.3（40）· arm64";}
  private TextView state,stamp;private final Handler handler=new Handler(Looper.getMainLooper());
  private final Runnable refresh=new Runnable(){public void run(){refreshStatus();handler.postDelayed(this,1000);}};
  int dp(int v){return Math.round(v*getResources().getDisplayMetrics().density);}
@@ -19,7 +19,7 @@ public class Dashboard extends Activity {
   LinearLayout network=card(page);heading(network,"保留宿主登录与联网");body(network,"模块不统一断网，也不额外阻断成绩上传。自动游玩和规则干预成绩可按原版流程尝试上传，是否接受取决于原版资格判断与服务器；不会伪造上传成功。");body(network,"本地记录恢复不会撤回已上传记录。本模块通过原版触摸输入与判定流程工作，保留用户原版模式选择及原版成绩资格判断，不保证上传被接受。");
   LinearLayout notice=card(page);heading(notice,"免责声明与使用范围");body(notice,UsageNotice.TEXT);
   extraCards(page);
-  LinearLayout setup=card(page);heading(setup,"设置与恢复");action(setup,"打开 LSPosed",false,()->{Intent i=getPackageManager().getLaunchIntentForPackage("org.lsposed.manager");if(i!=null)startActivity(i);else new AlertDialog.Builder(this).setTitle("选择作用域").setMessage("请从你的 LSPosed 管理器入口打开，在模块中仅勾选 "+game()+"。管理器包名可能因安装方式而不同。").setPositiveButton("知道了",null).show();});body(setup,"当前直接使用原版存档。修改前在宿主内部 phira-module-backups 自动备份；自动会话的成绩恢复在下次启用模块冷启动时执行。不要清除游戏数据。");body(setup,"0.2.5 时间误差候选 · 自研自动游玩与原版存档，需确认本次修复的实际效果。");
+  LinearLayout setup=card(page);heading(setup,"设置与恢复");action(setup,"打开 LSPosed",false,()->{Intent i=getPackageManager().getLaunchIntentForPackage("org.lsposed.manager");if(i!=null)startActivity(i);else new AlertDialog.Builder(this).setTitle("选择作用域").setMessage("请从你的 LSPosed 管理器入口打开，在模块中仅勾选 "+game()+"。管理器包名可能因安装方式而不同。").setPositiveButton("知道了",null).show();});body(setup,"当前直接使用原版存档。修改前在宿主内部 phira-module-backups 自动备份；自动会话的成绩恢复在下次启用模块冷启动时执行。不要清除游戏数据。");body(setup,"0.2.7 / Phira 0.8.3 适配候选 · 自研自动游玩与原版存档，需确认本次修复的实际效果。");
  }
  protected void extraCards(LinearLayout page){}
  private void launch(){try{Intent i=getPackageManager().getLaunchIntentForPackage(target());if(i==null)throw new IllegalStateException("未找到目标游戏，请核对包名与安装版本");Intent reply=new Intent(this,ConnectionReport.class);int flags=PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_ONE_SHOT;if(Build.VERSION.SDK_INT>=31)flags|=PendingIntent.FLAG_MUTABLE;PendingIntent p=PendingIntent.getBroadcast(this,0,reply,flags);i.putExtra(ConnectionReport.EXTRA,p);getSharedPreferences("connection",0).edit().remove("state").remove("received").putLong("requested",System.currentTimeMillis()).apply();startActivity(i);}catch(RuntimeException e){new AlertDialog.Builder(this).setTitle("无法启动").setMessage(e.getMessage()).setPositiveButton("知道了",null).show();}}

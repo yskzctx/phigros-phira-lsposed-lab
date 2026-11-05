@@ -5,7 +5,7 @@
 #include "input-touch.h"
 #include "timing-jitter.h"
 #include <stdio.h>
-/* Pinned original 0.8.2 ABI, verified by original disassembly. This adapter
+/* Pinned original 0.8.3 ABI, verified by original disassembly. This adapter
  * adapts ordinary chart timing/kind/index inputs for one Judge.update and
  * finishes the ordinary note state after a confirmed early Bad.
  * Original input handling, FX/audio and protected score updates still run.

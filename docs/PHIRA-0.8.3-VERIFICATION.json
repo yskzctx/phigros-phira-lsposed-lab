@@ -1,0 +1,120 @@
+{
+  "host": "Phira 0.8.3 (40) official arm64",
+  "elf_sha256": "823832db62f385af5238aef18831f1562d8037e319cbac183c276376cc4d98da",
+  "functions": [
+    {
+      "name": "GAME_UPDATE",
+      "rva": "0xee9f04",
+      "bytes": 4716
+    },
+    {
+      "name": "JUDGE_UPDATE",
+      "rva": "0xf0d0f8",
+      "bytes": 13756
+    },
+    {
+      "name": "INPUT_REPEAT",
+      "rva": "0xfa0f24",
+      "bytes": 448
+    },
+    {
+      "name": "INPUT_THUNK",
+      "rva": "0xf136fc",
+      "bytes": 16
+    },
+    {
+      "name": "JUDGE_COMMIT",
+      "rva": "0xeddb0c",
+      "bytes": 644
+    },
+    {
+      "name": "OBJECT_TIME",
+      "rva": "0xf68140",
+      "bytes": 1268
+    },
+    {
+      "name": "LINE_POSITION",
+      "rva": "0xf6abd0",
+      "bytes": 352
+    },
+    {
+      "name": "LINE_ROTATION",
+      "rva": "0xf6ad30",
+      "bytes": 148
+    },
+    {
+      "name": "ANIM_VALUE",
+      "rva": "0xf99694",
+      "bytes": 280
+    },
+    {
+      "name": "SCREEN_WIDTH",
+      "rva": "0x1760cd8",
+      "bytes": 116
+    },
+    {
+      "name": "SCREEN_HEIGHT",
+      "rva": "0x1760d4c",
+      "bytes": 116
+    }
+  ],
+  "input_tls": {
+    "thunk": "0xf136fc",
+    "localkey": "0x1a73d98",
+    "thunk_prefix": "e10300aa006100d000000f91ae65ff17"
+  },
+  "actual_judge_call_sites_verified": true,
+  "original_record_schema_preserved": true,
+  "device_tested": false,
+  "integrity_bypassed": false,
+  "input_machine": {
+    "original_sha256": "823832db62f385af5238aef18831f1562d8037e319cbac183c276376cc4d98da",
+    "original_event_repeat_rva": "0xfa0f24",
+    "code_bytes": 448,
+    "original_arm64_machine_code_executed": true,
+    "cases": [
+      "first press",
+      "additional press",
+      "repeat ignored",
+      "release preserves press count",
+      "signed release delta"
+    ],
+    "context_null_valid_for_key_variants": true,
+    "ordinary_input_only": true,
+    "protected_score_memory_not_accessed": true,
+    "device_tested": false,
+    "full_judge_tested": false,
+    "gameplay_tested": false,
+    "original_touch_start_move_end_cancel": true,
+    "original_infinite_time_touch_layout_verified": true,
+    "touch_id_position_time_and_phase_verified": true,
+    "context_null_valid_for_touch_variants": true
+  },
+  "geometry_machine": {
+    "original_sha256": "823832db62f385af5238aef18831f1562d8037e319cbac183c276376cc4d98da",
+    "original_arm64_geometry_executed": true,
+    "compiled_module_rust_abi_shim_executed": true,
+    "cases": [
+      "None Option<f32> becomes zero",
+      "Some Option<f32> retains value",
+      "line position packed x0 and aspect normalization",
+      "line rotation float result",
+      "Object.set_time uses d0 and updates six animations"
+    ],
+    "protected_score_memory_not_accessed": true,
+    "device_tested": false,
+    "full_judge_tested": false,
+    "gameplay_tested": false
+  },
+  "host_regressions_passed": true,
+  "notice_java_fixture_passed": true,
+  "android_rendering_tested": false,
+  "apk": {
+    "name": "Phira-Lab-LSPosed-0.8.3-arm64-v0.2.7-TEST.apk",
+    "bytes": 152093,
+    "sha256": "21dc1421ad41af2d9c88fa2499ee58d30bdf8560870cfd87fa73900d525f6f9c",
+    "signature_verified": true,
+    "alignment_16kb": true,
+    "public_source_dex_native_html_exact": true
+  }
+}
