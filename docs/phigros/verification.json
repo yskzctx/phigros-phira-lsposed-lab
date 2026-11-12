@@ -1,9 +1,9 @@
 {
-  "module_version": "0.2.4-test",
-  "module_version_code": 7,
-  "artifact": "Phigros-Lab-LSPosed-157-arm64-v0.2.4-TEST.apk",
-  "sha256": "a77534c9e81febe3cde0ba5c7dec5183694c7b9c0d73bf17810ce7b63cb3dd32",
-  "bytes": 49544450,
+  "module_version": "0.3.0-test",
+  "module_version_code": 8,
+  "artifact": "Phigros-Lab-LSPosed-157-arm64-v0.3.0-TEST.apk",
+  "sha256": "1d034d24cdcddf06315efa7702eddfc366fb11379600a650a9aae913c6ea1dae",
+  "bytes": 49609986,
   "package": "com.phigros.lab.lsp",
   "target": "com.PigeonGames.Phigros",
   "target_version_code": 157,
@@ -13,20 +13,18 @@
   "module_forces_offline": false,
   "upload_attempts_follow_original": true,
   "original_upload_eligibility_preserved": true,
+  "random_k_rules": true,
+  "real_touch_block_toggle": true,
+  "assist_guard": true,
+  "guard_score": true,
   "device_tested": false,
   "installed": false,
   "published": false,
   "complete_feature_parity": false,
   "limitations": [
-    "Real LSPosed loading, gameplay and original upload behavior await device verification",
-    "Native chapter extended FX/audio/line colors incomplete"
+    "Phigros 4.0.1.2 profile not adapted because its APK/ELF was not available",
+    "Native chapter extended FX/audio/line colors incomplete",
+    "Framework loading, real save behavior and original upload behavior await device verification"
   ],
-  "embedded_startup_and_panel_disclaimer": true,
-  "uses_original_host_storage": true,
-  "automatic_original_data_backup": true,
-  "record_only_session_restore": true,
-  "original_package_guard_regression_fixed": true,
-  "library_load_order_replayed": true,
-  "delayed_readiness_retried": true,
-  "no_persistent_path_or_cloud_hooks": true
+  "source_rebuilt_from_public_repository": true
 }

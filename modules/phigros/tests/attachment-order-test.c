@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
-#include "../native/attachment-order.h"
+#include "../src/attachment-order.h"
 static int calls;static bool install(void *handle){assert(handle==(void*)1);calls++;return true;}
 int main(void){
  AttachOrder before={0};attachment_library(&before,(void*)1,install);assert(calls==0);attachment_prepare(&before,install);assert(before.installed&&calls==1);attachment_library(&before,(void*)1,install);assert(calls==1);

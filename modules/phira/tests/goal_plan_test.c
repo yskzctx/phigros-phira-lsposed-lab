@@ -11,5 +11,14 @@ int main(void){
  PlanTiming one[2]={{0},{1,1}};unsigned char tap[2]={0,1};t=plan_timeline_windows(one,tap,1,.12f,.221f,.19f,123);int early=0,late=0;
  for(int k=0;k<t.length;k++){if(t.events[k].judgment==4){assert(fabs(t.events[k].time-.88)<1e-6);early++;}if(t.events[k].judgment==5){assert(fabs(t.events[k].time-1.19)<1e-6);late++;}}
  assert(early==1&&late==1);free(t.events);assert(fabs(-.12+.07)<=.08);assert(fabs(-.19+.07)>.08&&fabs(-.19+.07)<.16);
+ assert(assist_rescue_chance(0,0)==0&&assist_rescue_chance(0,100)==1);assert(assist_rescue_chance(50000,0)>assist_rescue_chance(1000,0));assert(assist_rescue_chance(1000000,0)==100);
+ ControlConfig guard={.mode=1,.target=700000,.assist_guard=2};
+ make_profile(&guard,100,456,out,&e);assert(e.bad==0&&e.miss==0);
+ guard=(ControlConfig){.assist_guard=3};
+ memset(out,1,sizeof(out));out[1]=0;make_profile(&guard,100,456,out,&e);assert(e.good==0&&e.bad==0&&e.miss==0);
+ guard=(ControlConfig){.rule_count=1,.assist_guard=2};guard.rules[0]=(NoteRule){.judgment=1,.position=1,.start=1};
+ make_profile(&guard,100,456,out,&e);assert(out[1]==1&&e.miss==1); /* explicit rules stay authoritative */
+ guard=(ControlConfig){.mode=1,.target=700000,.assist_guard=0,.guard_score=900000};
+ make_profile(&guard,100,456,out,&e);assert(e.score>=900000);
  puts("PASS: Phira double precision 0.65 score, native rounding, Hold tail combo order, rule priority, type filter and accuracy goal");
 }

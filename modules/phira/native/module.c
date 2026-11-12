@@ -63,7 +63,13 @@ static void judge_update(void *judge,void *resource,void *chart,void *bad_notes)
  if(!okay)atomic_store(&enabled,false);
  if(observed.generation!=plan.generation){memset(&observed,0,sizeof(observed));observed.generation=plan.generation;}
  void *previous=observed_judge;observed_judge=okay&&requested?judge:NULL;
+ LabTouchExclusion exclusion={0};bool excluded=false;
+ if(okay&&requested&&frame_config.block_touch){
+  excluded=lab_touch_exclude_begin(&touch_api,&plan.touch_scope,&exclusion);
+  if(!excluded)atomic_store(&enabled,false);
+ }
  judge_original(judge,resource,chart,bad_notes);
+ if(excluded&&!lab_touch_exclude_end(&exclusion))atomic_store(&enabled,false);
  observed_judge=previous;lab_frame_end(&plan);if(plan.cleanup_failed)atomic_store(&enabled,false);publish_controls();
 }
 static uintptr_t (*game_original)(void*,void*);
@@ -106,12 +112,12 @@ JNIEXPORT void JNICALL Java_com_phira_lab_LabNative_disarm(JNIEnv *env,jclass ty
 JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_setEnabled(JNIEnv *env,jclass type,jboolean value){(void)env;(void)type;if(!atomic_load(&ready)||!atomic_load(&armed))return JNI_FALSE;atomic_store(&enabled,value==JNI_TRUE);return JNI_TRUE;}
 JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_setTemporaryRoot(JNIEnv *env,jclass type,jstring directory){(void)type;if(!directory||!atomic_load(&armed))return JNI_FALSE;const char *p=(*env)->GetStringUTFChars(env,directory,NULL);if(!p)return JNI_FALSE;size_t n=strnlen(p,1024);bool okay=n>0&&n<1024&&p[0]=='/'&&!strstr(p,"..")&&!strchr(p,'\n');if(okay)okay=setenv("TMPDIR",p,1)==0;(*env)->ReleaseStringUTFChars(env,directory,p);return okay?JNI_TRUE:JNI_FALSE;}
 JNIEXPORT jintArray JNICALL Java_com_phira_lab_LabNative_status(JNIEnv *env,jclass type){(void)type;jint v[]={atomic_load(&ready),atomic_load(&armed),atomic_load(&enabled),atomic_load(&tainted),(jint)atomic_load(&frames),atomic_load(&stage),atomic_load(&early_frame)};jintArray out=(*env)->NewIntArray(env,7);if(out)(*env)->SetIntArrayRegion(env,out,0,7,v);return out;}
-JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_configure(JNIEnv *env,jclass type,jint mode,jint target,jint accuracy,jint timing,jintArray words){
- (void)type;if(mode<0||mode>2||target<0||target>1000000||accuracy<0||accuracy>10000||timing<0||timing>750||!words)return JNI_FALSE;
+JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_configure(JNIEnv *env,jclass type,jint mode,jint target,jint accuracy,jint timing,jboolean block_touch,jint assist_guard,jint guard_score,jintArray words){
+ (void)type;if(mode<0||mode>2||target<0||target>1000000||accuracy<0||accuracy>10000||timing<0||timing>750||assist_guard<0||assist_guard>3||guard_score<0||guard_score>1000000||!words)return JNI_FALSE;
  int length=(*env)->GetArrayLength(env,words);if(length<1||length>MAX_CONFIG_WORDS)return JNI_FALSE;
  jint packed[MAX_CONFIG_WORDS];(*env)->GetIntArrayRegion(env,words,0,length,packed);if((*env)->ExceptionCheck(env))return JNI_FALSE;
  bool typed=packed[0]==-168;if(typed&&length<2)return JNI_FALSE;
- ControlConfig c={.mode=mode,.target=target,.accuracy=accuracy,.timing_tenths_ms=timing,.rule_count=packed[typed?1:0]};if(c.rule_count<0||c.rule_count>MAX_RULES)return JNI_FALSE;int cursor=typed?2:1;
+ ControlConfig c={.mode=mode,.target=target,.accuracy=accuracy,.timing_tenths_ms=timing,.block_touch=block_touch==JNI_TRUE,.assist_guard=assist_guard,.guard_score=guard_score,.rule_count=packed[typed?1:0]};if(c.rule_count<0||c.rule_count>MAX_RULES)return JNI_FALSE;int cursor=typed?2:1;
  for(int i=0;i<c.rule_count;i++){
   if(cursor+(typed?7:6)>length)return JNI_FALSE;
   NoteRule *r=&c.rules[i];r->judgment=packed[cursor++];r->position=packed[cursor++];r->start=packed[cursor++];r->end=packed[cursor++];r->count=packed[cursor++];if(typed)r->note_type=packed[cursor++];r->length=packed[cursor++];

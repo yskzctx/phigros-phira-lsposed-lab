@@ -17,6 +17,7 @@
 <details id="network-policy" class="card"><summary>离线修改版 · 仅限本地 · 不可登录账号</summary><p class="muted">不可登录账号，不提供排行榜、云存档或其他线上操作。此应用不声明网络权限。</p></details>
 <section id="play" class="page active">
  <div class="card"><div class="row between"><label class="switch"><input id="auto" type="checkbox">自动游玩</label><span class="pill" id="auto-label">关闭</span></div><p class="muted">冷启动默认关闭。自动会话成绩在下次冷启动恢复。</p></div>
+ <div class="card"><label class="switch"><input id="block-touch" type="checkbox" checked>自动游玩时屏蔽真实触摸</label><p class="muted">关闭后，自动游玩仍输入，但手指触摸继续交给原版判定。</p><label class="field"><span>成绩保护</span><select id="assist-guard"><option value="0">关闭</option><option value="1">辅助 S</option><option value="2">辅助 FC</option><option value="3">辅助 AT</option></select></label><label class="field"><span>额外保护分数 · 0 为关闭</span><input id="guard-score" type="text" inputmode="numeric" value="0" maxlength="7" placeholder="例如 920000"></label><p class="muted">显式规则优先。目标规划会把即将失去 S／FC／AT 或保护分数的 Bad／Miss 改为 Good／Perfect；离目标越远，越倾向直接救成 Perfect。</p><button type="button" id="random-rule">随机 K 个音符 · 指定判定</button></div>
  <div class="card"><h2>这局怎么打</h2><div class="mode" role="group" aria-label="自动游玩目标"><button data-mode="0" class="active">默认 AP</button><button data-mode="1">目标分数</button><button data-mode="2">目标准确率</button></div>
  <label class="field hidden" id="score-field"><span>目标分数 · 0～1000000</span><input id="score" type="text" inputmode="numeric" value="900000" placeholder="例如 900000" maxlength="7"></label>
  <label class="field hidden" id="acc-field"><span>目标准确率 · 0～100%，支持两位小数</span><input id="accuracy" type="text" inputmode="decimal" value="90" placeholder="例如 90.25" maxlength="6"></label>
@@ -61,7 +62,8 @@ function renderRules(){let list=$('rules-list');list.replaceChildren();$('rule-c
  if([1,2,5].includes(+r.position))grid.append(field('N · 起始编号',r.start,'start',i));if(+r.position===2)grid.append(field('M · 结束编号',r.end,'end',i));if([4,5].includes(+r.position))grid.append(field('K · 数量',r.count,'count',i));if(+r.position===3)grid.append(field('编号 · 例如 10,25,100',r.indices,'indices',i));card.append(grid);list.append(card)});$('add').disabled=rules.length>=16}
 $('add').onclick=()=>{rules.push(blankRule());renderRules();mark()};
 function encoded(){return rules.map(r=>[r.judgment,r.position,r.start||'1',r.end||'1',r.count||'1',r.indices||'',r.noteType||0].join(':')).join(';')}
-$('save').onclick=()=>send('save',{mode,score:$('score').value,accuracy:$('accuracy').value,rules:encoded(),timingMs:$('timing-ms').value});
+$('save').onclick=()=>send('save',{mode,score:$('score').value,accuracy:$('accuracy').value,rules:encoded(),timingMs:$('timing-ms').value,blockTouch:$('block-touch').checked,assistGuard:+$('assist-guard').value,guardScore:+($('guard-score').value||'0')});
+$('random-rule').onclick=()=>{rules.push({judgment:1,position:4,noteType:0,start:'1',end:'1',count:'8',indices:''});renderRules();mark()};
 $('skin-open').onclick=()=>send('skin-open');
 $('chapter-open').onclick=()=>send('chapter-open');
 $('timing-ms').oninput=mark;
@@ -69,7 +71,7 @@ $('reset').onclick=()=>{$('timing-ms').value='0';setMode(0);rules=[];$('score').
 $('auto').onchange=()=>{send('auto',{enabled:$('auto').checked});if(hasBridge)$('auto').disabled=true};
 $('rks-apply').onclick=()=>send('rks',{target:$('rks').value});$('all-ap').onclick=()=>send('all-ap');$('restore').onclick=()=>send('restore');
 window.receive=function(s){$('auto').checked=!!s.auto;$('auto').disabled=false;$('auto-label').textContent=s.auto?'开启':'关闭';$('skin-state').textContent=s.skin||'默认皮肤';
- if(!initial||s.reload){$('timing-ms').value=s.timingMs||'0';initial=true;dirty=false;setMode(s.mode||0);$('score').value=s.score;$('accuracy').value=s.accuracy;rules=(s.rules||[]).map(r=>({...r,noteType:r.noteType||0}));renderRules();$('rks').value=s.rksTarget||'';showDirty()}
+ if(!initial||s.reload){$('timing-ms').value=s.timingMs||'0';$('block-touch').checked=s.blockTouch!==false;$('assist-guard').value=String(s.assistGuard||0);$('guard-score').value=String(s.guardScore||0);initial=true;dirty=false;setMode(s.mode||0);$('score').value=s.score;$('accuracy').value=s.accuracy;rules=(s.rules||[]).map(r=>({...r,noteType:r.noteType||0}));renderRules();$('rks').value=s.rksTarget||'';showDirty()}
  let text=s.runtime||'在选曲页保存，下局使用新设置。';$('runtime').replaceChildren();let strong=document.createElement('strong');strong.textContent=s.auto?'自动游玩已开启':'当前为手动模式';$('runtime').append(strong,document.createTextNode(text));let history=s.history||'';$('history-state').textContent=history;$('history-state').classList.toggle('hidden',!history);if(s.message)toast(s.message);if(s.saved){dirty=false;showDirty()}};
 try{if(hasBridge&&typeof OfflineBridge.environment==='function'&&['module','phira-module'].includes(OfflineBridge.environment())){
  const box=$('network-policy');box.replaceChildren();const title=document.createElement('summary');title.textContent='Phira 模块 · 保留宿主联网';const detail=document.createElement('p');detail.className='muted';detail.textContent='保留登录及原版上传流程，模拟成绩也可按原版条件尝试上传；是否接受由原版与服务器决定。本地重启恢复不会撤回已经上传的记录。';box.append(title,detail);

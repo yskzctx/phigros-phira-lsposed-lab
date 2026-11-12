@@ -27,7 +27,7 @@ public final class LaunchActivity {
    try(InputStream in=new FileInputStream(prefs(c))){copyAtomic(in,new File(state,"playerprefs.xml"));}
    try(FileOutputStream out=new FileOutputStream(pending)){out.write(1);out.getFD().sync();}
   }
-  NativeControls.apply(NativeControls.load(c));setAutoplay(value);autoplay=value;
+  NativeControls.apply(NativeControls.load(c),NativeControls.blockTouch(c),NativeControls.assistGuard(c),NativeControls.guardScore(c));setAutoplay(value);autoplay=value;
  }
  public static void beginManualSession(Context c)throws IOException{changeAutoplay(c,false);chosen=true;}
  public static void setGuestAutoplay(boolean value){autoplay=value;chosen=true;}

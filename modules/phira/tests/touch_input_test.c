@@ -19,6 +19,7 @@ int main(void){
  // rotation/translation. It must land at note-local (0.4, 0), not (-0.6, 0).
  float wx=x/2000*2-1,wy=-(y/1000*2-1);float local_x=wy-.1f,local_y=-(wx-.2f);assert(fabsf(local_x-.4f)<1e-6&&fabsf(local_y)<1e-6);
  uint64_t id;double stamp;memcpy(&id,sent[0]+16,8);memcpy(&stamp,sent[0]+24,8);assert(id==contact.id&&isinf(stamp)&&stamp<0);assert(!memcmp(resource,(unsigned char[2600]){0},2600));
+ LabTouchExclusion excluded={0};unsigned char preserved[3][32];memcpy(preserved,vector,3*32);assert(lab_touch_exclude_begin(&api,&scope,&excluded));memcpy(&len,cell+24,8);assert(len==2&&!memcmp(vector,preserved[1],32)&&!memcmp(vector+32,preserved[2],32));assert(lab_touch_exclude_end(&excluded));memcpy(&len,cell+24,8);assert(len==3&&!memcmp(vector,preserved,3*32));
  uint64_t later=456;memcpy(vector+3*32,&later,8);len=4;memcpy(cell+24,&len,8);assert(lab_touch_end(&scope));memcpy(&len,cell+24,8);assert(len==2&&!memcmp(vector,original,32));memcpy(&id,vector+32,8);assert(id==later);assert(!scope.cell);
  int64_t borrowed=1;memcpy(cell,&borrowed,8);assert(!lab_touch_submit_scoped(&api,&contact,1,resource,line,1,3.25,&scope));assert(events==2);
  borrowed=0;memcpy(cell,&borrowed,8);LabTouchContact dense[2048];for(int i=0;i<2048;i++){dense[i]=contact;dense[i].id+=(uint64_t)i;}assert(lab_touch_submit_scoped(&api,dense,2048,resource,line,1,3.25,&scope));assert(lab_touch_end(&scope));memcpy(&len,cell+24,8);assert(len==2);

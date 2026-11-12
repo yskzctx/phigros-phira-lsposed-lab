@@ -14,6 +14,11 @@ typedef struct {
  float (*screen_width)(void),(*screen_height)(void);
 } LabTouchApi;
 typedef struct {unsigned char *cell;const LabTouchContact *contacts;size_t start,count;} LabTouchScope;
+typedef struct {
+ unsigned char *cell,*saved;
+ size_t original_len,visible_len;
+ bool active;
+} LabTouchExclusion;
 /* The original input handler stores Touch { id, position, time, phase } in a
  * Vec at RefCell+8. Remove only our appended range after Judge.update. UI and
  * pause handling must see the real input before/after it, never our contacts. */
@@ -63,5 +68,48 @@ static inline bool lab_touch_submit_scoped(const LabTouchApi *api,const LabTouch
  okay=true;
 done:
  free(points);return okay;
+}
+/*
+ * Hide both real contacts and our temporary appended contacts from one
+ * Judge.update. Synthetic contacts are moved to the front; the complete
+ * original buffer is restored immediately after the call.
+ */
+static inline bool lab_touch_exclude_begin(const LabTouchApi *api,const LabTouchScope *scope,LabTouchExclusion *ex){
+ if(!api||!api->input.local_key||!ex||ex->active)return false;
+ unsigned char *cell=scope&&scope->cell?scope->cell:api->input.local_key(NULL);
+ if(!cell)return false;
+ int64_t borrow;memcpy(&borrow,cell,8);if(borrow)return false;
+ size_t cap,len;memcpy(&cap,cell+8,8);memcpy(&len,cell+24,8);unsigned char *buffer;
+ memcpy(&buffer,cell+16,8);
+ if(cap>1000000||len>cap||(len&&!buffer))return false;
+ size_t amount=scope&&scope->cell?scope->count*2:0;
+ size_t original_len=len;
+ if(scope&&scope->cell){
+  if(!scope->contacts||scope->start>len||amount>len-scope->start||scope->start+amount!=len)return false;
+ }else amount=0;
+ size_t bytes=len*32;
+ unsigned char *saved=bytes?malloc(bytes):NULL;
+ if(bytes&&!saved)return false;
+ if(bytes)memcpy(saved,buffer,bytes);
+ if(amount){
+  memmove(buffer,buffer+scope->start*32,amount*32);
+  memcpy(cell+24,&amount,8);
+ }else{
+  size_t zero=0;memcpy(cell+24,&zero,8);
+ }
+ *ex=(LabTouchExclusion){.cell=cell,.saved=saved,.original_len=original_len,.visible_len=amount,.active=true};
+ return true;
+}
+static inline bool lab_touch_exclude_end(LabTouchExclusion *ex){
+ if(!ex||!ex->active)return true;
+ size_t visible;memcpy(&visible,ex->cell+24,8);
+ if(visible!=ex->visible_len){free(ex->saved);memset(ex,0,sizeof(*ex));return false;}
+ if(ex->original_len){
+  unsigned char *buffer;memcpy(&buffer,ex->cell+16,8);
+  if(!buffer||!ex->saved){free(ex->saved);memset(ex,0,sizeof(*ex));return false;}
+  memcpy(buffer,ex->saved,ex->original_len*32);
+ }
+ memcpy(ex->cell+24,&ex->original_len,8);
+ free(ex->saved);memset(ex,0,sizeof(*ex));return true;
 }
 #endif
