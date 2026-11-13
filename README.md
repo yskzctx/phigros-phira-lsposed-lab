@@ -1,5 +1,7 @@
 # Phigros / Phira LSPosed 模块
 
+**公开预发行：** [v0.3.0-pre.1](https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/tag/v0.3.0-pre.1)（真实LSPosed验收前保持预发行）
+
 **当前：Phira0.3.0 / Phigros0.3.0（候选）** · [安装与恢复](docs/INSTALL-v0.3.0.md) · [验证边界](docs/VERIFICATION-v0.3.0.json) · [免责声明](DISCLAIMER.md)
 
 两个0.3.0模块是同一发布周期。此次加入随机K音符规则、自动游玩时是否屏蔽真实触摸、S/FC/AT成绩保护和额外保护分数；保护只在目标规划产生判定时救判，显式规则仍然优先。**0.3.0尚未经过本轮手机/真实LSPosed验收，因此只应作为预发行候选。**
