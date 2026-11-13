@@ -8,8 +8,8 @@
 
 | 模块 | 下载 | 唯一适配宿主 |
 |---|---|---|
-|Phigros|`Phigros-Lab-LSPosed-157-arm64-v0.3.0-TEST.apk`|com.PigeonGames.Phigros，4.0.1（157），arm64|
-|Phira|`Phira-Lab-LSPosed-0.8.3-arm64-v0.3.0-TEST.apk`|org.flos.phira，0.8.3（40），arm64|
+|Phigros|[Phigros-Lab-LSPosed-157-arm64-v0.3.0-TEST.apk](https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.3.0-pre.1/Phigros-Lab-LSPosed-157-arm64-v0.3.0-TEST.apk)|com.PigeonGames.Phigros，4.0.1（157），arm64|
+|Phira|[Phira-Lab-LSPosed-0.8.3-arm64-v0.3.0-TEST.apk](https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/download/v0.3.0-pre.1/Phira-Lab-LSPosed-0.8.3-arm64-v0.3.0-TEST.apk)|org.flos.phira，0.8.3（40），arm64|
 
 按需要下载一份即可。Phira code11、Phigros code8，使用同一签名覆盖旧模块；安装后强行停止游戏再打开，不清数据。需要root与支持原生Hook的LSPosed。音量上键打开面板，下键收起，冷启动自动游玩默认关闭。仍使用模块自研自动游玩，没有改成官方自动游玩。
 
@@ -23,5 +23,8 @@ Phira模块保留[可调结算时间误差（±毫秒）](docs/INSTALL-v0.2.5.md
 
 已检查主机回归、签名/16KB、APK内免责声明、九个原生入口前缀及公开源码构建一致性。编译与主机探针不等于手机接入或游玩成功。代码在modules/；完整自制谱后端对应源码随发行附件提供。不得公开私人备份、日志、密钥或凭据。
 
+## 发行历史
+
+公开下载只保留当前 `v0.3.0-pre.1`。0.1.0至0.2.7的预发行、候选和草稿已撤下；仓库中的安装说明、验证文件与源码快照继续用于追溯，不应再安装旧二进制。真实设备验收完成前，0.3.0保持预发行状态。
 
 本轮两模块均修正免责声明按钮的浅色布局；Phira保留0.8.3（40）适配。[0.3.0 安装说明](docs/INSTALL-v0.3.0.md)。尚未做本轮真机验收。
