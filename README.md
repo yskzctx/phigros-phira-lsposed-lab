@@ -1,5 +1,18 @@
 # Phigros / Phira LSPosed 模块
 
+**最新预发行：** [v0.3.2-pre.1](https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/tag/v0.3.2-pre.1)。本机构建和签名已完成，尚未完成本轮真实 LSPosed 验收。
+
+0.3.2 修复判定保护：必须打开自动游玩后才生效。分数安全时保留真实触摸；即将掉出保护目标时，在 Perfect 窗口最后一毫秒接管。关闭“屏蔽真实触摸”后，真实触摸不再被自动输入挡住。
+
+| 模块 | 产物 | 目标 |
+|---|---|---|
+| Phigros | Phigros-Lab-LSPosed-157-arm64-v0.3.2-TEST.apk | 4.0.1（157）arm64 |
+| Phira | Phira-Lab-LSPosed-0.8.3-arm64-v0.3.2-TEST.apk | 0.8.3（40）arm64 |
+
+覆盖安装后强停目标游戏再打开。两个模块保留宿主登录、联网和原版上传流程，不绕过服务器、账号、购买或反作弊校验。
+
+# Phigros / Phira LSPosed 模块
+
 **公开预发行：** [v0.3.0-pre.1](https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/tag/v0.3.0-pre.1)（真实LSPosed验收前保持预发行）
 
 **当前：Phira0.3.0 / Phigros0.3.0（候选）** · [安装与恢复](docs/INSTALL-v0.3.0.md) · [验证边界](docs/VERIFICATION-v0.3.0.json) · [免责声明](DISCLAIMER.md)
