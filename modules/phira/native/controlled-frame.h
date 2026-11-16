@@ -17,21 +17,33 @@ static void *lab_ptr(const void *p,size_t offset){void *v;memcpy(&v,(const char*
 static double lab_f64(const void *p,size_t offset){double v;memcpy(&v,(const char*)p+offset,8);return v;}
 static void lab_put_size(void *p,size_t offset,size_t v){memcpy((char*)p+offset,&v,8);}
 static void lab_put_f64(void *p,size_t offset,double v){memcpy((char*)p+offset,&v,8);}
-typedef struct {unsigned char *memory;size_t line,id,kind;double start,end,saved_time;size_t saved_kind;bool changed,contact_ready;} LabChartNote;
+typedef struct {unsigned char *memory;size_t line,id,kind;double start,end,saved_time;size_t saved_kind;bool changed,contact_ready,guard_held;} LabChartNote;
 typedef struct {unsigned char *notes,*live;uint32_t *indices,*order,*rank;size_t count,notes_len,start,end;bool reordered;} LabChartRow;
 typedef struct {
  void *judge,*lines,*judge_rows;size_t row_count;int n;uint32_t seed;uint64_t generation;double last_time;
  LabChartNote *notes;LabChartRow *rows;unsigned char *selected,*types;double *timing_offsets;ControlConfig config;PlanEstimate estimate;LabTimingEstimate timing_estimate;
  const LabTouchApi *touch;LabTouchContact *contacts;LabTouchScope touch_scope;bool cleanup_failed;void *frame_resource;uint32_t saved_autoplay;
- LabInputOwner input;bool valid,controlled,in_frame,inspected,expired_miss;unsigned fired;unsigned char first_state;char error[160];
+ LabInputOwner input;bool valid,controlled,in_frame,inspected,expired_miss,guard_mode;unsigned fired;unsigned char first_state;char error[160];
+ unsigned char *explicit_plan,*committed;double *guard_due;
+ int seen_p,seen_g,seen_b,seen_m,seen_combo,seen_max;
 } LabPlan;
 static void lab_plan_release(LabPlan *p){
  if(!p)return;
  if(p->rows)for(size_t i=0;i<p->row_count;i++){free(p->rows[i].order);free(p->rows[i].rank);}
- free(p->rows);free(p->notes);free(p->selected);free(p->types);free(p->contacts);free(p->timing_offsets);memset(p,0,sizeof(*p));
+ free(p->rows);free(p->notes);free(p->selected);free(p->types);free(p->contacts);free(p->timing_offsets);free(p->explicit_plan);free(p->committed);free(p->guard_due);memset(p,0,sizeof(*p));
 }
 static int lab_compare_notes(const void *aa,const void *bb){const LabChartNote *a=aa,*b=bb;if(a->start<b->start)return -1;if(a->start>b->start)return 1;if(a->line!=b->line)return a->line<b->line?-1:1;return a->id<b->id?-1:a->id>b->id;}
 static int lab_fail(LabPlan *p,const char *message){snprintf(p->error,sizeof(p->error),"%s",message);return 0;}
+static int lab_can_good(size_t kind){return kind==0||kind==1;}
+static bool lab_plan_guard(LabPlan *p,const ControlConfig *cfg,const PlanTimeline *timeline){
+ free(p->explicit_plan);free(p->committed);free(p->guard_due);p->explicit_plan=NULL;p->committed=NULL;p->guard_due=NULL;p->guard_mode=cfg->mode==3;
+ p->explicit_plan=calloc((size_t)p->n+1,1);p->committed=calloc((size_t)p->n+1,1);p->guard_due=calloc((size_t)p->n+1,sizeof(double));
+ if(!p->explicit_plan||!p->committed||!p->guard_due)return false;
+ make_profile_timed_ex(cfg,p->n,p->seed,p->selected,p->explicit_plan,&p->estimate,p->types,timeline);
+ if(!p->guard_mode)return true;
+ for(int i=1;i<=p->n;i++)p->guard_due[i]=INFINITY;
+ return true;
+}
 static bool lab_plan_collect(LabPlan *p,void *judge,void *chart,const ControlConfig *cfg,uint32_t seed,double time,float speed){
  size_t nr=lab_size(judge,16),nc=lab_size(chart,0x80);void *lines=lab_ptr(chart,0x78),*jr=lab_ptr(judge,8);
  if(!nr||nr!=nc||nr>LAB_MAX_LINES||!lines||!jr)return lab_fail(p,"谱面行与判定索引不匹配");
@@ -39,22 +51,27 @@ static bool lab_plan_collect(LabPlan *p,void *judge,void *chart,const ControlCon
  if(keep_contact){uint32_t down;memcpy(&down,(char*)judge+0x50,4);keep_contact=down>0;}
  uint64_t generation=p->generation+1;const LabTouchApi *touch=p->touch;
  lab_plan_release(p);p->touch=touch;p->generation=generation;p->judge=judge;p->lines=lines;p->judge_rows=jr;p->row_count=nr;p->seed=seed?seed:123;p->last_time=time;p->input.held=keep_contact;
- p->rows=calloc(nr,sizeof(*p->rows));p->notes=calloc(MAX_NOTES+1,sizeof(*p->notes));p->selected=calloc(MAX_NOTES+1,1);p->types=calloc(MAX_NOTES+1,1);
- p->contacts=calloc(MAX_NOTES+1,sizeof(*p->contacts));
- if(!p->rows||!p->notes||!p->selected||!p->types||!p->contacts)return lab_fail(p,"谱面计划内存不足");
+ p->seen_p=0;p->seen_g=0;p->seen_b=0;p->seen_m=0;p->seen_combo=0;p->seen_max=0;
+ p->rows=calloc(nr,sizeof(*p->rows));if(!p->rows)return lab_fail(p,"谱面计划内存不足");
+ size_t total=0;
  for(size_t i=0;i<nr;i++){
   LabChartRow *r=p->rows+i;r->live=(unsigned char*)jr+i*32;r->indices=lab_ptr(r->live,8);r->count=lab_size(r->live,16);
   unsigned char *line=(unsigned char*)lines+i*0x300;r->notes=lab_ptr(line,0x1c8);r->notes_len=lab_size(line,0x1d0);
-  if(r->count>MAX_NOTES||r->notes_len>MAX_NOTES*4u||r->count>r->notes_len||p->n+(int)r->count>MAX_NOTES||(!r->indices&&r->count)||(!r->notes&&r->notes_len))return lab_fail(p,"谱面索引大小异常或超出支持范围");
+  if(r->count>MAX_NOTES||r->notes_len>MAX_NOTES*4u||r->count>r->notes_len||total>(size_t)MAX_NOTES-r->count||(!r->indices&&r->count)||(!r->notes&&r->notes_len))return lab_fail(p,"谱面索引大小异常或超出支持范围");
+  total+=r->count;
   r->order=malloc((r->count?r->count:1)*4);r->rank=calloc(r->notes_len?r->notes_len:1,4);if(!r->order||!r->rank)return lab_fail(p,"谱面索引内存不足");
   if(r->count)memcpy(r->order,r->indices,r->count*4);
-  double previous=-INFINITY;
+  for(size_t k=0;k<r->count;k++){size_t id=r->order[k];if(id>=r->notes_len||r->rank[id])return lab_fail(p,"谱面索引重复或越界");r->rank[id]=1;}
+ }
+ if(!total)return lab_fail(p,"谱面没有可判定音符");
+ p->notes=calloc(total+1,sizeof(*p->notes));p->selected=calloc(total+1,1);p->types=calloc(total+1,1);p->contacts=calloc(total+1,sizeof(*p->contacts));
+ if(!p->notes||!p->selected||!p->types||!p->contacts)return lab_fail(p,"谱面计划内存不足");
+ for(size_t i=0;i<nr;i++){
+  LabChartRow *r=p->rows+i;double previous=-INFINITY;
   for(size_t k=0;k<r->count;k++){
-   size_t id=r->order[k];if(id>=r->notes_len||r->rank[id])return lab_fail(p,"谱面索引重复或越界");r->rank[id]=1;
-   unsigned char *note=r->notes+id*LAB_NOTE_BYTES;size_t kind=lab_size(note,0);double at=lab_f64(note,0x140),end=kind==1?lab_f64(note,8):at;
+   size_t id=r->order[k];unsigned char *note=r->notes+id*LAB_NOTE_BYTES;size_t kind=lab_size(note,0);double at=lab_f64(note,0x140),end=kind==1?lab_f64(note,8):at;
    if(kind>3||!isfinite(at)||!isfinite(end)||end<at||at<previous)return lab_fail(p,"音符类型、时间或排序异常");
-   previous=at;
-   p->notes[++p->n]=(LabChartNote){.memory=note,.line=i,.id=id,.kind=kind,.start=at,.end=end};
+   previous=at;p->notes[++p->n]=(LabChartNote){.memory=note,.line=i,.id=id,.kind=kind,.start=at,.end=end};
   }
  }
  if(!p->n)return lab_fail(p,"谱面没有可判定音符");
@@ -62,9 +79,10 @@ static bool lab_plan_collect(LabPlan *p,void *judge,void *chart,const ControlCon
  PlanTiming *timing=calloc((size_t)p->n+1,sizeof(*timing));if(!timing)return lab_fail(p,"谱面时间计划内存不足");
  for(int i=1;i<=p->n;i++){LabChartNote *n=p->notes+i;p->rows[n->line].rank[n->id]=(uint32_t)i;p->types[i]=(unsigned char)(n->kind==0?1:n->kind==1?3:n->kind==2?4:2);timing[i]=(PlanTiming){(float)n->start,(float)n->end};}
  p->config=*cfg;p->controlled=true;
- PlanTimeline timeline=plan_timeline_windows(timing,p->types,p->n,.12f*speed,.221f*speed,.19f*speed,p->seed);free(timing);
- if(!timeline.events)return lab_fail(p,"谱面判定时间计划无法创建");
- make_profile_timed(cfg,p->n,p->seed,p->selected,&p->estimate,p->types,&timeline);
+ bool need_timeline=cfg->timing_tenths_ms>0||cfg->mode==1||cfg->mode==2||cfg->rule_count>0;PlanTimeline timeline={0};
+ if(need_timeline)timeline=plan_timeline_windows(timing,p->types,p->n,.12f*speed,.221f*speed,.19f*speed,p->seed);
+ free(timing);if(need_timeline&&!timeline.events)return lab_fail(p,"谱面判定时间计划无法创建");
+ if(!lab_plan_guard(p,cfg,need_timeline?&timeline:NULL)){free(timeline.events);return lab_fail(p,"判定保护计划内存不足");}
  p->timing_offsets=calloc((size_t)p->n+1,sizeof(double));if(!p->timing_offsets||!lab_timing_plan(p->selected,p->n,cfg->timing_tenths_ms,p->seed,p->timing_offsets,&p->timing_estimate)){free(timeline.events);return lab_fail(p,"命中误差计划无法创建");}
  if(cfg->timing_tenths_ms>0){for(int i=0;i<timeline.length;i++)if(timeline.events[i].judgment==0){int id=timeline.events[i].note;LabChartNote *note=p->notes+id;double at=note->start+p->timing_offsets[id]*speed;timeline.events[i].time=(float)(note->kind==1?fmax(note->end,at):at);}qsort(timeline.events,(size_t)timeline.length,sizeof(PlanEvent),compare_events);estimate_timed(p->selected,p->n,&p->estimate,&timeline);}
  free(timeline.events);
@@ -83,13 +101,36 @@ static void lab_frame_end(LabPlan *p){
    * ordinary note lifecycle before restoring its kind; never touch scores. */
   if(p->selected[i]==3&&n->memory[0x30]==1)n->memory[0x30]=2;
   lab_put_f64(n->memory,0x140,n->saved_time);lab_put_size(n->memory,0,n->saved_kind);n->changed=false;
- }}
+ }
+ if(p->guard_mode&&p->committed&&p->committed[i]&&n->kind==0&&n->memory[0x30]==1)n->memory[0x30]=2;
+ }
  for(size_t i=0;i<p->row_count;i++){
   LabChartRow *r=p->rows+i;if(r->reordered&&r->count)memcpy(r->indices,r->order,r->count*4);r->reordered=false;
   size_t first=0;while(first<r->count&&r->notes[(size_t)r->order[first]*LAB_NOTE_BYTES+0x30]==2)first++;lab_put_size(r->live,24,first);
  }
  if(p->frame_resource){uint32_t mods;memcpy(&mods,(unsigned char*)p->frame_resource+0x88,4);mods=(mods&~1u)|p->saved_autoplay;memcpy((unsigned char*)p->frame_resource+0x88,&mods,4);p->frame_resource=NULL;}
  p->in_frame=false;p->inspected=false;if(p->valid&&p->n)p->first_state=p->notes[1].memory[0x30];
+}
+static size_t lab_guard_contacts(LabPlan *p,double time,float speed,size_t count){
+ if(!p->guard_mode||!p->explicit_plan||!p->guard_due)return count;
+ int pcount=p->seen_p,gcount=p->seen_g,bcount=p->seen_b,mcount=p->seen_m,combo=p->seen_combo,max_combo=p->seen_max;
+ for(int i=1;i<=p->n&&count<(size_t)MAX_NOTES;i++){
+  LabChartNote *n=p->notes+i;
+  if(n->memory[0x30]!=0||p->explicit_plan[i]||(p->committed&&p->committed[i])||n->contact_ready)continue;
+  int needed=guard_needed_judgment(p->n,pcount,gcount,bcount,mcount,combo,max_combo,p->config.assist_guard,p->config.guard_score,lab_can_good(n->kind));
+  if(needed<0)continue;
+  double offset=needed==2?(lab_can_good(n->kind)?.19:0.):(lab_can_good(n->kind)?.078:0.);
+  if(time<n->start+offset*speed)continue;
+  n->saved_time=lab_f64(n->memory,0x140);n->saved_kind=lab_size(n->memory,0);n->changed=true;n->contact_ready=true;
+  if(n->kind==1)n->guard_held=true;
+  if(n->kind!=1)lab_put_size(n->memory,0,0);
+  lab_put_f64(n->memory,0x140,time-offset*speed);
+  p->contacts[count++]=(LabTouchContact){.line=(unsigned char*)p->lines+n->line*0x300,.note=n->memory,.id=0x5048495241000000ULL+(unsigned)i};
+  p->fired++;
+  if(needed==0)pcount++;else gcount++;
+  combo++;if(combo>max_combo)max_combo=combo;
+ }
+ return count;
 }
 static bool lab_frame_begin(LabPlan *p,void *judge,void *resource,void *chart,bool enabled,const ControlConfig *cfg,uint32_t seed,const LabInputApi *api){
  if(!p||!judge||!resource||!chart||!cfg)return false;
@@ -102,13 +143,16 @@ static bool lab_frame_begin(LabPlan *p,void *judge,void *resource,void *chart,bo
  size_t nr=lab_size(judge,16);if(nr!=lab_size(chart,0x80)||nr>LAB_MAX_LINES)return lab_fail(p,"谱面行与判定索引不匹配");
  bool same=p->valid&&p->judge==judge&&p->lines==lab_ptr(chart,0x78)&&p->judge_rows==lab_ptr(judge,8)&&p->row_count==nr;
  if(same)for(size_t i=0;i<nr;i++){LabChartRow *r=p->rows+i;unsigned char *line=(unsigned char*)p->lines+i*0x300;if(r->notes!=lab_ptr(line,0x1c8)||r->notes_len!=lab_size(line,0x1d0)||r->indices!=lab_ptr(r->live,8)||r->count!=lab_size(r->live,16)){same=false;break;}}
+ if(same&&p->committed)for(int i=1;i<=p->n;i++){if(p->committed[i]&&p->notes[i].memory[0x30]==0){same=false;break;}}
  if(!same||time<p->last_time-.25||(p->first_state!=0&&p->n&&p->notes[1].memory[0x30]==0)){if(!lab_plan_collect(p,judge,chart,cfg,seed,time,speed))return false;}
  p->last_time=time;p->inspected=true;
+ bool guard=cfg->mode==3;
  for(int i=1;i<=p->n;i++)if(lab_size(p->notes[i].memory,0)!=p->notes[i].kind||lab_f64(p->notes[i].memory,0x140)!=p->notes[i].start){p->inspected=false;return lab_fail(p,"谱面运行时结构已改变，未继续自动输入");}
  uint32_t mods;memcpy(&mods,(char*)resource+0x88,4);uint32_t manual=mods&~1u;memcpy((char*)resource+0x88,&manual,4);
  unsigned char old_keyboard=((unsigned char*)resource)[0xbc];if(!p->touch)((unsigned char*)resource)[0xbc]=1;p->frame_resource=resource;p->saved_autoplay=mods&1u;p->in_frame=true;
  for(int i=1;i<=p->n;i++){
   LabChartNote *n=p->notes+i;n->contact_ready=false;unsigned char state=n->memory[0x30];if(state!=0)continue;int judgment=p->selected[i];
+  if(guard&&p->explicit_plan&&!p->explicit_plan[i])continue;
   /* Original touch matching subtracts EARLY_OFFSET=.07 from late offsets.
    * +.12 would become .05 (Perfect); +.19 becomes .12 (Good). */
   double good_offset=plan_good_early(judgment,i,p->seed)?-.12:.19;
@@ -127,9 +171,9 @@ static bool lab_frame_begin(LabPlan *p,void *judge,void *resource,void *chart,bo
  }
  if(p->expired_miss)p->fired=0;
  bool submitted;
- if(p->touch){size_t count=0;for(int i=1;i<=p->n;i++){LabChartNote *n=p->notes+i;if((n->kind==1&&n->memory[0x30]==3)||(!p->expired_miss&&n->contact_ready))p->contacts[count++]=(LabTouchContact){.line=(unsigned char*)p->lines+n->line*0x300,.note=n->memory,.id=0x5048495241000000ULL+(unsigned)i};}submitted=lab_touch_submit_scoped(p->touch,p->contacts,count,resource,p->lines,p->row_count,time,&p->touch_scope);}
+ if(p->touch){size_t count=0;for(int i=1;i<=p->n;i++){LabChartNote *n=p->notes+i;bool hold_active=n->kind==1&&n->memory[0x30]==3;bool hold_keep=hold_active&&(!guard||n->guard_held||(p->explicit_plan&&p->explicit_plan[i])||guard_needed_judgment(p->n,p->seen_p,p->seen_g,p->seen_b,p->seen_m,p->seen_combo,p->seen_max,cfg->assist_guard,cfg->guard_score,1)>=0);if(hold_keep||(!p->expired_miss&&n->contact_ready))p->contacts[count++]=(LabTouchContact){.line=(unsigned char*)p->lines+n->line*0x300,.note=n->memory,.id=0x5048495241000000ULL+(unsigned)i};}count=lab_guard_contacts(p,time,speed,count);submitted=lab_touch_submit_scoped(p->touch,p->contacts,count,resource,p->lines,p->row_count,time,&p->touch_scope);}
  else submitted=lab_input_apply(api,&p->input,p->fired,true);
  if(!submitted){lab_frame_end(p);memcpy((char*)resource+0x88,&mods,4);((unsigned char*)resource)[0xbc]=old_keyboard;return lab_fail(p,"判定输入接口忙、坐标无效或未就绪");}
- p->error[0]=0;return true;
+  p->error[0]=0;return true;
 }
 #endif

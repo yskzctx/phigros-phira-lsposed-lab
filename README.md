@@ -1,5 +1,19 @@
 # Phigros / Phira LSPosed 模块
 
+**最新预发行：** [v0.3.8-pre.1](https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/tag/v0.3.8-pre.1)。本机构建和签名已完成，尚未完成本轮真实 LSPosed 验收。
+
+- **Phira 模块 (v0.3.5)**：修复判定保护下 Click 音符在 PreJudge 状态被多次判定导致的连击超限和分数突破 100 万分问题；修复模式 3 下手打 Perfect 被误降级为 Good 的问题；修正 Good 判定时间窗口为 0.19s。
+- **Phigros 模块 (v0.3.8)**：修复原版模块点击“恢复全部 AP”时未写入曲目、收藏品、曲绘、头像和章节解锁的问题；补全 12 项遗漏曲目解锁键；控制面板新增“仅全解锁（保留成绩）”选项；“恢复上次备份”同步回退解锁与成绩。
+
+| 模块 | 产物 | 目标 |
+|---|---|---|
+| Phigros | Phigros-Lab-LSPosed-157-160-arm64-v0.3.8-TEST.apk | 4.0.1（157）与 4.0.1.2（160）arm64 |
+| Phira | Phira-Lab-LSPosed-0.8.3-arm64-v0.3.5-TEST.apk | 0.8.3（40）arm64 |
+
+覆盖安装后强停目标游戏再打开。两个模块保留宿主登录、联网和原版上传流程，不绕过服务器、账号、购买或反作弊校验。
+
+# Phigros / Phira LSPosed 模块
+
 **最新预发行：** [v0.3.2-pre.1](https://github.com/yskzctx/phigros-phira-lsposed-lab/releases/tag/v0.3.2-pre.1)。本机构建和签名已完成，尚未完成本轮真实 LSPosed 验收。
 
 0.3.2 修复判定保护：必须打开自动游玩后才生效。分数安全时保留真实触摸；即将掉出保护目标时，在 Perfect 窗口最后一毫秒接管。关闭“屏蔽真实触摸”后，真实触摸不再被自动输入挡住。

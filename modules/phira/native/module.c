@@ -16,7 +16,7 @@
 typedef void(*LibraryLoaded)(const char*,void*);
 typedef struct{uint32_t version;LabHook hook;LabUnhook unhook;} NativeAPI;
 static LabBatch batch;static pthread_mutex_t lock=PTHREAD_MUTEX_INITIALIZER;
-static atomic_bool ready,armed,enabled,tainted,early_frame;
+static atomic_bool ready,armed,enabled,guard_only,tainted,early_frame;
 static atomic_uint frames;
 /* 0 callback absent, 1 waiting, 2 symbol missing, 3 profile mismatch,
  * 4 hook failure, 5 installed. Never reports active from Java scope alone. */
@@ -29,7 +29,7 @@ static LabInputApi input_api;
 static LabTouchApi touch_api;static void *anim_value_original;
 extern float lab_anim_value(const void*,void*);
 static float note_x_value(const void *animation){return lab_anim_value(animation,anim_value_original);}
-typedef struct {int counts[4],combo,max_combo,early,late;double square;uint64_t generation;} Observed;
+typedef struct {int counts[4],combo,max_combo,early,late,total;double square;uint64_t generation;} Observed;
 static Observed observed;
 static _Thread_local void *observed_judge;
 static jint controls_status[21];static char controls_detail[512];
@@ -37,16 +37,49 @@ static void (*judge_original)(void*,void*,void*,void*);
 static void (*commit_original)(void*,unsigned,double);
 /* Observation only: forward every original parameter unchanged and let the
  * original protected update run. Never reconstruct/patch protected values. */
+static unsigned protection_rescue(unsigned what,double *diff){
+ if(frame_config.mode!=3||what>3)return what;
+ int safe=guard_rescue((int)what,observed.total,observed.counts[0],observed.counts[1],observed.counts[2],observed.counts[3],observed.combo,observed.max_combo,frame_config.assist_guard,frame_config.guard_score);
+ if(safe==(int)what)return what;
+ if(safe==1){*diff=.12;return 1;}
+ *diff=0.;return 0;
+}
+static int commit_note_rank(unsigned what,uint32_t *out_line,uint32_t *out_note,size_t *out_len){
+ if(!observed_judge||!plan.valid||plan.judge!=observed_judge||!plan.committed)return 0;
+ size_t len=lab_size(observed_judge,0x190);unsigned char *entries=lab_ptr(observed_judge,0x188);
+ if(!len||!entries)return 0;
+ unsigned char *entry=entries+(len-1)*24;uint32_t line_id=0,note_id=0;
+ memcpy(&line_id,entry+8,4);memcpy(&note_id,entry+12,4);
+ if(entry[16]!=0||entry[17]!=(unsigned char)what)return 0;
+ if(line_id>=plan.row_count||note_id>=plan.rows[line_id].notes_len)return 0;
+ uint32_t rank=plan.rows[line_id].rank[note_id];
+ if(rank<1||rank>(uint32_t)plan.n)return 0;
+ if(out_line)*out_line=line_id;
+ if(out_note)*out_note=note_id;
+ if(out_len)*out_len=len;
+ return (int)rank;
+}
 static void commit_observer(void *inner,unsigned what,double diff){
+ int rank=0;size_t len=0;
+ if(observed_judge&&inner==(unsigned char*)observed_judge+0x58&&what<=3){
+  rank=commit_note_rank(what,NULL,NULL,&len);
+  int total_seen=observed.counts[0]+observed.counts[1]+observed.counts[2]+observed.counts[3];
+  if((rank>0&&plan.committed[rank])||(plan.valid&&plan.n>0&&total_seen>=plan.n)){
+   if(len>0)lab_put_size(observed_judge,0x190,len-1);
+   return;
+  }
+  if(!(rank>0&&plan.explicit_plan&&plan.explicit_plan[rank]))what=protection_rescue(what,&diff);
+ }
  commit_original(inner,what,diff);
  if(!observed_judge||inner!=(unsigned char*)observed_judge+0x58||what>3)return;
+ if(rank>0&&plan.committed)plan.committed[rank]=1;
  observed.counts[what]++;
  double timing=what==3?.25:diff;if(isfinite(timing))observed.square+=timing*timing;
  if(what<2){observed.combo++;if(observed.combo>observed.max_combo)observed.max_combo=observed.combo;}else observed.combo=0;
  if(what==1){if(diff<0)observed.early++;else observed.late++;}
 }
 static void publish_controls(void){
- int n=plan.valid?plan.n:0,total=0;for(int i=0;i<4;i++)total+=observed.counts[i];
+ int n=plan.valid?plan.n:observed.total,total=0;for(int i=0;i<4;i++)total+=observed.counts[i];
  double accuracy=n?((double)observed.counts[0]+.65*observed.counts[1])/n:0;
  int score=n?(int)floor((.9*accuracy+.1*(double)observed.max_combo/n)*1000000.+.5):0;
  PlanEstimate *e=&plan.estimate;
@@ -59,9 +92,12 @@ static void judge_update(void *judge,void *resource,void *chart,void *bad_notes)
  if(!atomic_load(&armed)){judge_original(judge,resource,chart,bad_notes);return;}
  plan.touch=&touch_api;
  pthread_mutex_lock(&config_lock);frame_config=pending_config;pthread_mutex_unlock(&config_lock);
- bool requested=atomic_load(&enabled);bool okay=lab_frame_begin(&plan,judge,resource,chart,requested,&frame_config,(uint32_t)((uintptr_t)chart^(uintptr_t)judge^0xa73c819du),&input_api);
+ bool requested=atomic_load(&enabled);
+ plan.seen_p=observed.counts[0];plan.seen_g=observed.counts[1];plan.seen_b=observed.counts[2];plan.seen_m=observed.counts[3];plan.seen_combo=observed.combo;plan.seen_max=observed.max_combo;
+ bool okay=lab_frame_begin(&plan,judge,resource,chart,requested,&frame_config,(uint32_t)((uintptr_t)chart^(uintptr_t)judge^0xa73c819du),&input_api);
  if(!okay)atomic_store(&enabled,false);
  if(observed.generation!=plan.generation){memset(&observed,0,sizeof(observed));observed.generation=plan.generation;}
+ if(okay&&plan.n>0)observed.total=plan.n;
  void *previous=observed_judge;observed_judge=okay&&requested?judge:NULL;
  LabTouchExclusion exclusion={0};bool excluded=false;
  if(okay&&requested&&frame_config.block_touch){
@@ -76,7 +112,7 @@ static uintptr_t (*game_original)(void*,void*);
 static uintptr_t game_update(void *scene,void *time_manager){
  pthread_mutex_lock(&lock);bool active=atomic_load(&armed);if(!active)atomic_store(&early_frame,true);pthread_mutex_unlock(&lock);
  if(!active)return game_original(scene,time_manager);
- bool autoplay=atomic_load(&enabled);if(autoplay)atomic_store(&tainted,true);
+ bool autoplay=atomic_load(&enabled)&&!atomic_load(&guard_only);if(autoplay)atomic_store(&tainted,true);
  atomic_fetch_add(&frames,1);
  return game_original(scene,time_manager);
 }
@@ -113,19 +149,19 @@ JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_setEnabled(JNIEnv *env,j
 JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_setTemporaryRoot(JNIEnv *env,jclass type,jstring directory){(void)type;if(!directory||!atomic_load(&armed))return JNI_FALSE;const char *p=(*env)->GetStringUTFChars(env,directory,NULL);if(!p)return JNI_FALSE;size_t n=strnlen(p,1024);bool okay=n>0&&n<1024&&p[0]=='/'&&!strstr(p,"..")&&!strchr(p,'\n');if(okay)okay=setenv("TMPDIR",p,1)==0;(*env)->ReleaseStringUTFChars(env,directory,p);return okay?JNI_TRUE:JNI_FALSE;}
 JNIEXPORT jintArray JNICALL Java_com_phira_lab_LabNative_status(JNIEnv *env,jclass type){(void)type;jint v[]={atomic_load(&ready),atomic_load(&armed),atomic_load(&enabled),atomic_load(&tainted),(jint)atomic_load(&frames),atomic_load(&stage),atomic_load(&early_frame)};jintArray out=(*env)->NewIntArray(env,7);if(out)(*env)->SetIntArrayRegion(env,out,0,7,v);return out;}
 JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_configure(JNIEnv *env,jclass type,jint mode,jint target,jint accuracy,jint timing,jboolean block_touch,jint assist_guard,jint guard_score,jintArray words){
- (void)type;if(mode<0||mode>2||target<0||target>1000000||accuracy<0||accuracy>10000||timing<0||timing>750||assist_guard<0||assist_guard>3||guard_score<0||guard_score>1000000||!words)return JNI_FALSE;
+ (void)type;if(mode<0||mode>3||target<0||target>1000000||accuracy<0||accuracy>10000||timing<0||timing>750||assist_guard<0||assist_guard>3||guard_score<0||guard_score>1000000||(mode==3&&(assist_guard<1||(assist_guard==3&&guard_score<1)))||!words)return JNI_FALSE;
  int length=(*env)->GetArrayLength(env,words);if(length<1||length>MAX_CONFIG_WORDS)return JNI_FALSE;
  jint packed[MAX_CONFIG_WORDS];(*env)->GetIntArrayRegion(env,words,0,length,packed);if((*env)->ExceptionCheck(env))return JNI_FALSE;
  bool typed=packed[0]==-168;if(typed&&length<2)return JNI_FALSE;
- ControlConfig c={.mode=mode,.target=target,.accuracy=accuracy,.timing_tenths_ms=timing,.block_touch=block_touch==JNI_TRUE,.assist_guard=assist_guard,.guard_score=guard_score,.rule_count=packed[typed?1:0]};if(c.rule_count<0||c.rule_count>MAX_RULES)return JNI_FALSE;int cursor=typed?2:1;
+ if(mode!=3)assist_guard=0; ControlConfig c={.mode=mode,.target=target,.accuracy=accuracy,.timing_tenths_ms=timing,.block_touch=(mode!=3&&block_touch==JNI_TRUE),.assist_guard=assist_guard,.guard_score=guard_score,.rule_count=packed[typed?1:0]};if(c.rule_count<0||c.rule_count>MAX_RULES)return JNI_FALSE;int cursor=typed?2:1;
  for(int i=0;i<c.rule_count;i++){
   if(cursor+(typed?7:6)>length)return JNI_FALSE;
-  NoteRule *r=&c.rules[i];r->judgment=packed[cursor++];r->position=packed[cursor++];r->start=packed[cursor++];r->end=packed[cursor++];r->count=packed[cursor++];if(typed)r->note_type=packed[cursor++];r->length=packed[cursor++];
+  NoteRule *r=&c.rules[i];r->judgment=packed[cursor++];r->position=packed[cursor++];r->start=packed[cursor++];r->end=packed[cursor++];r->count=packed[cursor++];r->note_type=typed?packed[cursor++]:0;r->length=packed[cursor++];
   if(r->note_type<0||r->note_type>4||r->judgment<0||r->judgment>5||r->position<1||r->position>6||r->start<1||r->start>MAX_NOTES||r->end<1||r->end>MAX_NOTES||r->count<1||r->count>MAX_NOTES||r->length<0||r->length>MAX_INDICES||cursor+r->length>length||(r->position==2&&r->end<r->start)||(r->position==3&&r->length==0))return JNI_FALSE;
   for(int k=0;k<r->length;k++){int v=packed[cursor++];if(v<1||v>MAX_NOTES)return JNI_FALSE;r->indices[k]=v;}
  }
  if(cursor!=length)return JNI_FALSE;
- pthread_mutex_lock(&config_lock);pending_config=c;pthread_mutex_unlock(&config_lock);atomic_fetch_add(&config_revision,1);return JNI_TRUE;
+ pthread_mutex_lock(&config_lock);pending_config=c;pthread_mutex_unlock(&config_lock);atomic_store(&guard_only,false);(void)assist_guard;atomic_fetch_add(&config_revision,1);return JNI_TRUE;
 }
 JNIEXPORT jintArray JNICALL Java_com_phira_lab_LabNative_controlStatus(JNIEnv *env,jclass type){
  (void)type;jint v[21];pthread_mutex_lock(&status_lock);memcpy(v,controls_status,sizeof(v));pthread_mutex_unlock(&status_lock);v[0]=atomic_load(&ready);v[1]=atomic_load(&enabled);v[5]=(jint)atomic_load(&config_revision);
