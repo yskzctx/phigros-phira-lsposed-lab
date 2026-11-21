@@ -98,6 +98,79 @@ static inline int assist_guard_satisfied(const ControlConfig *c,const PlanEstima
     return 1;
 }
 /*
+ * Live rescue for an incoming judgment: given what the player is about to be
+ * awarded and how the run stands, return the judgment the guard wants instead, or
+ * `what` unchanged when no intervention is needed.
+ *
+ * `what` follows the game's own encoding: 0 Perfect, 1 Good, 2 Bad, 3 Miss.
+ * The guard only ever improves a judgment, never downgrades one, so a naturally
+ * played Perfect is always left alone.
+ */
+static inline int guard_rescue(int what,int n,int perfect,int good,int bad,int miss,
+        int combo,int max_combo,int assist_guard,int guard_score){
+    (void)combo;(void)max_combo;
+    if(what<0||what>3||n<1||assist_guard<1||assist_guard>3)return what;
+    if(what==0)return 0;                      /* already the best judgment */
+    int seen=perfect+good+bad+miss;
+    if(seen>=n)return what;
+    int remaining=n-seen;
+    switch(assist_guard){
+        case 3:                               /* protect AP */
+            return 0;
+        case 2:                               /* protect FC: no Bad, no Miss */
+            return (what==2||what==3)?0:what;
+        default: {                            /* protect a score floor */
+            if(guard_score<1)return what;
+            double best=((double)perfect+0.65*(double)good+(double)remaining)/(double)n;
+            int best_score=(int)(900000.0*best+100000.0);
+            if(best_score>=guard_score)return what;   /* floor still reachable */
+            return 0;
+        }
+    }
+}
+
+/*
+ * Decide which judgment the guard should force on a note that is about to be
+ * missed, given how the run is going so far.
+ *
+ * Returns the judgment to apply (0 = Perfect, 2 = Good), or -1 when the guard does
+ * not need to intervene. `can_good` says whether this note type accepts a Good at
+ * all: drag and flick notes only reach Perfect through a synthetic touch, so the
+ * caller uses it to pick the timing offset.
+ *
+ * This is the live counterpart of assist_guard_satisfied(), which judges a finished
+ * plan. Here only the counts so far are known, so the test is "would losing this
+ * note break the promise" rather than "does the final estimate hold".
+ */
+static inline int guard_needed_judgment(int n,int perfect,int good,int bad,int miss,
+        int combo,int max_combo,int assist_guard,int guard_score,int can_good){
+    (void)combo;(void)max_combo;
+    if(n<1||assist_guard<1||assist_guard>3)return -1;
+    int seen=perfect+good+bad+miss;
+    if(seen>=n)return -1;
+    int remaining=n-seen;
+    switch(assist_guard){
+        case 3: /* protect AP: any non-Perfect breaks it, so every note must be Perfect */
+            return 0;
+        case 2: /* protect FC: a Bad or Miss breaks it, so rescue anything that would be lost */
+            if(bad||miss)return 0;
+            /* Keep the chain alive: once any Bad/Miss happened the promise is already
+             * broken, so stop forcing and let the rest of the run be natural. */
+            return can_good?0:0;
+        default: { /* protect a score floor */
+            if(guard_score<1)return -1;
+            /* Upper bound on the final score if every remaining note is Perfect. */
+            double best=((double)perfect+0.65*(double)good+(double)remaining)/ (double)n;
+            int best_score=(int)(900000.0*best+100000.0);
+            if(best_score>=guard_score)return -1;   /* still reachable without help */
+            /* The floor is out of reach unless this note is rescued; a Good is worth
+             * less than a Perfect, so prefer Perfect when the gap is large. */
+            int gap=guard_score-best_score;
+            return (can_good&&gap<=0)?2:0;
+        }
+    }
+}
+/*
  * Protect only planner-generated non-target judgments. Explicit rules are
  * recorded in fixed[] and always win. Protection is deterministic about the
  * promised floor/FC/AP condition; the distance from that target controls the

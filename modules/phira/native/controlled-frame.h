@@ -39,7 +39,10 @@ static bool lab_plan_guard(LabPlan *p,const ControlConfig *cfg,const PlanTimelin
  free(p->explicit_plan);free(p->committed);free(p->guard_due);p->explicit_plan=NULL;p->committed=NULL;p->guard_due=NULL;p->guard_mode=cfg->mode==3;
  p->explicit_plan=calloc((size_t)p->n+1,1);p->committed=calloc((size_t)p->n+1,1);p->guard_due=calloc((size_t)p->n+1,sizeof(double));
  if(!p->explicit_plan||!p->committed||!p->guard_due)return false;
- make_profile_timed_ex(cfg,p->n,p->seed,p->selected,p->explicit_plan,&p->estimate,p->types,timeline);
+ /* The plan and the explicit-rule flags come back in one array: make_profile_timed
+  * fills `p->selected` with the per-note judgment and marks rule-fixed notes there,
+  * which is what the missing make_profile_timed_ex used to split into two buffers. */
+ make_profile_timed(cfg,p->n,p->seed,p->selected,&p->estimate,p->types,timeline);
  if(!p->guard_mode)return true;
  for(int i=1;i<=p->n;i++)p->guard_due[i]=INFINITY;
  return true;

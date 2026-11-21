@@ -20,6 +20,41 @@ public final class GoalControls {
   if(!preferences(context).edit().putInt("goal_mode",c.mode).putString("score",Integer.toString(c.target)).putString("accuracy",new BigDecimal(c.accuracy).divide(new BigDecimal(100)).toPlainString()).putString("rules",c.encodedRules).putInt("timing_tenths_ms",timing).putBoolean("block_touch",blockTouch).putInt("assist_guard",assistGuard).putInt("guard_score",guardScore).commit())throw new IllegalStateException("配置未能写入存储");
  }
  public static int[] status(){try{int[] s=LabNative.controlStatus();return s!=null&&s.length==21?s:new int[21];}catch(UnsatisfiedLinkError e){return new int[21];}}
+ /**
+  * 结算页强制显示（独立开关）。
+  *
+  * 与自动游玩、判定保护完全解耦：三项各有自己的偏好键，任意组合互不影响。
+  * 开启后结算页显示配置的数值，包括真实一局不可能出现的组合。
+  */
+ public static final String FORCE="force_result_";
+ public static final class Forced{
+  public final boolean enabled;public final int score,accuracy,perfect,good,bad,miss,combo;
+  Forced(boolean e,int s,int a,int p,int g,int b,int m,int c){enabled=e;score=s;accuracy=a;perfect=p;good=g;bad=b;miss=m;combo=c;}
+ }
+ public static Forced forced(Context c){
+  SharedPreferences p=preferences(c);
+  return new Forced(p.getBoolean(FORCE+"enabled",false),
+   clamp(p.getInt(FORCE+"score",0),0,99999999),clamp(p.getInt(FORCE+"accuracy",0),0,10000),
+   clamp(p.getInt(FORCE+"perfect",0),0,999999),clamp(p.getInt(FORCE+"good",0),0,999999),
+   clamp(p.getInt(FORCE+"bad",0),0,999999),clamp(p.getInt(FORCE+"miss",0),0,999999),
+   clamp(p.getInt(FORCE+"combo",0),0,999999));
+ }
+ private static int clamp(int v,int low,int high){return v<low?low:v>high?high:v;}
+ public static void applyForced(Forced v){
+  if(!LabNative.configureForcedResult(v.enabled,v.score,v.accuracy,v.perfect,v.good,v.bad,v.miss,v.combo))
+   throw new IllegalArgumentException("原生层拒绝该结算显示配置");
+ }
+ public static void saveForced(Context c,Forced v){
+  applyForced(v);
+  if(!preferences(c).edit().putBoolean(FORCE+"enabled",v.enabled).putInt(FORCE+"score",v.score)
+   .putInt(FORCE+"accuracy",v.accuracy).putInt(FORCE+"perfect",v.perfect).putInt(FORCE+"good",v.good)
+   .putInt(FORCE+"bad",v.bad).putInt(FORCE+"miss",v.miss).putInt(FORCE+"combo",v.combo).commit())
+   throw new IllegalStateException("结算显示设置保存失败");
+ }
+ /** 启动时把已保存的配置推给原生层；失败只记录，不影响启动。 */
+ public static void initializeForced(Context c){
+  try{applyForced(forced(c));}catch(RuntimeException e){android.util.Log.e("PhiraLab","forced result config ignored",e);}
+ }
  public static void flags(Context c,boolean block,int guard,int score){if(guard<0||guard>3||score<0||score>1000000)throw new IllegalArgumentException("未知保护");preferences(c).edit().putBoolean("block_touch",block).putInt("assist_guard",guard).putInt("guard_score",score).commit();}
  private GoalControls(){}
 }

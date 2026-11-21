@@ -59,6 +59,29 @@ static int commit_note_rank(unsigned what,uint32_t *out_line,uint32_t *out_note,
  if(out_len)*out_len=len;
  return (int)rank;
 }
+/* Forced settlement display: an independent opt-in switch. Phira computes its
+ * settlement numbers from `observed`, so overriding that struct is enough to change
+ * what the result screen shows without touching the judgment pipeline. It is
+ * deliberately decoupled from autoplay and from judgment protection, and values are
+ * accepted verbatim - including combinations a real run could not produce. */
+static atomic_bool force_enabled;
+static atomic_int force_score,force_accuracy,force_perfect,force_good,force_bad,force_miss,force_combo;
+
+static void apply_forced_result(void){
+ if(!atomic_load(&force_enabled))return;
+ int n=observed.total;
+ if(n<1)return;
+ observed.counts[0]=atomic_load(&force_perfect);
+ observed.counts[1]=atomic_load(&force_good);
+ observed.counts[2]=atomic_load(&force_bad);
+ observed.counts[3]=atomic_load(&force_miss);
+ observed.max_combo=atomic_load(&force_combo);
+ observed.combo=observed.max_combo;
+ __android_log_print(ANDROID_LOG_INFO,"PhiraLab","control.result.forced score=%d acc=%d P=%d G=%d B=%d M=%d combo=%d",
+  atomic_load(&force_score),(int)atomic_load(&force_accuracy),observed.counts[0],observed.counts[1],
+  observed.counts[2],observed.counts[3],observed.max_combo);
+}
+
 static void commit_observer(void *inner,unsigned what,double diff){
  int rank=0;size_t len=0;
  if(observed_judge&&inner==(unsigned char*)observed_judge+0x58&&what<=3){
@@ -79,9 +102,13 @@ static void commit_observer(void *inner,unsigned what,double diff){
  if(what==1){if(diff<0)observed.early++;else observed.late++;}
 }
 static void publish_controls(void){
+ /* Forced display overrides the observed tallies, so every number the settlement
+  * screen derives from them changes together and stays self-consistent. */
+ apply_forced_result();
  int n=plan.valid?plan.n:observed.total,total=0;for(int i=0;i<4;i++)total+=observed.counts[i];
  double accuracy=n?((double)observed.counts[0]+.65*observed.counts[1])/n:0;
  int score=n?(int)floor((.9*accuracy+.1*(double)observed.max_combo/n)*1000000.+.5):0;
+ if(atomic_load(&force_enabled)){score=atomic_load(&force_score);accuracy=(double)atomic_load(&force_accuracy)/10000.;}
  PlanEstimate *e=&plan.estimate;
  jint v[]={atomic_load(&ready),atomic_load(&enabled),n,e->good+e->bad+e->miss,observed.counts[1]+observed.counts[2]+observed.counts[3],(jint)atomic_load(&config_revision),e->score,e->accuracy,e->miss,e->good,e->bad,n>0&&total>=n,score,(int)floor(accuracy*10000.+.5),observed.counts[0],observed.counts[1],observed.counts[2],observed.counts[3],observed.max_combo,observed.early,observed.late};
  pthread_mutex_lock(&status_lock);memcpy(controls_status,v,sizeof(v));
@@ -148,6 +175,20 @@ JNIEXPORT void JNICALL Java_com_phira_lab_LabNative_disarm(JNIEnv *env,jclass ty
 JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_setEnabled(JNIEnv *env,jclass type,jboolean value){(void)env;(void)type;if(!atomic_load(&ready)||!atomic_load(&armed))return JNI_FALSE;atomic_store(&enabled,value==JNI_TRUE);return JNI_TRUE;}
 JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_setTemporaryRoot(JNIEnv *env,jclass type,jstring directory){(void)type;if(!directory||!atomic_load(&armed))return JNI_FALSE;const char *p=(*env)->GetStringUTFChars(env,directory,NULL);if(!p)return JNI_FALSE;size_t n=strnlen(p,1024);bool okay=n>0&&n<1024&&p[0]=='/'&&!strstr(p,"..")&&!strchr(p,'\n');if(okay)okay=setenv("TMPDIR",p,1)==0;(*env)->ReleaseStringUTFChars(env,directory,p);return okay?JNI_TRUE:JNI_FALSE;}
 JNIEXPORT jintArray JNICALL Java_com_phira_lab_LabNative_status(JNIEnv *env,jclass type){(void)type;jint v[]={atomic_load(&ready),atomic_load(&armed),atomic_load(&enabled),atomic_load(&tainted),(jint)atomic_load(&frames),atomic_load(&stage),atomic_load(&early_frame)};jintArray out=(*env)->NewIntArray(env,7);if(out)(*env)->SetIntArrayRegion(env,out,0,7,v);return out;}
+JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_configureForcedResult(JNIEnv *env,jclass type,jboolean enabled,jint score,jint accuracy,jint perfect,jint good,jint bad,jint miss,jint combo){
+ (void)env;(void)type;
+ // Ranges are permissive on purpose: the switch exists to show values a real run
+ // could not produce. Only values that would break the result screen's own
+ // arithmetic are refused.
+ if(score<0||score>99999999||accuracy<0||accuracy>10000)return JNI_FALSE;
+ if(perfect<0||good<0||bad<0||miss<0||combo<0)return JNI_FALSE;
+ if(perfect>999999||good>999999||bad>999999||miss>999999||combo>999999)return JNI_FALSE;
+ atomic_store(&force_score,score);atomic_store(&force_accuracy,accuracy);
+ atomic_store(&force_perfect,perfect);atomic_store(&force_good,good);
+ atomic_store(&force_bad,bad);atomic_store(&force_miss,miss);
+ atomic_store(&force_combo,combo);atomic_store(&force_enabled,enabled==JNI_TRUE);
+ return JNI_TRUE;
+}
 JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_configure(JNIEnv *env,jclass type,jint mode,jint target,jint accuracy,jint timing,jboolean block_touch,jint assist_guard,jint guard_score,jintArray words){
  (void)type;if(mode<0||mode>3||target<0||target>1000000||accuracy<0||accuracy>10000||timing<0||timing>750||assist_guard<0||assist_guard>3||guard_score<0||guard_score>1000000||(mode==3&&(assist_guard<1||(assist_guard==3&&guard_score<1)))||!words)return JNI_FALSE;
  int length=(*env)->GetArrayLength(env,words);if(length<1||length>MAX_CONFIG_WORDS)return JNI_FALSE;

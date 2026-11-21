@@ -19,7 +19,8 @@ public final class GoalPanel {
  }
  private void handle(String action,String payload){if(destroyed)return;try{
   JSONObject p=new JSONObject(payload);boolean reload=false;
-  if(action.equals("ready")){GoalControls.apply(GoalControls.load(activity),GoalControls.timing(activity),GoalControls.blockTouch(activity),GoalControls.assistGuard(activity),GoalControls.guardScore(activity));reload=true;}
+  if(action.equals("ready")){GoalControls.apply(GoalControls.load(activity),GoalControls.timing(activity),GoalControls.blockTouch(activity),GoalControls.assistGuard(activity),GoalControls.guardScore(activity));GoalControls.initializeForced(activity);reload=true;}
+  else if(action.equals("force-result")){GoalControls.Forced v=new GoalControls.Forced(p.optBoolean("enabled",false),p.optInt("score",0),p.optInt("accuracy",0),p.optInt("perfect",0),p.optInt("good",0),p.optInt("bad",0),p.optInt("miss",0),p.optInt("combo",0));GoalControls.saveForced(activity,v);publish(false,v.enabled?"结算显示已保存，本局结算即生效":"结算显示已关闭");return;}
   else if(action.equals("save")){ControlsConfig c=ControlsConfig.parse(p.getInt("mode"),p.optString("score",""),p.optString("accuracy",""),p.optString("rules",""));int guard=p.optInt("assistGuard",0),guardScore=p.optInt("guardScore",0);if(guard<0||guard>3||guardScore<0||guardScore>1000000)throw new IllegalArgumentException("成绩保护参数无效");GoalControls.save(activity,c,TimingSetting.parse(p.optString("timingMs","0")),p.optBoolean("blockTouch",true),guard,guardScore);publish(true,"已保存，下次开始谱面时使用新计划");return;}
   else if(action.equals("reset")){GoalControls.save(activity,ControlsConfig.parse(0,"1000000","100",""),0,true,0,0);publish(true,"已重置目标、保护与规则，下局生效");return;}
   else if(action.equals("auto")){
@@ -33,6 +34,15 @@ public final class GoalPanel {
  private void publish(boolean reload,String message){if(destroyed)return;try{
   ControlsConfig c=GoalControls.load(activity);int[] s=GoalControls.status();JSONObject data=new JSONObject();data.put("timingMs",TimingSetting.format(GoalControls.timing(activity))).put("blockTouch",GoalControls.blockTouch(activity)).put("assistGuard",GoalControls.assistGuard(activity)).put("guardScore",GoalControls.guardScore(activity));data.put("auto",s[1]==1).put("mode",c.mode).put("score",Integer.toString(c.target)).put("accuracy",new BigDecimal(c.accuracy).divide(new BigDecimal(100)).toPlainString()).put("reload",reload).put("rksTarget","").put("skin","由 Phira 原版管理");
   JSONArray rules=new JSONArray();for(ControlsConfig.Rule r:c.rules){StringBuilder list=new StringBuilder();for(int id:r.indices){if(list.length()>0)list.append(',');list.append(id);}rules.put(new JSONObject().put("judgment",r.judgment).put("position",r.position).put("start",r.start).put("end",r.end).put("count",r.count).put("indices",list.toString()).put("noteType",r.noteType));}data.put("rules",rules);
+  GoalControls.Forced f=GoalControls.forced(activity);
+  JSONObject force=new JSONObject();force.put("enabled",f.enabled);
+  force.put("score",f.score==0?"":Integer.toString(f.score));
+  force.put("accuracy",f.accuracy==0?"":new BigDecimal(f.accuracy).divide(new BigDecimal(100)).toPlainString());
+  force.put("perfect",f.perfect==0?"":Integer.toString(f.perfect));force.put("good",f.good==0?"":Integer.toString(f.good));
+  force.put("bad",f.bad==0?"":Integer.toString(f.bad));force.put("miss",f.miss==0?"":Integer.toString(f.miss));
+  force.put("combo",f.combo==0?"":Integer.toString(f.combo));
+  data.put("force",force);
+  data.put("forceState",f.enabled?"已启用 · 下次结算按上面的数值显示":"未启用");
   String runtime=Entry.connection();String detail="";try{detail=LabNative.controlDetail();}catch(UnsatisfiedLinkError ignored){}
   if(s[0]==1&&s[1]==1&&s[2]>0){runtime="音符 "+s[2]+" · 计划 "+s[6]+" 分 / "+new BigDecimal(s[7]).divide(new BigDecimal(100)).toPlainString()+"% · P "+(s[2]-s[8]-s[9]-s[10])+" G "+s[9]+" B "+s[10]+" M "+s[8];runtime+="\n"+(s[11]==1?"完整判定事件统计":"模块启用期间事件统计")+"：P "+s[14]+" G "+s[15]+" B "+s[16]+" M "+s[17]+" · 最大连击 "+s[18]+" · Good早/晚 "+s[19]+"/"+s[20]+" · 推算 "+s[12]+" 分。最终以原版结算为准。";}
   if(detail!=null&&!detail.isEmpty())runtime+="\n"+detail;
