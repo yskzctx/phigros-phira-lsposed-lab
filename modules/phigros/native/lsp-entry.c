@@ -6,6 +6,13 @@
 #include "attachment-order.h"
 #include <dlfcn.h>
 
+// Cloud observers live in their own translation unit for the host test, but are
+// included here so this file stays the single owner of the exported native_init.
+// CLOUD_GUARD_INCLUDED suppresses cloud-guard's own entry point.
+#define CLOUD_GUARD_INCLUDED 1
+#include "cloud-guard.c"
+#undef CLOUD_GUARD_INCLUDED
+
 typedef void (*NativeOnModuleLoaded)(const char*,void*);
 typedef struct{uint32_t version;LabHook hook_func;LabUnhook unhook_func;} NativeAPIEntries;
 static LabBatch batch;
@@ -53,7 +60,10 @@ static void on_library(const char *name,void *handle){
 }
 __attribute__((visibility("default"),used)) NativeOnModuleLoaded native_init(const NativeAPIEntries *api){
  if(!api||api->version<1||api->version>2||!api->hook_func||!api->unhook_func)return NULL;
- pthread_mutex_lock(&attachment_lock);batch.hook=api->hook_func;batch.unhook=api->unhook_func;atomic_store(&api_received,true);attachment_try(&attachment,install_library);pthread_mutex_unlock(&attachment_lock);return on_library;
+ pthread_mutex_lock(&attachment_lock);batch.hook=api->hook_func;batch.unhook=api->unhook_func;atomic_store(&api_received,true);attachment_try(&attachment,install_library);pthread_mutex_unlock(&attachment_lock);
+ // Hand the same API to the cloud observers so the panel's sync self-check works.
+ cloud_hook_api(api->hook_func,api->unhook_func);
+ return on_library;
 }
 JNIEXPORT jboolean JNICALL Java_com_phigros_lab_LabNative_isReady(JNIEnv *env,jclass type){(void)env;(void)type;return atomic_load(&ready)?JNI_TRUE:JNI_FALSE;}
 JNIEXPORT jboolean JNICALL Java_com_phigros_lab_LabNative_readyOrAbort(JNIEnv *env,jclass type){return Java_com_phigros_lab_LabNative_isReady(env,type);}

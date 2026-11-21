@@ -119,6 +119,69 @@ public final class RksEditor {
         return out.toString();
     }
     private static Map<String,String> entries(String raw){Map<String,String> result=new HashMap<String,String>();Matcher m=ENTRY.matcher(raw);while(m.find())result.put(m.group(1),m.group(2));return result;}
+    /**
+     * 会话结束时把自动游玩期间写入的曲目记录还原成会话开始前的样子，账号、设置、
+     * 资源等非记录字段保持当前值。
+     *
+     * 只覆盖备份里存在的谱面记录键，因此会话期间新增的解锁状态和设置改动不会被
+     * 回滚；备份缺失或格式不符时抛出异常而不是静默写坏存档。
+     */
+    public static void restoreSessionRecords(Context c,File backup,File current)throws IOException{
+        restoreSessionRecords(new File(c.getApplicationInfo().dataDir),backup,current);
+    }
+    public static void restoreSessionRecords(File applicationData,File backup,File current)throws IOException{
+        if(backup==null||!backup.isFile())throw new IOException("自动游玩会话备份缺失");
+        if(current==null)throw new IOException("当前存档路径缺失");
+        String previous=read(backup),now=current.isFile()?read(current):"";
+        Map<String,String> saved=entries(previous);
+        Map<String,String> changes=new LinkedHashMap<String,String>();
+        for(Map.Entry<String,String> entry:saved.entrySet()){
+            String key=entry.getKey();
+            // 只回滚加密的曲目记录，保留账号与设置。
+            if(PRESERVED_KEYS.contains(key))continue;
+            if(key.isEmpty())continue;
+            changes.put(key,entry.getValue());
+        }
+        if(changes.isEmpty())throw new IOException("自动游玩会话备份没有曲目记录");
+        String restored=now.isEmpty()?replaceOrAppend(previous,changes):replaceOrAppend(now,changes);
+        try(InputStream in=new ByteArrayInputStream(restored.getBytes(StandardCharsets.UTF_8))){
+            LaunchActivity.copyAtomic(in,current);
+        }
+    }
+    /**
+     * 把一局「强制结算」写进本地历史。
+     *
+     * 模块直接使用宿主原档，所以这里写入的就是原版会读到的那份记录；写前先备份到
+     * 模块自己的目录，出错可以回退。只改这一张谱面，其它曲目保持不变。
+     */
+    public static synchronized void applyForcedResult(Context c,String chartKey,int score,float accuracy,int combo)throws IOException{
+        if(chartKey==null||chartKey.trim().isEmpty())throw new IOException("缺少谱面标识");
+        if(accuracy<0f||accuracy>100f)throw new IOException("准确率超出 0～100");
+        if(score<0)throw new IOException("分数不能为负");
+        String[] names={"com.PigeonGames.Phigros.v2.playerprefs.xml",c.getPackageName()+".v2.playerprefs.xml"};
+        File games=new File(c.getApplicationInfo().dataDir,"shared_prefs");
+        File backups=new File(new File(c.getFilesDir(),"phigros-module-backups"),"forced-result");
+        if(!backups.isDirectory()&&!backups.mkdirs())throw new IOException("无法创建强制结算备份目录");
+        File backup=new File(backups,Long.toString(System.currentTimeMillis()));
+        if(!backup.mkdirs())throw new IOException("无法创建本次强制结算备份");
+        RksPlanner.Record record=new RksPlanner.Record(new RksPlanner.Chart(chartKey,0f),accuracy,accuracy>=99.999f);
+        record.score=score;record.combo=combo;
+        Map<String,String> update=new HashMap<String,String>();
+        try{
+            update.put(encrypt(chartKey),encrypt(record.json()));
+            boolean wrote=false;
+            for(String name:names){
+                File source=new File(games,name);
+                if(!source.isFile())continue;
+                copy(source,new File(backup,name));
+                String edited=replace(read(source),update);
+                try(InputStream in=new ByteArrayInputStream(edited.getBytes(StandardCharsets.UTF_8))){LaunchActivity.copyAtomic(in,source);}
+                wrote=true;
+            }
+            if(!wrote)throw new IOException("找不到宿主存档，未写入强制结算");
+        }catch(IOException e){throw e;}
+        catch(Exception e){throw new IOException("强制结算写入失败："+e.getClass().getSimpleName(),e);}
+    }
     static String mergeMissingCatalogEntries(String current,String seed)throws IOException {
         return CatalogXmlMerge.mergeMissing(current,seed);
     }
