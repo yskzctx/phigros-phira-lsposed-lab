@@ -66,20 +66,36 @@ static int commit_note_rank(unsigned what,uint32_t *out_line,uint32_t *out_note,
  * accepted verbatim - including combinations a real run could not produce. */
 static atomic_bool force_enabled;
 static atomic_int force_score,force_accuracy,force_perfect,force_good,force_bad,force_miss,force_combo;
+/* Good 早/晚：结算页分别显示，故选填。0 表示不干预（沿用观测值）。
+ * 结算符号同样由判定数量派生：Φ = 全 Perfect，FC = 无 Bad/Miss。 */
+static atomic_bool force_early_late_on;
+static atomic_int force_early,force_late;
+static atomic_int force_symbol;
 
 static void apply_forced_result(void){
  if(!atomic_load(&force_enabled))return;
  int n=observed.total;
  if(n<1)return;
- observed.counts[0]=atomic_load(&force_perfect);
- observed.counts[1]=atomic_load(&force_good);
- observed.counts[2]=atomic_load(&force_bad);
- observed.counts[3]=atomic_load(&force_miss);
+ int perfect=atomic_load(&force_perfect);
+ int good=atomic_load(&force_good);
+ int bad=atomic_load(&force_bad);
+ int miss=atomic_load(&force_miss);
+ int symbol=atomic_load(&force_symbol);
+ if(symbol==1){perfect=perfect+good+bad+miss;good=0;bad=0;miss=0;}
+ else if(symbol==2){bad=0;miss=0;}
+ observed.counts[0]=perfect;
+ observed.counts[1]=good;
+ observed.counts[2]=bad;
+ observed.counts[3]=miss;
  observed.max_combo=atomic_load(&force_combo);
  observed.combo=observed.max_combo;
- __android_log_print(ANDROID_LOG_INFO,"PhiraLab","control.result.forced score=%d acc=%d P=%d G=%d B=%d M=%d combo=%d",
+ if(atomic_load(&force_early_late_on)){
+  observed.early=atomic_load(&force_early);
+  observed.late=atomic_load(&force_late);
+ }
+ __android_log_print(ANDROID_LOG_INFO,"PhiraLab","control.result.forced score=%d acc=%d P=%d G=%d B=%d M=%d combo=%d early=%d late=%d symbol=%d",
   atomic_load(&force_score),(int)atomic_load(&force_accuracy),observed.counts[0],observed.counts[1],
-  observed.counts[2],observed.counts[3],observed.max_combo);
+  observed.counts[2],observed.counts[3],observed.max_combo,observed.early,observed.late,symbol);
 }
 
 static void commit_observer(void *inner,unsigned what,double diff){
@@ -119,7 +135,7 @@ static void judge_update(void *judge,void *resource,void *chart,void *bad_notes)
  if(!atomic_load(&armed)){judge_original(judge,resource,chart,bad_notes);return;}
  plan.touch=&touch_api;
  pthread_mutex_lock(&config_lock);frame_config=pending_config;pthread_mutex_unlock(&config_lock);
- bool requested=atomic_load(&enabled);
+ bool requested=atomic_load(&enabled)||frame_config.mode==3;
  plan.seen_p=observed.counts[0];plan.seen_g=observed.counts[1];plan.seen_b=observed.counts[2];plan.seen_m=observed.counts[3];plan.seen_combo=observed.combo;plan.seen_max=observed.max_combo;
  bool okay=lab_frame_begin(&plan,judge,resource,chart,requested,&frame_config,(uint32_t)((uintptr_t)chart^(uintptr_t)judge^0xa73c819du),&input_api);
  if(!okay)atomic_store(&enabled,false);
@@ -175,7 +191,7 @@ JNIEXPORT void JNICALL Java_com_phira_lab_LabNative_disarm(JNIEnv *env,jclass ty
 JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_setEnabled(JNIEnv *env,jclass type,jboolean value){(void)env;(void)type;if(!atomic_load(&ready)||!atomic_load(&armed))return JNI_FALSE;atomic_store(&enabled,value==JNI_TRUE);return JNI_TRUE;}
 JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_setTemporaryRoot(JNIEnv *env,jclass type,jstring directory){(void)type;if(!directory||!atomic_load(&armed))return JNI_FALSE;const char *p=(*env)->GetStringUTFChars(env,directory,NULL);if(!p)return JNI_FALSE;size_t n=strnlen(p,1024);bool okay=n>0&&n<1024&&p[0]=='/'&&!strstr(p,"..")&&!strchr(p,'\n');if(okay)okay=setenv("TMPDIR",p,1)==0;(*env)->ReleaseStringUTFChars(env,directory,p);return okay?JNI_TRUE:JNI_FALSE;}
 JNIEXPORT jintArray JNICALL Java_com_phira_lab_LabNative_status(JNIEnv *env,jclass type){(void)type;jint v[]={atomic_load(&ready),atomic_load(&armed),atomic_load(&enabled),atomic_load(&tainted),(jint)atomic_load(&frames),atomic_load(&stage),atomic_load(&early_frame)};jintArray out=(*env)->NewIntArray(env,7);if(out)(*env)->SetIntArrayRegion(env,out,0,7,v);return out;}
-JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_configureForcedResult(JNIEnv *env,jclass type,jboolean enabled,jint score,jint accuracy,jint perfect,jint good,jint bad,jint miss,jint combo){
+JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_configureForcedResult(JNIEnv *env,jclass type,jboolean enabled,jint score,jint accuracy,jint perfect,jint good,jint bad,jint miss,jint combo,jboolean earlyLateOn,jint early,jint late,jint symbol){
  (void)env;(void)type;
  // Ranges are permissive on purpose: the switch exists to show values a real run
  // could not produce. Only values that would break the result screen's own
@@ -183,10 +199,15 @@ JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_configureForcedResult(JN
  if(score<0||score>99999999||accuracy<0||accuracy>10000)return JNI_FALSE;
  if(perfect<0||good<0||bad<0||miss<0||combo<0)return JNI_FALSE;
  if(perfect>999999||good>999999||bad>999999||miss>999999||combo>999999)return JNI_FALSE;
+ if(early<0||late<0||early>999999||late>999999||symbol<0||symbol>2)return JNI_FALSE;
  atomic_store(&force_score,score);atomic_store(&force_accuracy,accuracy);
  atomic_store(&force_perfect,perfect);atomic_store(&force_good,good);
  atomic_store(&force_bad,bad);atomic_store(&force_miss,miss);
- atomic_store(&force_combo,combo);atomic_store(&force_enabled,enabled==JNI_TRUE);
+ atomic_store(&force_combo,combo);
+ atomic_store(&force_early,early);atomic_store(&force_late,late);
+ atomic_store(&force_early_late_on,earlyLateOn==JNI_TRUE);
+ atomic_store(&force_symbol,symbol);
+ atomic_store(&force_enabled,enabled==JNI_TRUE);
  return JNI_TRUE;
 }
 JNIEXPORT jboolean JNICALL Java_com_phira_lab_LabNative_configure(JNIEnv *env,jclass type,jint mode,jint target,jint accuracy,jint timing,jboolean block_touch,jint assist_guard,jint guard_score,jintArray words){

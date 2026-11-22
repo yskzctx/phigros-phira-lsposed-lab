@@ -29,26 +29,35 @@ public final class GoalControls {
  public static final String FORCE="force_result_";
  public static final class Forced{
   public final boolean enabled;public final int score,accuracy,perfect,good,bad,miss,combo;
-  Forced(boolean e,int s,int a,int p,int g,int b,int m,int c){enabled=e;score=s;accuracy=a;perfect=p;good=g;bad=b;miss=m;combo=c;}
+  public final boolean earlyLateOn;public final int early,late,symbol;
+  Forced(boolean e,int s,int a,int p,int g,int b,int m,int c,boolean eOn,int early,int late,int symbol){
+   enabled=e;score=s;accuracy=a;perfect=p;good=g;bad=b;miss=m;combo=c;
+   earlyLateOn=eOn;this.early=early;this.late=late;this.symbol=symbol;}
  }
  public static Forced forced(Context c){
   SharedPreferences p=preferences(c);
+  int symbol=clamp(p.getInt(FORCE+"symbol",0),0,2);
   return new Forced(p.getBoolean(FORCE+"enabled",false),
    clamp(p.getInt(FORCE+"score",0),0,99999999),clamp(p.getInt(FORCE+"accuracy",0),0,10000),
    clamp(p.getInt(FORCE+"perfect",0),0,999999),clamp(p.getInt(FORCE+"good",0),0,999999),
    clamp(p.getInt(FORCE+"bad",0),0,999999),clamp(p.getInt(FORCE+"miss",0),0,999999),
-   clamp(p.getInt(FORCE+"combo",0),0,999999));
+   clamp(p.getInt(FORCE+"combo",0),0,999999),
+   p.getBoolean(FORCE+"early_late_on",false),
+   clamp(p.getInt(FORCE+"early",0),0,999999),clamp(p.getInt(FORCE+"late",0),0,999999),symbol);
  }
  private static int clamp(int v,int low,int high){return v<low?low:v>high?high:v;}
  public static void applyForced(Forced v){
-  if(!LabNative.configureForcedResult(v.enabled,v.score,v.accuracy,v.perfect,v.good,v.bad,v.miss,v.combo))
+  if(!LabNative.configureForcedResult(v.enabled,v.score,v.accuracy,v.perfect,v.good,v.bad,v.miss,v.combo,
+   v.earlyLateOn,v.early,v.late,v.symbol))
    throw new IllegalArgumentException("原生层拒绝该结算显示配置");
  }
  public static void saveForced(Context c,Forced v){
   applyForced(v);
   if(!preferences(c).edit().putBoolean(FORCE+"enabled",v.enabled).putInt(FORCE+"score",v.score)
    .putInt(FORCE+"accuracy",v.accuracy).putInt(FORCE+"perfect",v.perfect).putInt(FORCE+"good",v.good)
-   .putInt(FORCE+"bad",v.bad).putInt(FORCE+"miss",v.miss).putInt(FORCE+"combo",v.combo).commit())
+   .putInt(FORCE+"bad",v.bad).putInt(FORCE+"miss",v.miss).putInt(FORCE+"combo",v.combo)
+   .putBoolean(FORCE+"early_late_on",v.earlyLateOn).putInt(FORCE+"early",v.early)
+   .putInt(FORCE+"late",v.late).putInt(FORCE+"symbol",v.symbol).commit())
    throw new IllegalStateException("结算显示设置保存失败");
  }
  /** 启动时把已保存的配置推给原生层；失败只记录，不影响启动。 */

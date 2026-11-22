@@ -20,7 +20,7 @@ public final class GoalPanel {
  private void handle(String action,String payload){if(destroyed)return;try{
   JSONObject p=new JSONObject(payload);boolean reload=false;
   if(action.equals("ready")){GoalControls.apply(GoalControls.load(activity),GoalControls.timing(activity),GoalControls.blockTouch(activity),GoalControls.assistGuard(activity),GoalControls.guardScore(activity));GoalControls.initializeForced(activity);reload=true;}
-  else if(action.equals("force-result")){GoalControls.Forced v=new GoalControls.Forced(p.optBoolean("enabled",false),p.optInt("score",0),p.optInt("accuracy",0),p.optInt("perfect",0),p.optInt("good",0),p.optInt("bad",0),p.optInt("miss",0),p.optInt("combo",0));GoalControls.saveForced(activity,v);publish(false,v.enabled?"结算显示已保存，本局结算即生效":"结算显示已关闭");return;}
+  else if(action.equals("force-result")){int symbol=p.optInt("symbol",0);if(symbol<0||symbol>2)throw new IllegalArgumentException("结算符号取值无效");GoalControls.Forced v=new GoalControls.Forced(p.optBoolean("enabled",false),p.optInt("score",0),p.optInt("accuracy",0),p.optInt("perfect",0),p.optInt("good",0),p.optInt("bad",0),p.optInt("miss",0),p.optInt("combo",0),p.optBoolean("earlyLateOn",false),p.optInt("early",0),p.optInt("late",0),symbol);GoalControls.saveForced(activity,v);publish(false,v.enabled?"结算显示已保存，本局结算即生效":"结算显示已关闭");return;}
   else if(action.equals("save")){ControlsConfig c=ControlsConfig.parse(p.getInt("mode"),p.optString("score",""),p.optString("accuracy",""),p.optString("rules",""));int guard=p.optInt("assistGuard",0),guardScore=p.optInt("guardScore",0);if(guard<0||guard>3||guardScore<0||guardScore>1000000)throw new IllegalArgumentException("成绩保护参数无效");GoalControls.save(activity,c,TimingSetting.parse(p.optString("timingMs","0")),p.optBoolean("blockTouch",true),guard,guardScore);publish(true,"已保存，下次开始谱面时使用新计划");return;}
   else if(action.equals("reset")){GoalControls.save(activity,ControlsConfig.parse(0,"1000000","100",""),0,true,0,0);publish(true,"已重置目标、保护与规则，下局生效");return;}
   else if(action.equals("auto")){
@@ -41,6 +41,10 @@ public final class GoalPanel {
   force.put("perfect",f.perfect==0?"":Integer.toString(f.perfect));force.put("good",f.good==0?"":Integer.toString(f.good));
   force.put("bad",f.bad==0?"":Integer.toString(f.bad));force.put("miss",f.miss==0?"":Integer.toString(f.miss));
   force.put("combo",f.combo==0?"":Integer.toString(f.combo));
+  force.put("earlyLateOn",f.earlyLateOn);
+  force.put("early",f.early==0?"":Integer.toString(f.early));
+  force.put("late",f.late==0?"":Integer.toString(f.late));
+  force.put("symbol",f.symbol);
   data.put("force",force);
   data.put("forceState",f.enabled?"已启用 · 下次结算按上面的数值显示":"未启用");
   String runtime=Entry.connection();String detail="";try{detail=LabNative.controlDetail();}catch(UnsatisfiedLinkError ignored){}
