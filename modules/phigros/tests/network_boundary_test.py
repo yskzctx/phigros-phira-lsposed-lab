@@ -21,10 +21,7 @@ from pathlib import Path
 AAPT2 = Path(r'C:\Users\yskzc\Android\Sdk\build-tools\36.0.0\aapt2.exe')
 
 OFFLINE_APK = Path(r'I:\dsh\work\release\v181\Phigros-offline-v181.apk')
-MODULE_APKS = [
-    Path(r'I:\dsh\work\release\modules\Phigros-Lab-LSPosed-157-arm64-v0.4.0-TEST.apk'),
-    Path(r'I:\dsh\work\release\modules\Phira-Lab-LSPosed-0.8.3-arm64-v0.4.0-TEST.apk'),
-]
+MODULE_APKS = []  # resolved in main() as the newest module APKs
 
 # Permissions the offline build is allowed to keep. INTERNET is deliberately absent:
 # without it the platform refuses every socket, which is what "cannot log in, cannot
@@ -49,7 +46,16 @@ def permissions(apk: Path) -> set[str]:
     return found
 
 
+
+def newest_apk(prefix: str):
+    """Newest built APK whose name starts with prefix, or None."""
+    candidates = sorted(Path(r'I:\dsh\work\release\modules').glob(f'{prefix}*.apk'),
+                        key=lambda p: p.stat().st_mtime, reverse=True)
+    return candidates[0] if candidates else None
+
 def main() -> int:
+    global MODULE_APKS
+    MODULE_APKS = [a for a in (newest_apk("Phigros-Lab-LSPosed-"), newest_apk("Phira-Lab-LSPosed-")) if a]
     problems = []
 
     print('offline build:')

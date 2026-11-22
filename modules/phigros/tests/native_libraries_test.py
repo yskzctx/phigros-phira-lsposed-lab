@@ -16,7 +16,7 @@ import zipfile
 from pathlib import Path
 
 MODULE = Path(__file__).resolve().parent.parent
-APK = Path(r'I:\dsh\work\release\modules\Phigros-Lab-LSPosed-157-arm64-v0.4.0-TEST.apk')
+APK = None  # resolved in main() as the newest built Phigros module APK
 
 LOAD = re.compile(r'System\.loadLibrary\(\s*"([^"]+)"\s*\)')
 
@@ -33,7 +33,16 @@ def loaded_libraries() -> dict[str, list[str]]:
     return found
 
 
+
+def newest_apk(prefix: str):
+    """Newest built APK whose name starts with prefix, or None."""
+    candidates = sorted(Path(r'I:\dsh\work\release\modules').glob(f'{prefix}*.apk'),
+                        key=lambda p: p.stat().st_mtime, reverse=True)
+    return candidates[0] if candidates else None
+
 def main() -> int:
+    global APK
+    APK = newest_apk("Phigros-Lab-LSPosed-")
     libraries = loaded_libraries()
     if not libraries:
         print('FAIL no System.loadLibrary calls found; the scan is broken')
