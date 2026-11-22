@@ -106,6 +106,7 @@ public final class OverlayMenu {
         if(action.equals("ready")){publish(true,null,false);return;}
         if(action.equals("chapter-open")){hide();ModuleScreens.chapters(activity);return;}
         if(action.equals("skin-open")){hide();ModuleScreens.skin(activity);return;}
+        if(action.equals("save-import")){hide();ModuleScreens.saveTransfer(activity);return;}
         if(action.equals("save")){int guard=p.optInt("assistGuard",0),score=p.optInt("guardScore",0);ControlsConfig c=ControlsConfig.parse(p.getInt("mode"),p.getString("score"),p.getString("accuracy"),p.getString("rules"));if(c.mode==3&&(guard<1||guard>3||(guard==3&&(score<1||score>1000000))))throw new IllegalArgumentException(guard==3?"保护分数必须填写":"判定保护类型无效");if(c.mode!=3)guard=0;NativeControls.save(storage,c,p.optBoolean("blockTouch",true),guard,score);publish(false,"已保存，下局使用新判定计划",true);return;}
         if(action.equals("reset")){NativeControls.save(storage,ControlsConfig.parse(0,"1000000","100",""),true,0,0);publish(true,"游玩设置已重置；历史成绩未改变",true);return;}
         if(action.equals("force-result")){

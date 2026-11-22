@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.phigros.lab.lsp" android:versionCode="18" android:versionName="0.5.1-test">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.phigros.lab.lsp" android:versionCode="19" android:versionName="0.6.0-test">
     <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
     <queries><package android:name="com.PigeonGames.Phigros" /><package android:name="org.lsposed.manager" /></queries>
     <application android:label="Phigros 本地实验模块" android:theme="@android:style/Theme.Material.Light.NoActionBar" android:allowBackup="false" android:extractNativeLibs="true" android:multiArch="true" android:usesCleartextTraffic="false">
@@ -11,6 +11,7 @@
         </activity>
         <activity android:name="com.phigros.offline.ChapterLibraryActivity" android:exported="true" android:screenOrientation="sensorLandscape" />
         <activity android:name="com.phigros.offline.SkinActivity" android:exported="false" android:screenOrientation="sensorLandscape" />
+        <activity android:name="com.phigros.offline.SaveTransferActivity" android:exported="false" android:screenOrientation="sensorLandscape" />
         <activity android:name="com.phigros.offline.ChapterPlayerActivity" android:exported="false" android:process=":chapter_player" android:screenOrientation="sensorLandscape" android:configChanges="orientation|screenSize|keyboardHidden" />
     <receiver android:name="com.phigros.lab.ConnectionReport" android:exported="false" /></application>
 </manifest>
