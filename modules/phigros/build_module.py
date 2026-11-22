@@ -4,6 +4,10 @@ from pathlib import Path,PurePosixPath
 p=argparse.ArgumentParser(description=__doc__)
 for arg in ['sdk','ndk','xposed-api','keystore','password-file','out','resources-from-apk']:p.add_argument('--'+arg,required=True,type=Path)
 p.add_argument('--alias',required=True);p.add_argument('--chapter-so',type=Path);p.add_argument('--build-tools',default='36.0.0');p.add_argument('--platform',default='android-36')
+# The local-chapter engine is a real feature, not an optional extra: shipping without
+# it silently removes自制章节 from the module. Omitting it must therefore be an
+# explicit decision, never a side effect of a missing file.
+p.add_argument('--without-chapter',action='store_true',help='explicitly build without the local-chapter engine')
 a=p.parse_args();root=Path(__file__).resolve().parent;out=a.out.resolve();out.mkdir(parents=True,exist_ok=True);build=out/'module-build';build.mkdir(exist_ok=True)
 def run(*args):subprocess.run([str(v)for v in args],check=True)
 def digest(path):
@@ -34,19 +38,34 @@ with zipfile.ZipFile(resources)as res,zipfile.ZipFile(a.resources_from_apk)as ol
    if e.filename.startswith(('assets/aa/','assets/bin/')):continue
    z.writestr(e,(root/'assets/offline/controls-ui.html').read_bytes()if e.filename=='assets/offline/controls-ui.html'else old.read(e))
  for name,file in native.items():z.write(file,'lib/arm64-v8a/'+name,compress_type=zipfile.ZIP_STORED)
- # The local-chapter backend is a Rust build (see chapter-player/README.md) that is
- # not part of this repository's toolchain. When neither --chapter-so nor the
- # resource APK provides it, ship the module without the chapter feature rather than
- # failing the whole build: everything else in the module works without it, and
- # silently embedding an unverified binary would be worse than omitting it.
- chapter=None
- if a.chapter_so:chapter=a.chapter_so.read_bytes()
- elif 'lib/arm64-v8a/libphigros_chapter.so' in old.namelist():chapter=old.read('lib/arm64-v8a/libphigros_chapter.so')
- if chapter:
-  assert chapter[:5]==b'\x7fELF\x02'and struct.unpack_from('<H',chapter,18)[0]==183
-  z.writestr('lib/arm64-v8a/libphigros_chapter.so',chapter,compress_type=zipfile.ZIP_STORED)
+ # The local-chapter backend is a Rust build (see chapter-player/README.md). It is a
+ # shipped feature: the module registers ChapterLibraryActivity / ChapterPlayerActivity
+ # and ChapterPlayerActivity calls System.loadLibrary("phigros_chapter"), so a module
+ # without this library has dead UI and no chapter playback.
+ #
+ # Resolution order: --chapter-so, then the resource APK (older modules carried it),
+ # then a sibling build-cache copy. Missing entirely is a hard error unless
+ # --without-chapter was passed.
+ chapter=None;chapter_source=None
+ if a.chapter_so:
+  chapter=a.chapter_so.read_bytes();chapter_source=str(a.chapter_so)
+ elif 'lib/arm64-v8a/libphigros_chapter.so' in old.namelist():
+  chapter=old.read('lib/arm64-v8a/libphigros_chapter.so');chapter_source='resource APK'
  else:
-  print('WARNING: no libphigros_chapter.so available; building without the local-chapter feature')
+  cached=root.parent.parent/'build-cache'/'libphigros_chapter.so'
+  if cached.is_file():chapter=cached.read_bytes();chapter_source=str(cached)
+ if chapter:
+  assert chapter[:5]==b'\x7fELF\x02'and struct.unpack_from('<H',chapter,18)[0]==183,'chapter library is not an aarch64 ELF'
+  z.writestr('lib/arm64-v8a/libphigros_chapter.so',chapter,compress_type=zipfile.ZIP_STORED)
+  print(f'chapter engine: {len(chapter)} bytes from {chapter_source}')
+ elif a.without_chapter:
+  print('WARNING: --without-chapter given; the local-chapter feature is NOT in this build')
+ else:
+  raise SystemExit(
+   'libphigros_chapter.so not found. This module ships a local-chapter engine, and building\n'
+   'without it silently removes that feature (ChapterPlayerActivity calls\n'
+   'System.loadLibrary("phigros_chapter")). Provide it with --chapter-so, or place it at\n'
+   'build-cache/libphigros_chapter.so, or pass --without-chapter to accept the loss.')
  z.writestr('assets/xposed_init','com.phigros.lab.Entry\n');z.writestr('assets/native_init','libphigros_lsp.so\n');z.writestr('assets/xposed_scope','com.PigeonGames.Phigros\n')
 zipalign=tools/('zipalign.exe'if os.name=='nt'else'zipalign');run(zipalign,'-P','16','-f','4',unsigned,aligned)
 apk=out/'Phigros-Lab-LSPosed-157-arm64-v0.4.0-TEST.apk'
