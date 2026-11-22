@@ -98,6 +98,19 @@ static void apply_forced_result(void){
   observed.counts[2],observed.counts[3],observed.max_combo,observed.early,observed.late,symbol);
 }
 
+// Bounded diagnostics: the first few calls tell whether the 0x58 offset matches this
+// build at all, which is the one thing that cannot be verified off-device.
+static atomic_int guard_diag_seen,guard_diag_matched,guard_diag_rescued;
+static void guard_diag(int matched,int rescued){
+ int seen=atomic_fetch_add(&guard_diag_seen,1)+1;
+ if(matched)atomic_fetch_add(&guard_diag_matched,1);
+ if(rescued)atomic_fetch_add(&guard_diag_rescued,1);
+ if(seen==1||seen==20||seen==100||seen==500)
+  __android_log_print(ANDROID_LOG_INFO,"PhiraLab",
+   "guard.diag calls=%d offsetMatched=%d rescued=%d mode=%d assist=%d floor=%d",
+   seen,atomic_load(&guard_diag_matched),atomic_load(&guard_diag_rescued),
+   frame_config.mode,frame_config.assist_guard,frame_config.guard_score);
+}
 static void commit_observer(void *inner,unsigned what,double diff){
  int rank=0;size_t len=0;
  if(observed_judge&&inner==(unsigned char*)observed_judge+0x58&&what<=3){
@@ -107,10 +120,15 @@ static void commit_observer(void *inner,unsigned what,double diff){
    if(len>0)lab_put_size(observed_judge,0x190,len-1);
    return;
   }
-  if(!(rank>0&&plan.explicit_plan&&plan.explicit_plan[rank]))what=protection_rescue(what,&diff);
+  if(!(rank>0&&plan.explicit_plan&&plan.explicit_plan[rank])){
+   unsigned before=what;what=protection_rescue(what,&diff);guard_diag(1,what!=before);
+  }
  }
  commit_original(inner,what,diff);
- if(!observed_judge||inner!=(unsigned char*)observed_judge+0x58||what>3)return;
+ if(!observed_judge||inner!=(unsigned char*)observed_judge+0x58||what>3){
+  if(frame_config.mode==3)guard_diag(0,0);
+  return;
+ }
  if(rank>0&&plan.committed)plan.committed[rank]=1;
  observed.counts[what]++;
  double timing=what==3?.25:diff;if(isfinite(timing))observed.square+=timing*timing;
