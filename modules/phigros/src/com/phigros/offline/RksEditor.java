@@ -33,9 +33,28 @@ public final class RksEditor {
     static List<RksPlanner.Chart> catalog(Context c)throws IOException {
         ArrayList<RksPlanner.Chart> result=new ArrayList<RksPlanner.Chart>();
         try(BufferedReader r=new BufferedReader(new InputStreamReader(c.getAssets().open("offline/chart-catalog.tsv"),"UTF-8"))){
-            String s;while((s=r.readLine())!=null){String[] p=s.split("\t");if(p.length!=2)throw new IOException("谱面定数目录损坏");result.add(new RksPlanner.Chart(p[0],Float.parseFloat(p[1])));}
+            String s;while((s=r.readLine())!=null){
+                // Two columns: key and difficulty constant. A blank constant is a chart
+                // the game has but whose constant this build's data does not expose -
+                // kept for unlocking, excluded from RKS arithmetic.
+                String[] p=s.split("\t",-1);if(p.length!=2)throw new IOException("谱面定数目录损坏");
+                if(p[0].trim().isEmpty())continue;
+                result.add(new RksPlanner.Chart(p[0],p[1].trim().isEmpty()?Float.NaN:Float.parseFloat(p[1])));
+            }
         }
-        if(result.size()!=1037)throw new IOException("谱面目录版本不一致");return result;
+        // The entry count is not fixed: the catalog is regenerated per supported build
+        // (157 has 1037 entries, 4.1.0 has 1072). Pinning the count here would reject any
+        // newer catalog outright. What must hold is that the table is non-empty and
+        // internally consistent, which still catches a truncated or corrupt asset.
+        if(result.isEmpty())throw new IOException("谱面定数目录为空");
+        HashSet<String> seen=new HashSet<String>();
+        for(RksPlanner.Chart chart:result){
+            if(!seen.add(chart.key))throw new IOException("谱面定数目录有重复条目："+chart.key);
+            if(!Float.isNaN(chart.difficulty)
+               &&(!Float.isFinite(chart.difficulty)||chart.difficulty<=0f||chart.difficulty>100f))
+                throw new IOException("谱面定数超出合理范围："+chart.key);
+        }
+        return result;
     }
     public static float validate(Context c,String input)throws IOException {
         if(!input.trim().matches("[0-9]+(\\.[0-9]{1,4})?"))throw new IllegalArgumentException("RKS 支持最多四位小数，例如 16.25");
@@ -267,8 +286,8 @@ public final class RksEditor {
                     }
                     meta.setProperty("backup",backup.getAbsolutePath());
                     if(unlockOnly)meta.setProperty("status","全曲目与全收藏品已解锁");
-                    else if(allAP)meta.setProperty("status",String.format(Locale.ROOT,"全解锁 ＋ 历史 RKS %.4f，AP %d / 1037",RksPlanner.calculate(records),ap));
-                    else meta.setProperty("status",records==null?"初始 Data 已准备：至少 10000 MB":String.format(Locale.ROOT,"历史 RKS %.4f，AP %d / 1037",RksPlanner.calculate(records),ap));
+                    else if(allAP)meta.setProperty("status",String.format(Locale.ROOT,"全解锁 ＋ 历史 RKS %.4f，AP %d / %d",RksPlanner.calculate(records),ap,charts.size()));
+                    else meta.setProperty("status",records==null?"初始 Data 已准备：至少 10000 MB":String.format(Locale.ROOT,"历史 RKS %.4f，AP %d / %d",RksPlanner.calculate(records),ap,charts.size()));
                 }
                 if(seedData)meta.setProperty("dataSeeded","true");
                 ByteArrayOutputStream out=new ByteArrayOutputStream();meta.store(out,"Prepared independent local history transaction");
