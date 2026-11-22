@@ -218,7 +218,12 @@ public final class RksEditor {
         return replace(raw,changes);
     }
     public static synchronized void applyPending(Context c)throws IOException {
-        if(!"com.PigeonGames.Phigros.offline".equals(c.getPackageName()))throw new IOException("拒绝修改其他包的存档");
+        // Only ever touch this game's saves. The standalone offline APK and the module
+        // (which runs inside the unmodified original package) are both legitimate
+        // hosts; anything else is refused so a mis-injection cannot rewrite another
+        // app's data.
+        String pkg=c.getPackageName();
+        if(!"com.PigeonGames.Phigros.offline".equals(pkg)&&!"com.PigeonGames.Phigros".equals(pkg))throw new IOException("拒绝修改其他包的存档");
         SharedPreferences prefs=NativeControls.preferences(c);
         File state=new File(c.getFilesDir(),"offline-rks"),backups=new File(state,"backups"),txn=new File(state,"transaction");
         File marker=new File(txn,"ready.properties");
