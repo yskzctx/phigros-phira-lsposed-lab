@@ -83,6 +83,61 @@ public final class RksEditor {
         "songsUpdateInfoVersionCode"
     ));
 
+    /**
+     * Record entries for catalog charts the save has no entry for.
+     *
+     * The shipped all-ap dump is a 157-era snapshot (1037 records) against a catalog of 1072
+     * charts, so charts added later have no entry and stay locked. A chart counts as unlocked
+     * once its Record key exists, so a zero-score record unlocks it without claiming a result.
+     */
+    public static Map<String,String> missingUnlockEntries(Map<String,String> existing,
+                                                          java.util.List<RksPlanner.Chart> charts)
+            throws Exception {
+        Map<String,String> result = new LinkedHashMap<String,String>();
+        for (RksPlanner.Chart chart : charts) {
+            if (chart.key == null || !chart.key.contains(".Record.")) continue;
+            String encKey = encrypt(chart.key);
+            if (existing.containsKey(encKey)) continue;
+            result.put(encKey, encrypt("{\"s\":0,\"a\":0,\"c\":0}"));
+        }
+        return result;
+    }
+
+    /**
+     * Unlock flags for songs the dump does not cover.
+     *
+     * Songs are gated by `1key<Song>` / `2key<Song>` preferences as well as Record keys, and
+     * the dump carries only 646 flags against 329 catalog songs - 191 songs have none, so they
+     * stay locked even when every Record exists. Values are copied from an existing flag of the
+     * same prefix rather than invented.
+     */
+    public static Map<String,String> missingUnlockFlags(Map<String,String> dump,
+                                                        java.util.List<RksPlanner.Chart> charts)
+            throws Exception {
+        String sampleOne = null, sampleTwo = null;
+        java.util.Set<String> covered = new java.util.HashSet<String>();
+        for (Map.Entry<String,String> entry : dump.entrySet()) {
+            String plain = decrypt(entry.getKey());
+            if (plain.startsWith("1key")) {
+                covered.add(plain.substring(4));
+                if (sampleOne == null) sampleOne = entry.getValue();
+            } else if (plain.startsWith("2key")) {
+                covered.add(plain.substring(4));
+                if (sampleTwo == null) sampleTwo = entry.getValue();
+            }
+        }
+        Map<String,String> result = new LinkedHashMap<String,String>();
+        for (RksPlanner.Chart chart : charts) {
+            if (chart.key == null) continue;
+            String song = chart.key.split("\\.")[0];
+            if (song.isEmpty() || covered.contains(song)) continue;
+            covered.add(song);
+            if (sampleOne != null) result.put(encrypt("1key" + song), sampleOne);
+            if (sampleTwo != null) result.put(encrypt("2key" + song), sampleTwo);
+        }
+        return result;
+    }
+
     public static Map<String,String> unlockEntries(String allApXml) throws Exception {
         Map<String,String> result = new LinkedHashMap<String,String>();
         Matcher m = ENTRY.matcher(allApXml);
@@ -276,6 +331,8 @@ public final class RksEditor {
                             while((count=in.read(buffer))!=-1)out.write(buffer,0,count);
                             Map<String,String> unlocks=unlockEntries(new String(out.toByteArray(),StandardCharsets.UTF_8));
                             updates.putAll(unlocks);
+                            updates.putAll(missingUnlockEntries(updates,charts));
+                            updates.putAll(missingUnlockFlags(unlocks,charts));
                         }
                     }
                     File backup=new File(backups,Long.toString(System.currentTimeMillis()));

@@ -113,22 +113,23 @@ static void guard_diag(int matched,int rescued){
 }
 static void commit_observer(void *inner,unsigned what,double diff){
  int rank=0;size_t len=0;
- if(observed_judge&&inner==(unsigned char*)observed_judge+0x58&&what<=3){
+ int tracked=observed_judge&&inner==(unsigned char*)observed_judge+0x58&&what<=3;
+ if(tracked){
   rank=commit_note_rank(what,NULL,NULL,&len);
   int total_seen=observed.counts[0]+observed.counts[1]+observed.counts[2]+observed.counts[3];
   if((rank>0&&plan.committed[rank])||(plan.valid&&plan.n>0&&total_seen>=plan.n)){
    if(len>0)lab_put_size(observed_judge,0x190,len-1);
    return;
   }
-  if(!(rank>0&&plan.explicit_plan&&plan.explicit_plan[rank])){
-   unsigned before=what;what=protection_rescue(what,&diff);guard_diag(1,what!=before);
-  }
+ }
+ // The rescue depends only on the judgment itself, not on the judge struct layout. Keeping
+ // it outside the offset check is what makes protection work even when 0x58 does not match
+ // this build - previously the whole feature sat behind that one comparison.
+ if(what<=3&&frame_config.mode==3&&!(tracked&&rank>0&&plan.explicit_plan&&plan.explicit_plan[rank])){
+  unsigned before=what;what=protection_rescue(what,&diff);guard_diag(tracked,what!=before);
  }
  commit_original(inner,what,diff);
- if(!observed_judge||inner!=(unsigned char*)observed_judge+0x58||what>3){
-  if(frame_config.mode==3)guard_diag(0,0);
-  return;
- }
+ if(!tracked||what>3)return;
  if(rank>0&&plan.committed)plan.committed[rank]=1;
  observed.counts[what]++;
  double timing=what==3?.25:diff;if(isfinite(timing))observed.square+=timing*timing;
