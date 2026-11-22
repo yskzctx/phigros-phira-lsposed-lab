@@ -8,7 +8,7 @@ a=p.parse_args();root=Path(__file__).resolve().parent;out=a.out.resolve();out.mk
 def run(*args):subprocess.run([str(v)for v in args],check=True)
 def digest(path):
  with path.open('rb')as f:return hashlib.file_digest(f,'sha256').hexdigest()
-assert digest(a.resources_from_apk)in {'28ea2851b276024e1fe41c7f1f7ff8ac9f334b6e7b9c75cf9bc31b9003cd726c','d186832bd2600a1353ef6421d9159987d88639756ffc02f2a120bcd5f6597968','61fedd402042ad301de66b87a0e2ed844568b242a1052c1e8cf07401041195ac','edec4ce3f4ca761085d2a9fe745ac47082e5bbf1f2a51e39d001a7b966643ded'},'Use the exact verified v174/v175/v177 modified APK (or retained 0.1 module), not an original game or private APK'
+assert digest(a.resources_from_apk)in {'28ea2851b276024e1fe41c7f1f7ff8ac9f334b6e7b9c75cf9bc31b9003cd726c','d186832bd2600a1353ef6421d9159987d88639756ffc02f2a120bcd5f6597968','61fedd402042ad301de66b87a0e2ed844568b242a1052c1e8cf07401041195ac','edec4ce3f4ca761085d2a9fe745ac47082e5bbf1f2a51e39d001a7b966643ded','ac9d4e7014a963f86a28584deba557f2d96d1cba2849e4b60f766bacc5e4e49e'},'Use the exact verified v174/v175/v177/v181 modified APK (or retained 0.1 module), not an original game or private APK'
 sdk=a.sdk.resolve();tools=sdk/'build-tools'/a.build_tools;android=sdk/'platforms'/a.platform/'android.jar';api=a.xposed_api.resolve()
 classes=build/'classes';classes.mkdir(exist_ok=True)
 # A fresh javac output prevents removed anonymous classes entering the DEX.
@@ -34,12 +34,22 @@ with zipfile.ZipFile(resources)as res,zipfile.ZipFile(a.resources_from_apk)as ol
    if e.filename.startswith(('assets/aa/','assets/bin/')):continue
    z.writestr(e,(root/'assets/offline/controls-ui.html').read_bytes()if e.filename=='assets/offline/controls-ui.html'else old.read(e))
  for name,file in native.items():z.write(file,'lib/arm64-v8a/'+name,compress_type=zipfile.ZIP_STORED)
- chapter=a.chapter_so.read_bytes()if a.chapter_so else old.read('lib/arm64-v8a/libphigros_chapter.so')
- assert chapter[:5]==b'\x7fELF\x02'and struct.unpack_from('<H',chapter,18)[0]==183
- z.writestr('lib/arm64-v8a/libphigros_chapter.so',chapter,compress_type=zipfile.ZIP_STORED)
+ # The local-chapter backend is a Rust build (see chapter-player/README.md) that is
+ # not part of this repository's toolchain. When neither --chapter-so nor the
+ # resource APK provides it, ship the module without the chapter feature rather than
+ # failing the whole build: everything else in the module works without it, and
+ # silently embedding an unverified binary would be worse than omitting it.
+ chapter=None
+ if a.chapter_so:chapter=a.chapter_so.read_bytes()
+ elif 'lib/arm64-v8a/libphigros_chapter.so' in old.namelist():chapter=old.read('lib/arm64-v8a/libphigros_chapter.so')
+ if chapter:
+  assert chapter[:5]==b'\x7fELF\x02'and struct.unpack_from('<H',chapter,18)[0]==183
+  z.writestr('lib/arm64-v8a/libphigros_chapter.so',chapter,compress_type=zipfile.ZIP_STORED)
+ else:
+  print('WARNING: no libphigros_chapter.so available; building without the local-chapter feature')
  z.writestr('assets/xposed_init','com.phigros.lab.Entry\n');z.writestr('assets/native_init','libphigros_lsp.so\n');z.writestr('assets/xposed_scope','com.PigeonGames.Phigros\n')
 zipalign=tools/('zipalign.exe'if os.name=='nt'else'zipalign');run(zipalign,'-P','16','-f','4',unsigned,aligned)
-apk=out/'Phigros-Lab-LSPosed-157-arm64-v0.3.0-TEST.apk'
+apk=out/'Phigros-Lab-LSPosed-157-arm64-v0.4.0-TEST.apk'
 run('java','-Djava.io.tmpdir='+str(build),'-jar',tools/'lib/apksigner.jar','sign','--ks',a.keystore.resolve(),'--ks-key-alias',a.alias,'--ks-pass','file:'+str(a.password_file.resolve()),'--min-sdk-version','26','--v1-signing-enabled','false','--v2-signing-enabled','true','--v3-signing-enabled','true','--v4-signing-enabled','false','--out',apk,aligned)
 run('java','-jar',tools/'lib/apksigner.jar','verify','--verbose',apk);run(zipalign,'-c','-P','16','4',apk)
 with zipfile.ZipFile(apk)as z:
